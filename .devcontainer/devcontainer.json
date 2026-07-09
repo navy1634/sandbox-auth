@@ -1,0 +1,39 @@
+{
+  "name": "sandbox",
+  "dockerComposeFile": [
+    "../compose.yml",
+    "./compose.devcontainer.yml",
+  ],
+  "service": "web",
+  "workspaceFolder": "/app",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "stylelint.vscode-stylelint",
+        "usernamehw.errorlens",
+        "christian-kohler.path-intellisense",
+        "streetsidesoftware.code-spell-checker"
+      ],
+      "settings": {
+        "[css]": {
+          "editor.tabSize": 2
+        },
+        "[javascript]": {
+          "editor.tabSize": 2
+        },
+        "[javascriptreact]": {
+          "editor.tabSize": 2
+        },
+        "[typescript]": {
+          "editor.tabSize": 2
+        },
+        "[typescriptreact]": {
+          "editor.tabSize": 2
+        },
+        "prettier.singleQuote": true,
+        "editor.formatOnSave": true
+      }
+    }
+  },
+  "onCreateCommand": "pnpm install --frozen-lockfile"
+}

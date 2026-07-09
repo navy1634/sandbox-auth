@@ -1,0 +1,19 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    environment:
+      - API_DOMAIN=sample
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - pnpm-store:/pnpm/store
+    ports:
+      - 3000:3000
+    working_dir: /app
+    command: bash -c "pnpm install --frozen-lockfile && pnpm dev --hostname 0.0.0.0 --port 3000"
+
+volumes:
+  pnpm-store:
+    name: pnpm-store

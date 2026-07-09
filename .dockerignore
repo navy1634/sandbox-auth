@@ -1,0 +1,12 @@
+.agents
+.codex
+.devcontainer
+.git
+.next
+
+.env*
+tsconfig.tsbuildinfo
+Dockerfile*
+compose*.yml
+debug-storybook.log
+node_modules
