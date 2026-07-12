@@ -1,5 +1,5 @@
 import type { Meta } from "@storybook/nextjs-vite";
-import Footer from "@/components/Footer/footer";
+import Footer from "./footer";
 
 const meta = {
   component: Footer,
