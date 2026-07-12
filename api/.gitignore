@@ -1,0 +1,11 @@
+# folders
+pkg
+bin
+tmp
+
+# files
+*.exe
+*.log
+*.tmp
+.env
+.env.local

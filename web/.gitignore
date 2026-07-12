@@ -1,19 +1,19 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+node_modules
 /.pnp
 .pnp.*
 
 # testing
-/coverage
+coverage
 
 # next.js
 .next
 /out/
 
 # production
-/build
+build
 
 # misc
 .DS_Store
@@ -22,6 +22,7 @@
 # debug
 npm-debug.log*
 .pnpm-debug.log*
+.pnpm-store
 
 # env files (can opt-in for committing if needed)
 .env*

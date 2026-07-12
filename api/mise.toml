@@ -1,0 +1,43 @@
+[tools]
+go = "1.26.2"
+golangci-lint = "2.11.4"
+
+[env]
+_.file = ".env.local"
+
+[tasks.dev]
+run = "go tool air"
+
+[tasks.run]
+run = "go run src/main.go"
+
+[tasks.install]
+run = "go mod tidy"
+
+[tasks."migrate:up"]
+run = "go tool goose -dir ./migrations postgres \"$DATABASE_URL\" up"
+
+[tasks."migrate:down"]
+run = "go tool goose -dir ./migrations postgres \"$DATABASE_URL\" down"
+
+[tasks.format]
+run = "go fmt ./..."
+
+[tasks.lint]
+run = "golangci-lint run ./..."
+
+[tasks."lint:config-chk"]
+run = "golangci-lint config verify"
+
+[tasks.test]
+run = "go test ./..."
+
+[tasks.ci]
+run = [
+  { task = "build" },
+  { tasks = [
+    "format",
+    "lint",
+    "test",
+  ] },
+]

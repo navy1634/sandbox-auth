@@ -1,0 +1,57 @@
+version: 2
+
+run:
+  timeout: 5m
+
+linters:
+  enable-all: true
+  disable:
+    - wrapcheck
+    - rowserrcheck
+    - maintidx
+    - godox
+    - gocheckcompilerdirectives
+    - depguard
+    - durationcheck
+    - forbidigo
+    - gocritic
+    - godot
+    - goheader
+    - gomoddirectives
+    - gomodguard
+    - goprintffuncname
+    - paralleltest
+    - thelper
+    - tparallel
+    - testpackage
+    - containedctx
+    - fatcontext
+    - intrange
+    - forcetypeassert
+    - recvcheck
+    - bidichk
+    - decorder
+    - embeddedstructfieldcheck
+    - exptostd
+    - ginkgolinter
+    - grouper
+    - inamedparam
+    - interfacebloat
+    - iotamixing
+    - nakedret
+    - protogetter
+    - sloglint
+    - spancheck
+    - testableexamples
+    - testifylint
+    - zerologlint
+    - arangolint
+    - asasalint
+    - gosmopolitan
+    - promlinter
+
+issues:
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - errcheck

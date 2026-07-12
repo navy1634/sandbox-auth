@@ -1,25 +1,15 @@
 "use client";
 
+import { startAuthentication } from "@simplewebauthn/browser";
+import Link from "next/link";
 import { useEffect, useState } from "react";
+import { apiBaseURL, webAuthnOptions, type MeResponse } from "../authTypes";
 import styles from "./page.module.css";
-
-type MeResponse = {
-  authenticated: boolean;
-  user?: {
-    email?: string;
-    name?: string;
-    picture?: string;
-    provider?: string;
-    providerAccountId?: string;
-  };
-};
-
-const apiBaseURL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
 
 export default function LoginPage() {
   const [me, setMe] = useState<MeResponse>({ authenticated: false });
   const [status, setStatus] = useState("loading");
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     fetch(`${apiBaseURL}/me`, { credentials: "include" })
@@ -35,6 +25,38 @@ export default function LoginPage() {
   }, []);
 
   const user = me.user;
+
+  const handlePasskeyLogin = async () => {
+    setMessage("");
+    setStatus("passkey");
+
+    try {
+      const optionsResponse = await fetch(`${apiBaseURL}/passkeys/login/options`, {
+        method: "POST",
+        credentials: "include",
+      });
+      const optionsJSON = webAuthnOptions(await optionsResponse.json());
+      const assertion = await startAuthentication({ optionsJSON });
+      const verifyResponse = await fetch(`${apiBaseURL}/passkeys/login/verify`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(assertion),
+      });
+
+      if (!verifyResponse.ok) {
+        throw new Error("failed to verify passkey");
+      }
+
+      const data = (await verifyResponse.json()) as MeResponse;
+      setMe(data);
+      setStatus("authenticated");
+      window.location.href = data.needsRegistration ? "/register" : "/mypage";
+    } catch {
+      setStatus(me.authenticated ? "authenticated" : "unauthenticated");
+      setMessage("パスキーでログインできませんでした。");
+    }
+  };
 
   return (
     <div className={styles.page}>
@@ -52,6 +74,8 @@ export default function LoginPage() {
           <strong>{status}</strong>
         </div>
 
+        {message ? <p className={styles.message}>{message}</p> : null}
+
         {user ? (
           <div className={styles.user}>
             {user.picture ? (
@@ -66,6 +90,9 @@ export default function LoginPage() {
             <div>
               <p className={styles.name}>{user.name ?? "No name"}</p>
               <p className={styles.email}>{user.email}</p>
+              {me.needsRegistration ? (
+                <p className={styles.email}>初回登録が必要です。</p>
+              ) : null}
             </div>
           </div>
         ) : (
@@ -82,6 +109,18 @@ export default function LoginPage() {
           >
             Google でログイン
           </button>
+          <button
+            className={styles.secondaryButton}
+            type="button"
+            onClick={handlePasskeyLogin}
+          >
+            パスキーでログイン
+          </button>
+          {me.authenticated ? (
+            <Link className={styles.secondaryLink} href={me.needsRegistration ? "/register" : "/mypage"}>
+              {me.needsRegistration ? "初回登録へ" : "マイページへ"}
+            </Link>
+          ) : null}
           <button
             className={styles.secondaryButton}
             type="button"

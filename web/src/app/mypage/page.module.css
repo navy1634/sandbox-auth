@@ -1,0 +1,107 @@
+.page {
+  display: grid;
+  min-height: calc(100vh - 120px);
+  place-items: center;
+  padding: 32px 16px;
+}
+
+.panel {
+  width: min(100%, 520px);
+  display: grid;
+  gap: 22px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 32px;
+  background: #fff;
+  color: #111827;
+}
+
+.label {
+  margin-bottom: 8px;
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.title {
+  font-size: 28px;
+  line-height: 1.2;
+}
+
+.email {
+  color: #4b5563;
+  line-height: 1.7;
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.avatar {
+  border-radius: 50%;
+}
+
+.name {
+  font-weight: 700;
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+  color: #374151;
+  font-weight: 700;
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: #111827;
+  font: inherit;
+}
+
+.message {
+  color: #047857;
+  line-height: 1.6;
+}
+
+.actions {
+  display: grid;
+  gap: 12px;
+}
+
+.primaryButton,
+.secondaryButton,
+.primaryLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  border-radius: 8px;
+  padding: 0 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primaryButton,
+.primaryLink {
+  border: 1px solid #2563eb;
+  background: #2563eb;
+  color: #fff;
+}
+
+.secondaryButton {
+  border: 1px solid #d1d5db;
+  background: #fff;
+  color: #111827;
+}
+
+@media (width <= 520px) {
+  .panel {
+    padding: 24px;
+  }
+}
