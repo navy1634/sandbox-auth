@@ -4,12 +4,12 @@ package ent
 
 import (
 	"context"
-	"sandbox-nextjs/api/src/ent/predicate"
-	"sandbox-nextjs/api/src/ent/webauthncredential"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/sandbox-nextjs/src/ent/predicate"
+	"github.com/sandbox-nextjs/src/ent/webauthncredential"
 )
 
 // WebauthnCredentialDelete is the builder for deleting a WebauthnCredential entity.

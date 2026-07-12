@@ -1,4 +1,4 @@
-module sandbox-nextjs/api
+module github.com/sandbox-nextjs
 
 go 1.26.2
 

@@ -3,17 +3,15 @@ package repository
 import (
 	"context"
 	"crypto/rand"
-	"encoding/json"
 	"errors"
 	"strings"
 	"time"
 
-	"github.com/go-webauthn/webauthn/webauthn"
-	"sandbox-nextjs/api/src/domain"
-	"sandbox-nextjs/api/src/ent"
-	entaccount "sandbox-nextjs/api/src/ent/account"
-	entcredential "sandbox-nextjs/api/src/ent/webauthncredential"
-	entsession "sandbox-nextjs/api/src/ent/webauthnsession"
+	"github.com/sandbox-nextjs/src/domain"
+	"github.com/sandbox-nextjs/src/ent"
+	entaccount "github.com/sandbox-nextjs/src/ent/account"
+	entidentity "github.com/sandbox-nextjs/src/ent/authidentity"
+	"github.com/sandbox-nextjs/src/infrastructure/database"
 )
 
 type AccountRepository struct {
@@ -24,24 +22,33 @@ func NewAccountRepository(client *ent.Client) *AccountRepository {
 	return &AccountRepository{client: client}
 }
 
-func (r *AccountRepository) UpsertGoogleAccount(ctx context.Context, user domain.GoogleUser) (domain.Account, error) {
-	storedAccount, err := r.client.Account.Query().
+func (r *AccountRepository) db(ctx context.Context) (*ent.Client, error) {
+	return database.ClientFromContext(ctx, r.client)
+}
+
+func (r *AccountRepository) UpsertProviderIdentity(ctx context.Context, identity domain.ProviderIdentity) (domain.Account, error) {
+	client, err := r.db(ctx)
+	if err != nil {
+		return domain.Account{}, err
+	}
+
+	storedIdentity, err := client.AuthIdentity.Query().
 		Where(
-			entaccount.Provider(user.Provider),
-			entaccount.ProviderAccountID(user.ProviderAccountID),
+			entidentity.Provider(identity.Provider),
+			entidentity.ProviderAccountID(identity.ProviderAccountID),
 		).
 		Only(ctx)
 	if err == nil {
-		updatedAccount, err := r.client.Account.UpdateOneID(storedAccount.ID).
-			SetEmail(user.Email).
-			SetEmailVerified(user.EmailVerified).
-			SetName(user.Name).
-			SetPicture(user.Picture).
+		updatedIdentity, err := client.AuthIdentity.UpdateOneID(storedIdentity.ID).
+			SetEmail(identity.Email).
+			SetEmailVerified(identity.EmailVerified).
+			SetName(identity.Name).
+			SetPicture(identity.Picture).
 			Save(ctx)
 		if err != nil {
 			return domain.Account{}, err
 		}
-		return toAccount(updatedAccount), nil
+		return r.findByIDWithIdentity(ctx, updatedIdentity.AccountID, updatedIdentity)
 	}
 	if !ent.IsNotFound(err) {
 		return domain.Account{}, err
@@ -52,32 +59,54 @@ func (r *AccountRepository) UpsertGoogleAccount(ctx context.Context, user domain
 		return domain.Account{}, err
 	}
 
-	createdAccount, err := r.client.Account.Create().
-		SetProvider(user.Provider).
-		SetProviderAccountID(user.ProviderAccountID).
-		SetEmail(user.Email).
-		SetEmailVerified(user.EmailVerified).
-		SetName(user.Name).
-		SetPicture(user.Picture).
+	createdAccount, err := client.Account.Create().
 		SetWebauthnUserHandle(userHandle).
 		Save(ctx)
 	if err != nil {
 		return domain.Account{}, err
 	}
 
-	return toAccount(createdAccount), nil
-}
-
-func (r *AccountRepository) FindByID(ctx context.Context, id int64) (domain.Account, error) {
-	storedAccount, err := r.client.Account.Get(ctx, int(id))
+	createdIdentity, err := client.AuthIdentity.Create().
+		SetAccountID(int64(createdAccount.ID)).
+		SetProvider(identity.Provider).
+		SetProviderAccountID(identity.ProviderAccountID).
+		SetEmail(identity.Email).
+		SetEmailVerified(identity.EmailVerified).
+		SetName(identity.Name).
+		SetPicture(identity.Picture).
+		Save(ctx)
 	if err != nil {
 		return domain.Account{}, err
 	}
 
-	return toAccount(storedAccount), nil
+	return toAccount(createdAccount, createdIdentity), nil
+}
+
+func (r *AccountRepository) FindByID(ctx context.Context, id int64) (domain.Account, error) {
+	client, err := r.db(ctx)
+	if err != nil {
+		return domain.Account{}, err
+	}
+
+	storedAccount, err := client.Account.Get(ctx, int(id))
+	if err != nil {
+		return domain.Account{}, err
+	}
+
+	storedIdentity, err := r.primaryIdentity(ctx, id)
+	if err != nil {
+		return domain.Account{}, err
+	}
+
+	return toAccount(storedAccount, storedIdentity), nil
 }
 
 func (r *AccountRepository) UpdateProfile(ctx context.Context, id int64, input domain.ProfileInput) (domain.Account, error) {
+	client, err := r.db(ctx)
+	if err != nil {
+		return domain.Account{}, err
+	}
+
 	displayName := strings.TrimSpace(input.DisplayName)
 	bio := strings.TrimSpace(input.Bio)
 
@@ -91,11 +120,11 @@ func (r *AccountRepository) UpdateProfile(ctx context.Context, id int64, input d
 		return domain.Account{}, errors.New("bio is too long")
 	}
 
-	builder := r.client.Account.UpdateOneID(int(id)).
+	builder := client.Account.UpdateOneID(int(id)).
 		SetDisplayName(displayName).
 		SetBio(bio)
 
-	storedAccount, err := r.client.Account.Get(ctx, int(id))
+	storedAccount, err := client.Account.Get(ctx, int(id))
 	if err != nil {
 		return domain.Account{}, err
 	}
@@ -108,173 +137,64 @@ func (r *AccountRepository) UpdateProfile(ctx context.Context, id int64, input d
 		return domain.Account{}, err
 	}
 
-	return toAccount(updatedAccount), nil
-}
-
-func (r *AccountRepository) FindWebAuthnUserByID(ctx context.Context, id int64) (domain.Account, error) {
-	account, err := r.FindByID(ctx, id)
+	storedIdentity, err := r.primaryIdentity(ctx, id)
 	if err != nil {
 		return domain.Account{}, err
 	}
 
-	credentials, err := r.ListCredentials(ctx, id)
+	return toAccount(updatedAccount, storedIdentity), nil
+}
+
+func (r *AccountRepository) FindByWebAuthnUserHandle(ctx context.Context, handle []byte) (domain.Account, error) {
+	client, err := r.db(ctx)
 	if err != nil {
 		return domain.Account{}, err
 	}
 
-	account.Credentials = credentials
-	return account, nil
-}
-
-func (r *AccountRepository) FindWebAuthnUserByHandle(ctx context.Context, handle []byte) (domain.Account, error) {
-	storedAccount, err := r.client.Account.Query().
+	storedAccount, err := client.Account.Query().
 		Where(entaccount.WebauthnUserHandle(handle)).
 		Only(ctx)
 	if err != nil {
 		return domain.Account{}, err
 	}
 
-	account := toAccount(storedAccount)
-	credentials, err := r.ListCredentials(ctx, account.ID)
+	storedIdentity, err := r.primaryIdentity(ctx, int64(storedAccount.ID))
 	if err != nil {
 		return domain.Account{}, err
 	}
 
-	account.Credentials = credentials
-	return account, nil
+	return toAccount(storedAccount, storedIdentity), nil
 }
 
-func (r *AccountRepository) ListCredentials(ctx context.Context, accountID int64) ([]webauthn.Credential, error) {
-	storedCredentials, err := r.client.WebauthnCredential.Query().
-		Where(entcredential.AccountID(accountID)).
-		Order(ent.Asc(entcredential.FieldCreatedAt)).
-		All(ctx)
+func (r *AccountRepository) findByIDWithIdentity(ctx context.Context, id int64, identity *ent.AuthIdentity) (domain.Account, error) {
+	client, err := r.db(ctx)
+	if err != nil {
+		return domain.Account{}, err
+	}
+
+	storedAccount, err := client.Account.Get(ctx, int(id))
+	if err != nil {
+		return domain.Account{}, err
+	}
+
+	return toAccount(storedAccount, identity), nil
+}
+
+func (r *AccountRepository) primaryIdentity(ctx context.Context, accountID int64) (*ent.AuthIdentity, error) {
+	client, err := r.db(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	credentials := make([]webauthn.Credential, 0, len(storedCredentials))
-	for _, storedCredential := range storedCredentials {
-		var credential webauthn.Credential
-		if err := json.Unmarshal(storedCredential.CredentialJSON, &credential); err != nil {
-			return nil, err
-		}
-		credentials = append(credentials, credential)
-	}
-
-	return credentials, nil
+	return client.AuthIdentity.Query().
+		Where(entidentity.AccountID(accountID)).
+		Order(ent.Asc(entidentity.FieldCreatedAt)).
+		First(ctx)
 }
 
-func (r *AccountRepository) SaveCredential(ctx context.Context, accountID int64, credential *webauthn.Credential) error {
-	raw, err := json.Marshal(credential)
-	if err != nil {
-		return err
-	}
-
-	storedCredential, err := r.client.WebauthnCredential.Query().
-		Where(entcredential.CredentialID(credential.ID)).
-		Only(ctx)
-	if err == nil {
-		return r.client.WebauthnCredential.UpdateOneID(storedCredential.ID).
-			SetAccountID(accountID).
-			SetCredentialJSON(raw).
-			Exec(ctx)
-	}
-	if !ent.IsNotFound(err) {
-		return err
-	}
-
-	return r.client.WebauthnCredential.Create().
-		SetAccountID(accountID).
-		SetCredentialID(credential.ID).
-		SetCredentialJSON(raw).
-		Exec(ctx)
-}
-
-func (r *AccountRepository) UpdateCredential(ctx context.Context, accountID int64, credential *webauthn.Credential) error {
-	raw, err := json.Marshal(credential)
-	if err != nil {
-		return err
-	}
-
-	storedCredential, err := r.client.WebauthnCredential.Query().
-		Where(
-			entcredential.AccountID(accountID),
-			entcredential.CredentialID(credential.ID),
-		).
-		Only(ctx)
-	if err != nil {
-		return err
-	}
-
-	return r.client.WebauthnCredential.UpdateOneID(storedCredential.ID).
-		SetCredentialJSON(raw).
-		SetLastUsedAt(time.Now()).
-		Exec(ctx)
-}
-
-func (r *AccountRepository) SavePasskeySession(ctx context.Context, id string, accountID *int64, ceremony string, session *webauthn.SessionData, ttl time.Duration) error {
-	raw, err := json.Marshal(session)
-	if err != nil {
-		return err
-	}
-
-	return r.client.WebauthnSession.Create().
-		SetID(id).
-		SetNillableAccountID(accountID).
-		SetCeremony(ceremony).
-		SetSessionJSON(raw).
-		SetExpiresAt(time.Now().Add(ttl)).
-		Exec(ctx)
-}
-
-func (r *AccountRepository) ConsumePasskeySession(ctx context.Context, id string, ceremony string) (domain.PasskeySession, error) {
-	tx, err := r.client.Tx(ctx)
-	if err != nil {
-		return domain.PasskeySession{}, err
-	}
-	defer tx.Rollback()
-
-	storedSession, err := tx.WebauthnSession.Query().
-		Where(
-			entsession.ID(id),
-			entsession.Ceremony(ceremony),
-			entsession.ExpiresAtGT(time.Now()),
-		).
-		Only(ctx)
-	if err != nil {
-		return domain.PasskeySession{}, err
-	}
-
-	if err := tx.WebauthnSession.DeleteOneID(id).Exec(ctx); err != nil {
-		return domain.PasskeySession{}, err
-	}
-
-	var session webauthn.SessionData
-	if err := json.Unmarshal(storedSession.SessionJSON, &session); err != nil {
-		return domain.PasskeySession{}, err
-	}
-
-	if err := tx.Commit(); err != nil {
-		return domain.PasskeySession{}, err
-	}
-
-	return domain.PasskeySession{
-		AccountID: storedSession.AccountID,
-		Ceremony:  ceremony,
-		Session:   session,
-	}, nil
-}
-
-func toAccount(storedAccount *ent.Account) domain.Account {
-	return domain.Account{
+func toAccount(storedAccount *ent.Account, identity *ent.AuthIdentity) domain.Account {
+	account := domain.Account{
 		ID:                 int64(storedAccount.ID),
-		Provider:           storedAccount.Provider,
-		ProviderAccountID:  storedAccount.ProviderAccountID,
-		Email:              storedAccount.Email,
-		EmailVerified:      storedAccount.EmailVerified,
-		Name:               storedAccount.Name,
-		Picture:            storedAccount.Picture,
 		DisplayName:        storedAccount.DisplayName,
 		Bio:                storedAccount.Bio,
 		RegisteredAt:       storedAccount.RegisteredAt,
@@ -282,6 +202,17 @@ func toAccount(storedAccount *ent.Account) domain.Account {
 		UpdatedAt:          storedAccount.UpdatedAt,
 		WebAuthnUserHandle: storedAccount.WebauthnUserHandle,
 	}
+	if identity != nil {
+		account.Identity = &domain.ProviderIdentity{
+			Provider:          identity.Provider,
+			ProviderAccountID: identity.ProviderAccountID,
+			Email:             identity.Email,
+			EmailVerified:     identity.EmailVerified,
+			Name:              identity.Name,
+			Picture:           identity.Picture,
+		}
+	}
+	return account
 }
 
 func randomBytes(size int) ([]byte, error) {

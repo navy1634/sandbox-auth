@@ -6,7 +6,7 @@ import (
 	"github.com/go-webauthn/webauthn/webauthn"
 )
 
-type GoogleUser struct {
+type ProviderIdentity struct {
 	Provider          string
 	ProviderAccountID string
 	Email             string
@@ -17,19 +17,14 @@ type GoogleUser struct {
 
 type Account struct {
 	ID                 int64                 `json:"id"`
-	Provider           string                `json:"provider"`
-	ProviderAccountID  string                `json:"providerAccountId"`
-	Email              string                `json:"email"`
-	EmailVerified      bool                  `json:"emailVerified"`
-	Name               string                `json:"name"`
-	Picture            string                `json:"picture"`
+	Identity           *ProviderIdentity     `json:"identity,omitempty"`
 	DisplayName        string                `json:"displayName"`
 	Bio                string                `json:"bio"`
-	RegisteredAt       *time.Time            `json:"registeredAt"`
+	Credentials        []webauthn.Credential `json:"-"`
+	WebAuthnUserHandle []byte                `json:"-"`
 	CreatedAt          time.Time             `json:"createdAt"`
 	UpdatedAt          time.Time             `json:"updatedAt"`
-	WebAuthnUserHandle []byte                `json:"-"`
-	Credentials        []webauthn.Credential `json:"-"`
+	RegisteredAt       *time.Time            `json:"registeredAt"`
 }
 
 type ProfileInput struct {
@@ -48,17 +43,20 @@ func (account Account) WebAuthnID() []byte {
 }
 
 func (account Account) WebAuthnName() string {
-	return account.Email
+	if account.Identity != nil {
+		return account.Identity.Email
+	}
+	return ""
 }
 
 func (account Account) WebAuthnDisplayName() string {
 	if account.DisplayName != "" {
 		return account.DisplayName
 	}
-	if account.Name != "" {
-		return account.Name
+	if account.Identity != nil && account.Identity.Name != "" {
+		return account.Identity.Name
 	}
-	return account.Email
+	return account.WebAuthnName()
 }
 
 func (account Account) WebAuthnCredentials() []webauthn.Credential {

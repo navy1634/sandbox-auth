@@ -7,14 +7,15 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
-	"sandbox-nextjs/api/src/ent/account"
-	"sandbox-nextjs/api/src/ent/webauthncredential"
-	"sandbox-nextjs/api/src/ent/webauthnsession"
 	"sync"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/sandbox-nextjs/src/ent/account"
+	"github.com/sandbox-nextjs/src/ent/authidentity"
+	"github.com/sandbox-nextjs/src/ent/webauthncredential"
+	"github.com/sandbox-nextjs/src/ent/webauthnsession"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -76,6 +77,7 @@ func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
 			account.Table:            account.ValidColumn,
+			authidentity.Table:       authidentity.ValidColumn,
 			webauthncredential.Table: webauthncredential.ValidColumn,
 			webauthnsession.Table:    webauthnsession.ValidColumn,
 		})

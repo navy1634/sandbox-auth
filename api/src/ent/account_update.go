@@ -6,13 +6,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"sandbox-nextjs/api/src/ent/account"
-	"sandbox-nextjs/api/src/ent/predicate"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/sandbox-nextjs/src/ent/account"
+	"github.com/sandbox-nextjs/src/ent/predicate"
 )
 
 // AccountUpdate is the builder for updating Account entities.
@@ -31,90 +31,6 @@ func (_u *AccountUpdate) Where(ps ...predicate.Account) *AccountUpdate {
 // SetUpdatedAt sets the "updated_at" field.
 func (_u *AccountUpdate) SetUpdatedAt(v time.Time) *AccountUpdate {
 	_u.mutation.SetUpdatedAt(v)
-	return _u
-}
-
-// SetProvider sets the "provider" field.
-func (_u *AccountUpdate) SetProvider(v string) *AccountUpdate {
-	_u.mutation.SetProvider(v)
-	return _u
-}
-
-// SetNillableProvider sets the "provider" field if the given value is not nil.
-func (_u *AccountUpdate) SetNillableProvider(v *string) *AccountUpdate {
-	if v != nil {
-		_u.SetProvider(*v)
-	}
-	return _u
-}
-
-// SetProviderAccountID sets the "provider_account_id" field.
-func (_u *AccountUpdate) SetProviderAccountID(v string) *AccountUpdate {
-	_u.mutation.SetProviderAccountID(v)
-	return _u
-}
-
-// SetNillableProviderAccountID sets the "provider_account_id" field if the given value is not nil.
-func (_u *AccountUpdate) SetNillableProviderAccountID(v *string) *AccountUpdate {
-	if v != nil {
-		_u.SetProviderAccountID(*v)
-	}
-	return _u
-}
-
-// SetEmail sets the "email" field.
-func (_u *AccountUpdate) SetEmail(v string) *AccountUpdate {
-	_u.mutation.SetEmail(v)
-	return _u
-}
-
-// SetNillableEmail sets the "email" field if the given value is not nil.
-func (_u *AccountUpdate) SetNillableEmail(v *string) *AccountUpdate {
-	if v != nil {
-		_u.SetEmail(*v)
-	}
-	return _u
-}
-
-// SetEmailVerified sets the "email_verified" field.
-func (_u *AccountUpdate) SetEmailVerified(v bool) *AccountUpdate {
-	_u.mutation.SetEmailVerified(v)
-	return _u
-}
-
-// SetNillableEmailVerified sets the "email_verified" field if the given value is not nil.
-func (_u *AccountUpdate) SetNillableEmailVerified(v *bool) *AccountUpdate {
-	if v != nil {
-		_u.SetEmailVerified(*v)
-	}
-	return _u
-}
-
-// SetName sets the "name" field.
-func (_u *AccountUpdate) SetName(v string) *AccountUpdate {
-	_u.mutation.SetName(v)
-	return _u
-}
-
-// SetNillableName sets the "name" field if the given value is not nil.
-func (_u *AccountUpdate) SetNillableName(v *string) *AccountUpdate {
-	if v != nil {
-		_u.SetName(*v)
-	}
-	return _u
-}
-
-// SetPicture sets the "picture" field.
-func (_u *AccountUpdate) SetPicture(v string) *AccountUpdate {
-	_u.mutation.SetPicture(v)
-	return _u
-}
-
-// SetNillablePicture sets the "picture" field if the given value is not nil.
-func (_u *AccountUpdate) SetNillablePicture(v *string) *AccountUpdate {
-	if v != nil {
-		_u.SetPicture(*v)
-	}
 	return _u
 }
 
@@ -225,24 +141,6 @@ func (_u *AccountUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(account.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := _u.mutation.Provider(); ok {
-		_spec.SetField(account.FieldProvider, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.ProviderAccountID(); ok {
-		_spec.SetField(account.FieldProviderAccountID, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.Email(); ok {
-		_spec.SetField(account.FieldEmail, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.EmailVerified(); ok {
-		_spec.SetField(account.FieldEmailVerified, field.TypeBool, value)
-	}
-	if value, ok := _u.mutation.Name(); ok {
-		_spec.SetField(account.FieldName, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.Picture(); ok {
-		_spec.SetField(account.FieldPicture, field.TypeString, value)
-	}
 	if value, ok := _u.mutation.DisplayName(); ok {
 		_spec.SetField(account.FieldDisplayName, field.TypeString, value)
 	}
@@ -281,90 +179,6 @@ type AccountUpdateOne struct {
 // SetUpdatedAt sets the "updated_at" field.
 func (_u *AccountUpdateOne) SetUpdatedAt(v time.Time) *AccountUpdateOne {
 	_u.mutation.SetUpdatedAt(v)
-	return _u
-}
-
-// SetProvider sets the "provider" field.
-func (_u *AccountUpdateOne) SetProvider(v string) *AccountUpdateOne {
-	_u.mutation.SetProvider(v)
-	return _u
-}
-
-// SetNillableProvider sets the "provider" field if the given value is not nil.
-func (_u *AccountUpdateOne) SetNillableProvider(v *string) *AccountUpdateOne {
-	if v != nil {
-		_u.SetProvider(*v)
-	}
-	return _u
-}
-
-// SetProviderAccountID sets the "provider_account_id" field.
-func (_u *AccountUpdateOne) SetProviderAccountID(v string) *AccountUpdateOne {
-	_u.mutation.SetProviderAccountID(v)
-	return _u
-}
-
-// SetNillableProviderAccountID sets the "provider_account_id" field if the given value is not nil.
-func (_u *AccountUpdateOne) SetNillableProviderAccountID(v *string) *AccountUpdateOne {
-	if v != nil {
-		_u.SetProviderAccountID(*v)
-	}
-	return _u
-}
-
-// SetEmail sets the "email" field.
-func (_u *AccountUpdateOne) SetEmail(v string) *AccountUpdateOne {
-	_u.mutation.SetEmail(v)
-	return _u
-}
-
-// SetNillableEmail sets the "email" field if the given value is not nil.
-func (_u *AccountUpdateOne) SetNillableEmail(v *string) *AccountUpdateOne {
-	if v != nil {
-		_u.SetEmail(*v)
-	}
-	return _u
-}
-
-// SetEmailVerified sets the "email_verified" field.
-func (_u *AccountUpdateOne) SetEmailVerified(v bool) *AccountUpdateOne {
-	_u.mutation.SetEmailVerified(v)
-	return _u
-}
-
-// SetNillableEmailVerified sets the "email_verified" field if the given value is not nil.
-func (_u *AccountUpdateOne) SetNillableEmailVerified(v *bool) *AccountUpdateOne {
-	if v != nil {
-		_u.SetEmailVerified(*v)
-	}
-	return _u
-}
-
-// SetName sets the "name" field.
-func (_u *AccountUpdateOne) SetName(v string) *AccountUpdateOne {
-	_u.mutation.SetName(v)
-	return _u
-}
-
-// SetNillableName sets the "name" field if the given value is not nil.
-func (_u *AccountUpdateOne) SetNillableName(v *string) *AccountUpdateOne {
-	if v != nil {
-		_u.SetName(*v)
-	}
-	return _u
-}
-
-// SetPicture sets the "picture" field.
-func (_u *AccountUpdateOne) SetPicture(v string) *AccountUpdateOne {
-	_u.mutation.SetPicture(v)
-	return _u
-}
-
-// SetNillablePicture sets the "picture" field if the given value is not nil.
-func (_u *AccountUpdateOne) SetNillablePicture(v *string) *AccountUpdateOne {
-	if v != nil {
-		_u.SetPicture(*v)
-	}
 	return _u
 }
 
@@ -504,24 +318,6 @@ func (_u *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err er
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(account.FieldUpdatedAt, field.TypeTime, value)
-	}
-	if value, ok := _u.mutation.Provider(); ok {
-		_spec.SetField(account.FieldProvider, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.ProviderAccountID(); ok {
-		_spec.SetField(account.FieldProviderAccountID, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.Email(); ok {
-		_spec.SetField(account.FieldEmail, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.EmailVerified(); ok {
-		_spec.SetField(account.FieldEmailVerified, field.TypeBool, value)
-	}
-	if value, ok := _u.mutation.Name(); ok {
-		_spec.SetField(account.FieldName, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.Picture(); ok {
-		_spec.SetField(account.FieldPicture, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.DisplayName(); ok {
 		_spec.SetField(account.FieldDisplayName, field.TypeString, value)

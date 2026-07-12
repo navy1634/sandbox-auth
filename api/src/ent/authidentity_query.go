@@ -11,68 +11,68 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/sandbox-nextjs/src/ent/authidentity"
 	"github.com/sandbox-nextjs/src/ent/predicate"
-	"github.com/sandbox-nextjs/src/ent/webauthncredential"
 )
 
-// WebauthnCredentialQuery is the builder for querying WebauthnCredential entities.
-type WebauthnCredentialQuery struct {
+// AuthIdentityQuery is the builder for querying AuthIdentity entities.
+type AuthIdentityQuery struct {
 	config
 	ctx        *QueryContext
-	order      []webauthncredential.OrderOption
+	order      []authidentity.OrderOption
 	inters     []Interceptor
-	predicates []predicate.WebauthnCredential
+	predicates []predicate.AuthIdentity
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
 }
 
-// Where adds a new predicate for the WebauthnCredentialQuery builder.
-func (_q *WebauthnCredentialQuery) Where(ps ...predicate.WebauthnCredential) *WebauthnCredentialQuery {
+// Where adds a new predicate for the AuthIdentityQuery builder.
+func (_q *AuthIdentityQuery) Where(ps ...predicate.AuthIdentity) *AuthIdentityQuery {
 	_q.predicates = append(_q.predicates, ps...)
 	return _q
 }
 
 // Limit the number of records to be returned by this query.
-func (_q *WebauthnCredentialQuery) Limit(limit int) *WebauthnCredentialQuery {
+func (_q *AuthIdentityQuery) Limit(limit int) *AuthIdentityQuery {
 	_q.ctx.Limit = &limit
 	return _q
 }
 
 // Offset to start from.
-func (_q *WebauthnCredentialQuery) Offset(offset int) *WebauthnCredentialQuery {
+func (_q *AuthIdentityQuery) Offset(offset int) *AuthIdentityQuery {
 	_q.ctx.Offset = &offset
 	return _q
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
-func (_q *WebauthnCredentialQuery) Unique(unique bool) *WebauthnCredentialQuery {
+func (_q *AuthIdentityQuery) Unique(unique bool) *AuthIdentityQuery {
 	_q.ctx.Unique = &unique
 	return _q
 }
 
 // Order specifies how the records should be ordered.
-func (_q *WebauthnCredentialQuery) Order(o ...webauthncredential.OrderOption) *WebauthnCredentialQuery {
+func (_q *AuthIdentityQuery) Order(o ...authidentity.OrderOption) *AuthIdentityQuery {
 	_q.order = append(_q.order, o...)
 	return _q
 }
 
-// First returns the first WebauthnCredential entity from the query.
-// Returns a *NotFoundError when no WebauthnCredential was found.
-func (_q *WebauthnCredentialQuery) First(ctx context.Context) (*WebauthnCredential, error) {
+// First returns the first AuthIdentity entity from the query.
+// Returns a *NotFoundError when no AuthIdentity was found.
+func (_q *AuthIdentityQuery) First(ctx context.Context) (*AuthIdentity, error) {
 	nodes, err := _q.Limit(1).All(setContextOp(ctx, _q.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
 	if len(nodes) == 0 {
-		return nil, &NotFoundError{webauthncredential.Label}
+		return nil, &NotFoundError{authidentity.Label}
 	}
 	return nodes[0], nil
 }
 
 // FirstX is like First, but panics if an error occurs.
-func (_q *WebauthnCredentialQuery) FirstX(ctx context.Context) *WebauthnCredential {
+func (_q *AuthIdentityQuery) FirstX(ctx context.Context) *AuthIdentity {
 	node, err := _q.First(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -80,22 +80,22 @@ func (_q *WebauthnCredentialQuery) FirstX(ctx context.Context) *WebauthnCredenti
 	return node
 }
 
-// FirstID returns the first WebauthnCredential ID from the query.
-// Returns a *NotFoundError when no WebauthnCredential ID was found.
-func (_q *WebauthnCredentialQuery) FirstID(ctx context.Context) (id int, err error) {
+// FirstID returns the first AuthIdentity ID from the query.
+// Returns a *NotFoundError when no AuthIdentity ID was found.
+func (_q *AuthIdentityQuery) FirstID(ctx context.Context) (id int, err error) {
 	var ids []int
 	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
-		err = &NotFoundError{webauthncredential.Label}
+		err = &NotFoundError{authidentity.Label}
 		return
 	}
 	return ids[0], nil
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (_q *WebauthnCredentialQuery) FirstIDX(ctx context.Context) int {
+func (_q *AuthIdentityQuery) FirstIDX(ctx context.Context) int {
 	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -103,10 +103,10 @@ func (_q *WebauthnCredentialQuery) FirstIDX(ctx context.Context) int {
 	return id
 }
 
-// Only returns a single WebauthnCredential entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when more than one WebauthnCredential entity is found.
-// Returns a *NotFoundError when no WebauthnCredential entities are found.
-func (_q *WebauthnCredentialQuery) Only(ctx context.Context) (*WebauthnCredential, error) {
+// Only returns a single AuthIdentity entity found by the query, ensuring it only returns one.
+// Returns a *NotSingularError when more than one AuthIdentity entity is found.
+// Returns a *NotFoundError when no AuthIdentity entities are found.
+func (_q *AuthIdentityQuery) Only(ctx context.Context) (*AuthIdentity, error) {
 	nodes, err := _q.Limit(2).All(setContextOp(ctx, _q.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
@@ -115,14 +115,14 @@ func (_q *WebauthnCredentialQuery) Only(ctx context.Context) (*WebauthnCredentia
 	case 1:
 		return nodes[0], nil
 	case 0:
-		return nil, &NotFoundError{webauthncredential.Label}
+		return nil, &NotFoundError{authidentity.Label}
 	default:
-		return nil, &NotSingularError{webauthncredential.Label}
+		return nil, &NotSingularError{authidentity.Label}
 	}
 }
 
 // OnlyX is like Only, but panics if an error occurs.
-func (_q *WebauthnCredentialQuery) OnlyX(ctx context.Context) *WebauthnCredential {
+func (_q *AuthIdentityQuery) OnlyX(ctx context.Context) *AuthIdentity {
 	node, err := _q.Only(ctx)
 	if err != nil {
 		panic(err)
@@ -130,10 +130,10 @@ func (_q *WebauthnCredentialQuery) OnlyX(ctx context.Context) *WebauthnCredentia
 	return node
 }
 
-// OnlyID is like Only, but returns the only WebauthnCredential ID in the query.
-// Returns a *NotSingularError when more than one WebauthnCredential ID is found.
+// OnlyID is like Only, but returns the only AuthIdentity ID in the query.
+// Returns a *NotSingularError when more than one AuthIdentity ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (_q *WebauthnCredentialQuery) OnlyID(ctx context.Context) (id int, err error) {
+func (_q *AuthIdentityQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
 	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
@@ -142,15 +142,15 @@ func (_q *WebauthnCredentialQuery) OnlyID(ctx context.Context) (id int, err erro
 	case 1:
 		id = ids[0]
 	case 0:
-		err = &NotFoundError{webauthncredential.Label}
+		err = &NotFoundError{authidentity.Label}
 	default:
-		err = &NotSingularError{webauthncredential.Label}
+		err = &NotSingularError{authidentity.Label}
 	}
 	return
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (_q *WebauthnCredentialQuery) OnlyIDX(ctx context.Context) int {
+func (_q *AuthIdentityQuery) OnlyIDX(ctx context.Context) int {
 	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -158,18 +158,18 @@ func (_q *WebauthnCredentialQuery) OnlyIDX(ctx context.Context) int {
 	return id
 }
 
-// All executes the query and returns a list of WebauthnCredentials.
-func (_q *WebauthnCredentialQuery) All(ctx context.Context) ([]*WebauthnCredential, error) {
+// All executes the query and returns a list of AuthIdentities.
+func (_q *AuthIdentityQuery) All(ctx context.Context) ([]*AuthIdentity, error) {
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryAll)
 	if err := _q.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	qr := querierAll[[]*WebauthnCredential, *WebauthnCredentialQuery]()
-	return withInterceptors[[]*WebauthnCredential](ctx, _q, qr, _q.inters)
+	qr := querierAll[[]*AuthIdentity, *AuthIdentityQuery]()
+	return withInterceptors[[]*AuthIdentity](ctx, _q, qr, _q.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
-func (_q *WebauthnCredentialQuery) AllX(ctx context.Context) []*WebauthnCredential {
+func (_q *AuthIdentityQuery) AllX(ctx context.Context) []*AuthIdentity {
 	nodes, err := _q.All(ctx)
 	if err != nil {
 		panic(err)
@@ -177,20 +177,20 @@ func (_q *WebauthnCredentialQuery) AllX(ctx context.Context) []*WebauthnCredenti
 	return nodes
 }
 
-// IDs executes the query and returns a list of WebauthnCredential IDs.
-func (_q *WebauthnCredentialQuery) IDs(ctx context.Context) (ids []int, err error) {
+// IDs executes the query and returns a list of AuthIdentity IDs.
+func (_q *AuthIdentityQuery) IDs(ctx context.Context) (ids []int, err error) {
 	if _q.ctx.Unique == nil && _q.path != nil {
 		_q.Unique(true)
 	}
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryIDs)
-	if err = _q.Select(webauthncredential.FieldID).Scan(ctx, &ids); err != nil {
+	if err = _q.Select(authidentity.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (_q *WebauthnCredentialQuery) IDsX(ctx context.Context) []int {
+func (_q *AuthIdentityQuery) IDsX(ctx context.Context) []int {
 	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -199,16 +199,16 @@ func (_q *WebauthnCredentialQuery) IDsX(ctx context.Context) []int {
 }
 
 // Count returns the count of the given query.
-func (_q *WebauthnCredentialQuery) Count(ctx context.Context) (int, error) {
+func (_q *AuthIdentityQuery) Count(ctx context.Context) (int, error) {
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryCount)
 	if err := _q.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return withInterceptors[int](ctx, _q, querierCount[*WebauthnCredentialQuery](), _q.inters)
+	return withInterceptors[int](ctx, _q, querierCount[*AuthIdentityQuery](), _q.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
-func (_q *WebauthnCredentialQuery) CountX(ctx context.Context) int {
+func (_q *AuthIdentityQuery) CountX(ctx context.Context) int {
 	count, err := _q.Count(ctx)
 	if err != nil {
 		panic(err)
@@ -217,7 +217,7 @@ func (_q *WebauthnCredentialQuery) CountX(ctx context.Context) int {
 }
 
 // Exist returns true if the query has elements in the graph.
-func (_q *WebauthnCredentialQuery) Exist(ctx context.Context) (bool, error) {
+func (_q *AuthIdentityQuery) Exist(ctx context.Context) (bool, error) {
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryExist)
 	switch _, err := _q.FirstID(ctx); {
 	case IsNotFound(err):
@@ -230,7 +230,7 @@ func (_q *WebauthnCredentialQuery) Exist(ctx context.Context) (bool, error) {
 }
 
 // ExistX is like Exist, but panics if an error occurs.
-func (_q *WebauthnCredentialQuery) ExistX(ctx context.Context) bool {
+func (_q *AuthIdentityQuery) ExistX(ctx context.Context) bool {
 	exist, err := _q.Exist(ctx)
 	if err != nil {
 		panic(err)
@@ -238,18 +238,18 @@ func (_q *WebauthnCredentialQuery) ExistX(ctx context.Context) bool {
 	return exist
 }
 
-// Clone returns a duplicate of the WebauthnCredentialQuery builder, including all associated steps. It can be
+// Clone returns a duplicate of the AuthIdentityQuery builder, including all associated steps. It can be
 // used to prepare common query builders and use them differently after the clone is made.
-func (_q *WebauthnCredentialQuery) Clone() *WebauthnCredentialQuery {
+func (_q *AuthIdentityQuery) Clone() *AuthIdentityQuery {
 	if _q == nil {
 		return nil
 	}
-	return &WebauthnCredentialQuery{
+	return &AuthIdentityQuery{
 		config:     _q.config,
 		ctx:        _q.ctx.Clone(),
-		order:      append([]webauthncredential.OrderOption{}, _q.order...),
+		order:      append([]authidentity.OrderOption{}, _q.order...),
 		inters:     append([]Interceptor{}, _q.inters...),
-		predicates: append([]predicate.WebauthnCredential{}, _q.predicates...),
+		predicates: append([]predicate.AuthIdentity{}, _q.predicates...),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
@@ -262,19 +262,19 @@ func (_q *WebauthnCredentialQuery) Clone() *WebauthnCredentialQuery {
 // Example:
 //
 //	var v []struct {
-//		AccountID int64 `json:"account_id,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
-//	client.WebauthnCredential.Query().
-//		GroupBy(webauthncredential.FieldAccountID).
+//	client.AuthIdentity.Query().
+//		GroupBy(authidentity.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-func (_q *WebauthnCredentialQuery) GroupBy(field string, fields ...string) *WebauthnCredentialGroupBy {
+func (_q *AuthIdentityQuery) GroupBy(field string, fields ...string) *AuthIdentityGroupBy {
 	_q.ctx.Fields = append([]string{field}, fields...)
-	grbuild := &WebauthnCredentialGroupBy{build: _q}
+	grbuild := &AuthIdentityGroupBy{build: _q}
 	grbuild.flds = &_q.ctx.Fields
-	grbuild.label = webauthncredential.Label
+	grbuild.label = authidentity.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
 }
@@ -285,26 +285,26 @@ func (_q *WebauthnCredentialQuery) GroupBy(field string, fields ...string) *Weba
 // Example:
 //
 //	var v []struct {
-//		AccountID int64 `json:"account_id,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
-//	client.WebauthnCredential.Query().
-//		Select(webauthncredential.FieldAccountID).
+//	client.AuthIdentity.Query().
+//		Select(authidentity.FieldCreatedAt).
 //		Scan(ctx, &v)
-func (_q *WebauthnCredentialQuery) Select(fields ...string) *WebauthnCredentialSelect {
+func (_q *AuthIdentityQuery) Select(fields ...string) *AuthIdentitySelect {
 	_q.ctx.Fields = append(_q.ctx.Fields, fields...)
-	sbuild := &WebauthnCredentialSelect{WebauthnCredentialQuery: _q}
-	sbuild.label = webauthncredential.Label
+	sbuild := &AuthIdentitySelect{AuthIdentityQuery: _q}
+	sbuild.label = authidentity.Label
 	sbuild.flds, sbuild.scan = &_q.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
-// Aggregate returns a WebauthnCredentialSelect configured with the given aggregations.
-func (_q *WebauthnCredentialQuery) Aggregate(fns ...AggregateFunc) *WebauthnCredentialSelect {
+// Aggregate returns a AuthIdentitySelect configured with the given aggregations.
+func (_q *AuthIdentityQuery) Aggregate(fns ...AggregateFunc) *AuthIdentitySelect {
 	return _q.Select().Aggregate(fns...)
 }
 
-func (_q *WebauthnCredentialQuery) prepareQuery(ctx context.Context) error {
+func (_q *AuthIdentityQuery) prepareQuery(ctx context.Context) error {
 	for _, inter := range _q.inters {
 		if inter == nil {
 			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
@@ -316,7 +316,7 @@ func (_q *WebauthnCredentialQuery) prepareQuery(ctx context.Context) error {
 		}
 	}
 	for _, f := range _q.ctx.Fields {
-		if !webauthncredential.ValidColumn(f) {
+		if !authidentity.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
 	}
@@ -330,16 +330,16 @@ func (_q *WebauthnCredentialQuery) prepareQuery(ctx context.Context) error {
 	return nil
 }
 
-func (_q *WebauthnCredentialQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*WebauthnCredential, error) {
+func (_q *AuthIdentityQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*AuthIdentity, error) {
 	var (
-		nodes = []*WebauthnCredential{}
+		nodes = []*AuthIdentity{}
 		_spec = _q.querySpec()
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
-		return (*WebauthnCredential).scanValues(nil, columns)
+		return (*AuthIdentity).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []any) error {
-		node := &WebauthnCredential{config: _q.config}
+		node := &AuthIdentity{config: _q.config}
 		nodes = append(nodes, node)
 		return node.assignValues(columns, values)
 	}
@@ -355,7 +355,7 @@ func (_q *WebauthnCredentialQuery) sqlAll(ctx context.Context, hooks ...queryHoo
 	return nodes, nil
 }
 
-func (_q *WebauthnCredentialQuery) sqlCount(ctx context.Context) (int, error) {
+func (_q *AuthIdentityQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := _q.querySpec()
 	_spec.Node.Columns = _q.ctx.Fields
 	if len(_q.ctx.Fields) > 0 {
@@ -364,8 +364,8 @@ func (_q *WebauthnCredentialQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, _q.driver, _spec)
 }
 
-func (_q *WebauthnCredentialQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(webauthncredential.Table, webauthncredential.Columns, sqlgraph.NewFieldSpec(webauthncredential.FieldID, field.TypeInt))
+func (_q *AuthIdentityQuery) querySpec() *sqlgraph.QuerySpec {
+	_spec := sqlgraph.NewQuerySpec(authidentity.Table, authidentity.Columns, sqlgraph.NewFieldSpec(authidentity.FieldID, field.TypeInt))
 	_spec.From = _q.sql
 	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
@@ -374,9 +374,9 @@ func (_q *WebauthnCredentialQuery) querySpec() *sqlgraph.QuerySpec {
 	}
 	if fields := _q.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
-		_spec.Node.Columns = append(_spec.Node.Columns, webauthncredential.FieldID)
+		_spec.Node.Columns = append(_spec.Node.Columns, authidentity.FieldID)
 		for i := range fields {
-			if fields[i] != webauthncredential.FieldID {
+			if fields[i] != authidentity.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
 		}
@@ -404,12 +404,12 @@ func (_q *WebauthnCredentialQuery) querySpec() *sqlgraph.QuerySpec {
 	return _spec
 }
 
-func (_q *WebauthnCredentialQuery) sqlQuery(ctx context.Context) *sql.Selector {
+func (_q *AuthIdentityQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(_q.driver.Dialect())
-	t1 := builder.Table(webauthncredential.Table)
+	t1 := builder.Table(authidentity.Table)
 	columns := _q.ctx.Fields
 	if len(columns) == 0 {
-		columns = webauthncredential.Columns
+		columns = authidentity.Columns
 	}
 	selector := builder.Select(t1.Columns(columns...)...).From(t1)
 	if _q.sql != nil {
@@ -436,28 +436,28 @@ func (_q *WebauthnCredentialQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	return selector
 }
 
-// WebauthnCredentialGroupBy is the group-by builder for WebauthnCredential entities.
-type WebauthnCredentialGroupBy struct {
+// AuthIdentityGroupBy is the group-by builder for AuthIdentity entities.
+type AuthIdentityGroupBy struct {
 	selector
-	build *WebauthnCredentialQuery
+	build *AuthIdentityQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
-func (_g *WebauthnCredentialGroupBy) Aggregate(fns ...AggregateFunc) *WebauthnCredentialGroupBy {
+func (_g *AuthIdentityGroupBy) Aggregate(fns ...AggregateFunc) *AuthIdentityGroupBy {
 	_g.fns = append(_g.fns, fns...)
 	return _g
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (_g *WebauthnCredentialGroupBy) Scan(ctx context.Context, v any) error {
+func (_g *AuthIdentityGroupBy) Scan(ctx context.Context, v any) error {
 	ctx = setContextOp(ctx, _g.build.ctx, ent.OpQueryGroupBy)
 	if err := _g.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*WebauthnCredentialQuery, *WebauthnCredentialGroupBy](ctx, _g.build, _g, _g.build.inters, v)
+	return scanWithInterceptors[*AuthIdentityQuery, *AuthIdentityGroupBy](ctx, _g.build, _g, _g.build.inters, v)
 }
 
-func (_g *WebauthnCredentialGroupBy) sqlScan(ctx context.Context, root *WebauthnCredentialQuery, v any) error {
+func (_g *AuthIdentityGroupBy) sqlScan(ctx context.Context, root *AuthIdentityQuery, v any) error {
 	selector := root.sqlQuery(ctx).Select()
 	aggregation := make([]string, 0, len(_g.fns))
 	for _, fn := range _g.fns {
@@ -484,28 +484,28 @@ func (_g *WebauthnCredentialGroupBy) sqlScan(ctx context.Context, root *Webauthn
 	return sql.ScanSlice(rows, v)
 }
 
-// WebauthnCredentialSelect is the builder for selecting fields of WebauthnCredential entities.
-type WebauthnCredentialSelect struct {
-	*WebauthnCredentialQuery
+// AuthIdentitySelect is the builder for selecting fields of AuthIdentity entities.
+type AuthIdentitySelect struct {
+	*AuthIdentityQuery
 	selector
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
-func (_s *WebauthnCredentialSelect) Aggregate(fns ...AggregateFunc) *WebauthnCredentialSelect {
+func (_s *AuthIdentitySelect) Aggregate(fns ...AggregateFunc) *AuthIdentitySelect {
 	_s.fns = append(_s.fns, fns...)
 	return _s
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (_s *WebauthnCredentialSelect) Scan(ctx context.Context, v any) error {
+func (_s *AuthIdentitySelect) Scan(ctx context.Context, v any) error {
 	ctx = setContextOp(ctx, _s.ctx, ent.OpQuerySelect)
 	if err := _s.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*WebauthnCredentialQuery, *WebauthnCredentialSelect](ctx, _s.WebauthnCredentialQuery, _s, _s.inters, v)
+	return scanWithInterceptors[*AuthIdentityQuery, *AuthIdentitySelect](ctx, _s.AuthIdentityQuery, _s, _s.inters, v)
 }
 
-func (_s *WebauthnCredentialSelect) sqlScan(ctx context.Context, root *WebauthnCredentialQuery, v any) error {
+func (_s *AuthIdentitySelect) sqlScan(ctx context.Context, root *AuthIdentityQuery, v any) error {
 	selector := root.sqlQuery(ctx)
 	aggregation := make([]string, 0, len(_s.fns))
 	for _, fn := range _s.fns {

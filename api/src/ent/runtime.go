@@ -3,11 +3,13 @@
 package ent
 
 import (
-	"sandbox-nextjs/api/src/ent/account"
-	"sandbox-nextjs/api/src/ent/schema"
-	"sandbox-nextjs/api/src/ent/webauthncredential"
-	"sandbox-nextjs/api/src/ent/webauthnsession"
 	"time"
+
+	"github.com/sandbox-nextjs/src/ent/account"
+	"github.com/sandbox-nextjs/src/ent/authidentity"
+	"github.com/sandbox-nextjs/src/ent/schema"
+	"github.com/sandbox-nextjs/src/ent/webauthncredential"
+	"github.com/sandbox-nextjs/src/ent/webauthnsession"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -29,26 +31,41 @@ func init() {
 	account.DefaultUpdatedAt = accountDescUpdatedAt.Default.(func() time.Time)
 	// account.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	account.UpdateDefaultUpdatedAt = accountDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// accountDescEmailVerified is the schema descriptor for email_verified field.
-	accountDescEmailVerified := accountFields[3].Descriptor()
-	// account.DefaultEmailVerified holds the default value on creation for the email_verified field.
-	account.DefaultEmailVerified = accountDescEmailVerified.Default.(bool)
-	// accountDescName is the schema descriptor for name field.
-	accountDescName := accountFields[4].Descriptor()
-	// account.DefaultName holds the default value on creation for the name field.
-	account.DefaultName = accountDescName.Default.(string)
-	// accountDescPicture is the schema descriptor for picture field.
-	accountDescPicture := accountFields[5].Descriptor()
-	// account.DefaultPicture holds the default value on creation for the picture field.
-	account.DefaultPicture = accountDescPicture.Default.(string)
 	// accountDescDisplayName is the schema descriptor for display_name field.
-	accountDescDisplayName := accountFields[6].Descriptor()
+	accountDescDisplayName := accountFields[0].Descriptor()
 	// account.DefaultDisplayName holds the default value on creation for the display_name field.
 	account.DefaultDisplayName = accountDescDisplayName.Default.(string)
 	// accountDescBio is the schema descriptor for bio field.
-	accountDescBio := accountFields[7].Descriptor()
+	accountDescBio := accountFields[1].Descriptor()
 	// account.DefaultBio holds the default value on creation for the bio field.
 	account.DefaultBio = accountDescBio.Default.(string)
+	authidentityMixin := schema.AuthIdentity{}.Mixin()
+	authidentityMixinFields0 := authidentityMixin[0].Fields()
+	_ = authidentityMixinFields0
+	authidentityFields := schema.AuthIdentity{}.Fields()
+	_ = authidentityFields
+	// authidentityDescCreatedAt is the schema descriptor for created_at field.
+	authidentityDescCreatedAt := authidentityMixinFields0[0].Descriptor()
+	// authidentity.DefaultCreatedAt holds the default value on creation for the created_at field.
+	authidentity.DefaultCreatedAt = authidentityDescCreatedAt.Default.(func() time.Time)
+	// authidentityDescUpdatedAt is the schema descriptor for updated_at field.
+	authidentityDescUpdatedAt := authidentityMixinFields0[1].Descriptor()
+	// authidentity.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	authidentity.DefaultUpdatedAt = authidentityDescUpdatedAt.Default.(func() time.Time)
+	// authidentity.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	authidentity.UpdateDefaultUpdatedAt = authidentityDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// authidentityDescEmailVerified is the schema descriptor for email_verified field.
+	authidentityDescEmailVerified := authidentityFields[4].Descriptor()
+	// authidentity.DefaultEmailVerified holds the default value on creation for the email_verified field.
+	authidentity.DefaultEmailVerified = authidentityDescEmailVerified.Default.(bool)
+	// authidentityDescName is the schema descriptor for name field.
+	authidentityDescName := authidentityFields[5].Descriptor()
+	// authidentity.DefaultName holds the default value on creation for the name field.
+	authidentity.DefaultName = authidentityDescName.Default.(string)
+	// authidentityDescPicture is the schema descriptor for picture field.
+	authidentityDescPicture := authidentityFields[6].Descriptor()
+	// authidentity.DefaultPicture holds the default value on creation for the picture field.
+	authidentity.DefaultPicture = authidentityDescPicture.Default.(string)
 	webauthncredentialFields := schema.WebauthnCredential{}.Fields()
 	_ = webauthncredentialFields
 	// webauthncredentialDescCreatedAt is the schema descriptor for created_at field.

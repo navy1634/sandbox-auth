@@ -8,6 +8,9 @@ _.file = ".env.local"
 [tasks.dev]
 run = "go tool air"
 
+[tasks.build]
+run = "go build -o ./tmp/ ./src"
+
 [tasks.run]
 run = "go run src/main.go"
 

@@ -14,12 +14,6 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "provider", Type: field.TypeString},
-		{Name: "provider_account_id", Type: field.TypeString},
-		{Name: "email", Type: field.TypeString},
-		{Name: "email_verified", Type: field.TypeBool, Default: false},
-		{Name: "name", Type: field.TypeString, Default: ""},
-		{Name: "picture", Type: field.TypeString, Default: ""},
 		{Name: "display_name", Type: field.TypeString, Default: ""},
 		{Name: "bio", Type: field.TypeString, Default: ""},
 		{Name: "registered_at", Type: field.TypeTime, Nullable: true},
@@ -30,16 +24,40 @@ var (
 		Name:       "accounts",
 		Columns:    AccountsColumns,
 		PrimaryKey: []*schema.Column{AccountsColumns[0]},
+	}
+	// AuthIdentitiesColumns holds the columns for the "auth_identities" table.
+	AuthIdentitiesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "account_id", Type: field.TypeInt64},
+		{Name: "provider", Type: field.TypeString},
+		{Name: "provider_account_id", Type: field.TypeString},
+		{Name: "email", Type: field.TypeString},
+		{Name: "email_verified", Type: field.TypeBool, Default: false},
+		{Name: "name", Type: field.TypeString, Default: ""},
+		{Name: "picture", Type: field.TypeString, Default: ""},
+	}
+	// AuthIdentitiesTable holds the schema information for the "auth_identities" table.
+	AuthIdentitiesTable = &schema.Table{
+		Name:       "auth_identities",
+		Columns:    AuthIdentitiesColumns,
+		PrimaryKey: []*schema.Column{AuthIdentitiesColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "account_provider_provider_account_id",
+				Name:    "authidentity_provider_provider_account_id",
 				Unique:  true,
-				Columns: []*schema.Column{AccountsColumns[3], AccountsColumns[4]},
+				Columns: []*schema.Column{AuthIdentitiesColumns[4], AuthIdentitiesColumns[5]},
 			},
 			{
-				Name:    "account_email",
+				Name:    "authidentity_account_id",
 				Unique:  false,
-				Columns: []*schema.Column{AccountsColumns[5]},
+				Columns: []*schema.Column{AuthIdentitiesColumns[3]},
+			},
+			{
+				Name:    "authidentity_email",
+				Unique:  false,
+				Columns: []*schema.Column{AuthIdentitiesColumns[6]},
 			},
 		},
 	}
@@ -91,6 +109,7 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AccountsTable,
+		AuthIdentitiesTable,
 		WebauthnCredentialsTable,
 		WebauthnSessionsTable,
 	}
@@ -99,6 +118,9 @@ var (
 func init() {
 	AccountsTable.Annotation = &entsql.Annotation{
 		Table: "accounts",
+	}
+	AuthIdentitiesTable.Annotation = &entsql.Annotation{
+		Table: "auth_identities",
 	}
 	WebauthnCredentialsTable.Annotation = &entsql.Annotation{
 		Table: "webauthn_credentials",

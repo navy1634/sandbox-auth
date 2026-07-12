@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"sandbox-nextjs/api/src/infrastructure/session"
+	"github.com/sandbox-nextjs/src/infrastructure/session"
 )
 
 func (h *AuthHandler) validateState(c *gin.Context) error {

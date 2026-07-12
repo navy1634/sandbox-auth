@@ -4,10 +4,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"sandbox-nextjs/api/src/config"
-	"sandbox-nextjs/api/src/infrastructure/auth"
-	"sandbox-nextjs/api/src/infrastructure/session"
-	"sandbox-nextjs/api/src/repository"
+	"github.com/sandbox-nextjs/src/config"
+	"github.com/sandbox-nextjs/src/infrastructure/session"
+	"github.com/sandbox-nextjs/src/repository"
 )
 
 const (
@@ -21,24 +20,15 @@ const (
 type AuthHandler struct {
 	cfg      config.Config
 	accounts *repository.AccountRepository
-	google   *auth.GoogleService
-	passkey  *auth.PasskeyService
 	sessions *session.Manager
 }
 
-func NewAuthHandler(cfg config.Config, accounts *repository.AccountRepository) (*AuthHandler, error) {
-	passkey, err := auth.NewPasskeyService(cfg.PasskeyRPID, cfg.PasskeyRPOrigin)
-	if err != nil {
-		return nil, err
-	}
-
+func NewAuthHandler(cfg config.Config, accounts *repository.AccountRepository) *AuthHandler {
 	return &AuthHandler{
 		cfg:      cfg,
 		accounts: accounts,
-		google:   auth.NewGoogleService(cfg.GoogleClientID, cfg.GoogleSecret, cfg.GoogleRedirectURL),
-		passkey:  passkey,
 		sessions: session.NewManager(cfg.SessionSecret),
-	}, nil
+	}
 }
 
 func (h *AuthHandler) Health(c *gin.Context) {

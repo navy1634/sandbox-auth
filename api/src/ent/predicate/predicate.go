@@ -9,6 +9,9 @@ import (
 // Account is the predicate function for account builders.
 type Account func(*sql.Selector)
 
+// AuthIdentity is the predicate function for authidentity builders.
+type AuthIdentity func(*sql.Selector)
+
 // WebauthnCredential is the predicate function for webauthncredential builders.
 type WebauthnCredential func(*sql.Selector)
 

@@ -9,15 +9,15 @@ import (
 	"log"
 	"reflect"
 
-	"sandbox-nextjs/api/src/ent/migrate"
-
-	"sandbox-nextjs/api/src/ent/account"
-	"sandbox-nextjs/api/src/ent/webauthncredential"
-	"sandbox-nextjs/api/src/ent/webauthnsession"
+	"github.com/sandbox-nextjs/src/ent/migrate"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
+	"github.com/sandbox-nextjs/src/ent/account"
+	"github.com/sandbox-nextjs/src/ent/authidentity"
+	"github.com/sandbox-nextjs/src/ent/webauthncredential"
+	"github.com/sandbox-nextjs/src/ent/webauthnsession"
 )
 
 // Client is the client that holds all ent builders.
@@ -27,6 +27,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// Account is the client for interacting with the Account builders.
 	Account *AccountClient
+	// AuthIdentity is the client for interacting with the AuthIdentity builders.
+	AuthIdentity *AuthIdentityClient
 	// WebauthnCredential is the client for interacting with the WebauthnCredential builders.
 	WebauthnCredential *WebauthnCredentialClient
 	// WebauthnSession is the client for interacting with the WebauthnSession builders.
@@ -43,6 +45,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Account = NewAccountClient(c.config)
+	c.AuthIdentity = NewAuthIdentityClient(c.config)
 	c.WebauthnCredential = NewWebauthnCredentialClient(c.config)
 	c.WebauthnSession = NewWebauthnSessionClient(c.config)
 }
@@ -138,6 +141,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ctx:                ctx,
 		config:             cfg,
 		Account:            NewAccountClient(cfg),
+		AuthIdentity:       NewAuthIdentityClient(cfg),
 		WebauthnCredential: NewWebauthnCredentialClient(cfg),
 		WebauthnSession:    NewWebauthnSessionClient(cfg),
 	}, nil
@@ -160,6 +164,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		ctx:                ctx,
 		config:             cfg,
 		Account:            NewAccountClient(cfg),
+		AuthIdentity:       NewAuthIdentityClient(cfg),
 		WebauthnCredential: NewWebauthnCredentialClient(cfg),
 		WebauthnSession:    NewWebauthnSessionClient(cfg),
 	}, nil
@@ -191,6 +196,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.Account.Use(hooks...)
+	c.AuthIdentity.Use(hooks...)
 	c.WebauthnCredential.Use(hooks...)
 	c.WebauthnSession.Use(hooks...)
 }
@@ -199,6 +205,7 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	c.Account.Intercept(interceptors...)
+	c.AuthIdentity.Intercept(interceptors...)
 	c.WebauthnCredential.Intercept(interceptors...)
 	c.WebauthnSession.Intercept(interceptors...)
 }
@@ -208,6 +215,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
 	case *AccountMutation:
 		return c.Account.mutate(ctx, m)
+	case *AuthIdentityMutation:
+		return c.AuthIdentity.mutate(ctx, m)
 	case *WebauthnCredentialMutation:
 		return c.WebauthnCredential.mutate(ctx, m)
 	case *WebauthnSessionMutation:
@@ -347,6 +356,139 @@ func (c *AccountClient) mutate(ctx context.Context, m *AccountMutation) (Value, 
 		return (&AccountDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Account mutation op: %q", m.Op())
+	}
+}
+
+// AuthIdentityClient is a client for the AuthIdentity schema.
+type AuthIdentityClient struct {
+	config
+}
+
+// NewAuthIdentityClient returns a client for the AuthIdentity from the given config.
+func NewAuthIdentityClient(c config) *AuthIdentityClient {
+	return &AuthIdentityClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `authidentity.Hooks(f(g(h())))`.
+func (c *AuthIdentityClient) Use(hooks ...Hook) {
+	c.hooks.AuthIdentity = append(c.hooks.AuthIdentity, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `authidentity.Intercept(f(g(h())))`.
+func (c *AuthIdentityClient) Intercept(interceptors ...Interceptor) {
+	c.inters.AuthIdentity = append(c.inters.AuthIdentity, interceptors...)
+}
+
+// Create returns a builder for creating a AuthIdentity entity.
+func (c *AuthIdentityClient) Create() *AuthIdentityCreate {
+	mutation := newAuthIdentityMutation(c.config, OpCreate)
+	return &AuthIdentityCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of AuthIdentity entities.
+func (c *AuthIdentityClient) CreateBulk(builders ...*AuthIdentityCreate) *AuthIdentityCreateBulk {
+	return &AuthIdentityCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *AuthIdentityClient) MapCreateBulk(slice any, setFunc func(*AuthIdentityCreate, int)) *AuthIdentityCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &AuthIdentityCreateBulk{err: fmt.Errorf("calling to AuthIdentityClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*AuthIdentityCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &AuthIdentityCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for AuthIdentity.
+func (c *AuthIdentityClient) Update() *AuthIdentityUpdate {
+	mutation := newAuthIdentityMutation(c.config, OpUpdate)
+	return &AuthIdentityUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AuthIdentityClient) UpdateOne(_m *AuthIdentity) *AuthIdentityUpdateOne {
+	mutation := newAuthIdentityMutation(c.config, OpUpdateOne, withAuthIdentity(_m))
+	return &AuthIdentityUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AuthIdentityClient) UpdateOneID(id int) *AuthIdentityUpdateOne {
+	mutation := newAuthIdentityMutation(c.config, OpUpdateOne, withAuthIdentityID(id))
+	return &AuthIdentityUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for AuthIdentity.
+func (c *AuthIdentityClient) Delete() *AuthIdentityDelete {
+	mutation := newAuthIdentityMutation(c.config, OpDelete)
+	return &AuthIdentityDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AuthIdentityClient) DeleteOne(_m *AuthIdentity) *AuthIdentityDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AuthIdentityClient) DeleteOneID(id int) *AuthIdentityDeleteOne {
+	builder := c.Delete().Where(authidentity.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AuthIdentityDeleteOne{builder}
+}
+
+// Query returns a query builder for AuthIdentity.
+func (c *AuthIdentityClient) Query() *AuthIdentityQuery {
+	return &AuthIdentityQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeAuthIdentity},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a AuthIdentity entity by its id.
+func (c *AuthIdentityClient) Get(ctx context.Context, id int) (*AuthIdentity, error) {
+	return c.Query().Where(authidentity.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AuthIdentityClient) GetX(ctx context.Context, id int) *AuthIdentity {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *AuthIdentityClient) Hooks() []Hook {
+	return c.hooks.AuthIdentity
+}
+
+// Interceptors returns the client interceptors.
+func (c *AuthIdentityClient) Interceptors() []Interceptor {
+	return c.inters.AuthIdentity
+}
+
+func (c *AuthIdentityClient) mutate(ctx context.Context, m *AuthIdentityMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AuthIdentityCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AuthIdentityUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AuthIdentityUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AuthIdentityDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown AuthIdentity mutation op: %q", m.Op())
 	}
 }
 
@@ -619,9 +761,9 @@ func (c *WebauthnSessionClient) mutate(ctx context.Context, m *WebauthnSessionMu
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Account, WebauthnCredential, WebauthnSession []ent.Hook
+		Account, AuthIdentity, WebauthnCredential, WebauthnSession []ent.Hook
 	}
 	inters struct {
-		Account, WebauthnCredential, WebauthnSession []ent.Interceptor
+		Account, AuthIdentity, WebauthnCredential, WebauthnSession []ent.Interceptor
 	}
 )

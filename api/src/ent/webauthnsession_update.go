@@ -7,14 +7,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"sandbox-nextjs/api/src/ent/predicate"
-	"sandbox-nextjs/api/src/ent/webauthnsession"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
+	"github.com/sandbox-nextjs/src/ent/predicate"
+	"github.com/sandbox-nextjs/src/ent/webauthnsession"
 )
 
 // WebauthnSessionUpdate is the builder for updating WebauthnSession entities.

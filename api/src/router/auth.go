@@ -4,30 +4,34 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"sandbox-nextjs/api/src/config"
-	"sandbox-nextjs/api/src/ent"
-	"sandbox-nextjs/api/src/handler"
-	"sandbox-nextjs/api/src/repository"
+	"github.com/sandbox-nextjs/src/config"
+	"github.com/sandbox-nextjs/src/ent"
+	"github.com/sandbox-nextjs/src/handler"
+	"github.com/sandbox-nextjs/src/infrastructure/database"
+	"github.com/sandbox-nextjs/src/repository"
 )
 
 func RegisterRoutes(engine *gin.Engine, cfg config.Config, db *ent.Client) error {
-	authHandler, err := handler.NewAuthHandler(cfg, repository.NewAccountRepository(db))
+	accountRepository := repository.NewAccountRepository(db)
+	passkeyRepository := repository.NewPasskeyRepository(db, accountRepository)
+	authHandler := handler.NewAuthHandler(cfg, accountRepository)
+	oauthHandler := handler.NewOAuthHandler(cfg, authHandler)
+	passkeyHandler, err := handler.NewPasskeyHandler(cfg, authHandler, passkeyRepository)
 	if err != nil {
 		return err
 	}
 
 	engine.Use(corsMiddleware(cfg.FrontendURL))
+	engine.Use(database.TransactionMiddleware(db))
 
 	engine.GET("/health", authHandler.Health)
-	engine.GET("/auth/google/login", authHandler.GoogleLogin)
-	engine.GET("/auth/google/callback", authHandler.GoogleCallback)
 	engine.GET("/me", authHandler.Me)
 	engine.POST("/account/profile", authHandler.UpdateProfile)
-	engine.POST("/passkeys/register/options", authHandler.BeginPasskeyRegistration)
-	engine.POST("/passkeys/register/verify", authHandler.FinishPasskeyRegistration)
-	engine.POST("/passkeys/login/options", authHandler.BeginPasskeyLogin)
-	engine.POST("/passkeys/login/verify", authHandler.FinishPasskeyLogin)
 	engine.POST("/auth/logout", authHandler.Logout)
+
+	for _, authMethod := range []handler.AuthMethodHandler{oauthHandler, passkeyHandler} {
+		authMethod.RegisterRoutes(engine)
+	}
 
 	return nil
 }

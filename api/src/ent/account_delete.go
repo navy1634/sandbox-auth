@@ -4,12 +4,12 @@ package ent
 
 import (
 	"context"
-	"sandbox-nextjs/api/src/ent/account"
-	"sandbox-nextjs/api/src/ent/predicate"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/sandbox-nextjs/src/ent/account"
+	"github.com/sandbox-nextjs/src/ent/predicate"
 )
 
 // AccountDelete is the builder for deleting a Account entity.

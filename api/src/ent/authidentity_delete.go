@@ -8,30 +8,30 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/sandbox-nextjs/src/ent/authidentity"
 	"github.com/sandbox-nextjs/src/ent/predicate"
-	"github.com/sandbox-nextjs/src/ent/webauthnsession"
 )
 
-// WebauthnSessionDelete is the builder for deleting a WebauthnSession entity.
-type WebauthnSessionDelete struct {
+// AuthIdentityDelete is the builder for deleting a AuthIdentity entity.
+type AuthIdentityDelete struct {
 	config
 	hooks    []Hook
-	mutation *WebauthnSessionMutation
+	mutation *AuthIdentityMutation
 }
 
-// Where appends a list predicates to the WebauthnSessionDelete builder.
-func (_d *WebauthnSessionDelete) Where(ps ...predicate.WebauthnSession) *WebauthnSessionDelete {
+// Where appends a list predicates to the AuthIdentityDelete builder.
+func (_d *AuthIdentityDelete) Where(ps ...predicate.AuthIdentity) *AuthIdentityDelete {
 	_d.mutation.Where(ps...)
 	return _d
 }
 
 // Exec executes the deletion query and returns how many vertices were deleted.
-func (_d *WebauthnSessionDelete) Exec(ctx context.Context) (int, error) {
+func (_d *AuthIdentityDelete) Exec(ctx context.Context) (int, error) {
 	return withHooks(ctx, _d.sqlExec, _d.mutation, _d.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_d *WebauthnSessionDelete) ExecX(ctx context.Context) int {
+func (_d *AuthIdentityDelete) ExecX(ctx context.Context) int {
 	n, err := _d.Exec(ctx)
 	if err != nil {
 		panic(err)
@@ -39,8 +39,8 @@ func (_d *WebauthnSessionDelete) ExecX(ctx context.Context) int {
 	return n
 }
 
-func (_d *WebauthnSessionDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(webauthnsession.Table, sqlgraph.NewFieldSpec(webauthnsession.FieldID, field.TypeString))
+func (_d *AuthIdentityDelete) sqlExec(ctx context.Context) (int, error) {
+	_spec := sqlgraph.NewDeleteSpec(authidentity.Table, sqlgraph.NewFieldSpec(authidentity.FieldID, field.TypeInt))
 	if ps := _d.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -56,32 +56,32 @@ func (_d *WebauthnSessionDelete) sqlExec(ctx context.Context) (int, error) {
 	return affected, err
 }
 
-// WebauthnSessionDeleteOne is the builder for deleting a single WebauthnSession entity.
-type WebauthnSessionDeleteOne struct {
-	_d *WebauthnSessionDelete
+// AuthIdentityDeleteOne is the builder for deleting a single AuthIdentity entity.
+type AuthIdentityDeleteOne struct {
+	_d *AuthIdentityDelete
 }
 
-// Where appends a list predicates to the WebauthnSessionDelete builder.
-func (_d *WebauthnSessionDeleteOne) Where(ps ...predicate.WebauthnSession) *WebauthnSessionDeleteOne {
+// Where appends a list predicates to the AuthIdentityDelete builder.
+func (_d *AuthIdentityDeleteOne) Where(ps ...predicate.AuthIdentity) *AuthIdentityDeleteOne {
 	_d._d.mutation.Where(ps...)
 	return _d
 }
 
 // Exec executes the deletion query.
-func (_d *WebauthnSessionDeleteOne) Exec(ctx context.Context) error {
+func (_d *AuthIdentityDeleteOne) Exec(ctx context.Context) error {
 	n, err := _d._d.Exec(ctx)
 	switch {
 	case err != nil:
 		return err
 	case n == 0:
-		return &NotFoundError{webauthnsession.Label}
+		return &NotFoundError{authidentity.Label}
 	default:
 		return nil
 	}
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_d *WebauthnSessionDeleteOne) ExecX(ctx context.Context) {
+func (_d *AuthIdentityDeleteOne) ExecX(ctx context.Context) {
 	if err := _d.Exec(ctx); err != nil {
 		panic(err)
 	}

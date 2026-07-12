@@ -9,7 +9,7 @@ import (
 	"entgo.io/ent/dialect"
 	entsql "entgo.io/ent/dialect/sql"
 	_ "github.com/lib/pq"
-	"sandbox-nextjs/api/src/ent"
+	"github.com/sandbox-nextjs/src/ent"
 )
 
 func Connect(ctx context.Context, databaseURL string) (*ent.Client, error) {

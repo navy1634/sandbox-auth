@@ -5,12 +5,12 @@ package ent
 import (
 	"encoding/json"
 	"fmt"
-	"sandbox-nextjs/api/src/ent/webauthnsession"
 	"strings"
 	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/sandbox-nextjs/src/ent/webauthnsession"
 )
 
 // WebauthnSession is the model entity for the WebauthnSession schema.

@@ -6,11 +6,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"sandbox-nextjs/api/src/ent/account"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/sandbox-nextjs/src/ent/account"
 )
 
 // AccountCreate is the builder for creating a Account entity.
@@ -44,66 +44,6 @@ func (_c *AccountCreate) SetUpdatedAt(v time.Time) *AccountCreate {
 func (_c *AccountCreate) SetNillableUpdatedAt(v *time.Time) *AccountCreate {
 	if v != nil {
 		_c.SetUpdatedAt(*v)
-	}
-	return _c
-}
-
-// SetProvider sets the "provider" field.
-func (_c *AccountCreate) SetProvider(v string) *AccountCreate {
-	_c.mutation.SetProvider(v)
-	return _c
-}
-
-// SetProviderAccountID sets the "provider_account_id" field.
-func (_c *AccountCreate) SetProviderAccountID(v string) *AccountCreate {
-	_c.mutation.SetProviderAccountID(v)
-	return _c
-}
-
-// SetEmail sets the "email" field.
-func (_c *AccountCreate) SetEmail(v string) *AccountCreate {
-	_c.mutation.SetEmail(v)
-	return _c
-}
-
-// SetEmailVerified sets the "email_verified" field.
-func (_c *AccountCreate) SetEmailVerified(v bool) *AccountCreate {
-	_c.mutation.SetEmailVerified(v)
-	return _c
-}
-
-// SetNillableEmailVerified sets the "email_verified" field if the given value is not nil.
-func (_c *AccountCreate) SetNillableEmailVerified(v *bool) *AccountCreate {
-	if v != nil {
-		_c.SetEmailVerified(*v)
-	}
-	return _c
-}
-
-// SetName sets the "name" field.
-func (_c *AccountCreate) SetName(v string) *AccountCreate {
-	_c.mutation.SetName(v)
-	return _c
-}
-
-// SetNillableName sets the "name" field if the given value is not nil.
-func (_c *AccountCreate) SetNillableName(v *string) *AccountCreate {
-	if v != nil {
-		_c.SetName(*v)
-	}
-	return _c
-}
-
-// SetPicture sets the "picture" field.
-func (_c *AccountCreate) SetPicture(v string) *AccountCreate {
-	_c.mutation.SetPicture(v)
-	return _c
-}
-
-// SetNillablePicture sets the "picture" field if the given value is not nil.
-func (_c *AccountCreate) SetNillablePicture(v *string) *AccountCreate {
-	if v != nil {
-		_c.SetPicture(*v)
 	}
 	return _c
 }
@@ -199,18 +139,6 @@ func (_c *AccountCreate) defaults() {
 		v := account.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := _c.mutation.EmailVerified(); !ok {
-		v := account.DefaultEmailVerified
-		_c.mutation.SetEmailVerified(v)
-	}
-	if _, ok := _c.mutation.Name(); !ok {
-		v := account.DefaultName
-		_c.mutation.SetName(v)
-	}
-	if _, ok := _c.mutation.Picture(); !ok {
-		v := account.DefaultPicture
-		_c.mutation.SetPicture(v)
-	}
 	if _, ok := _c.mutation.DisplayName(); !ok {
 		v := account.DefaultDisplayName
 		_c.mutation.SetDisplayName(v)
@@ -228,24 +156,6 @@ func (_c *AccountCreate) check() error {
 	}
 	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Account.updated_at"`)}
-	}
-	if _, ok := _c.mutation.Provider(); !ok {
-		return &ValidationError{Name: "provider", err: errors.New(`ent: missing required field "Account.provider"`)}
-	}
-	if _, ok := _c.mutation.ProviderAccountID(); !ok {
-		return &ValidationError{Name: "provider_account_id", err: errors.New(`ent: missing required field "Account.provider_account_id"`)}
-	}
-	if _, ok := _c.mutation.Email(); !ok {
-		return &ValidationError{Name: "email", err: errors.New(`ent: missing required field "Account.email"`)}
-	}
-	if _, ok := _c.mutation.EmailVerified(); !ok {
-		return &ValidationError{Name: "email_verified", err: errors.New(`ent: missing required field "Account.email_verified"`)}
-	}
-	if _, ok := _c.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Account.name"`)}
-	}
-	if _, ok := _c.mutation.Picture(); !ok {
-		return &ValidationError{Name: "picture", err: errors.New(`ent: missing required field "Account.picture"`)}
 	}
 	if _, ok := _c.mutation.DisplayName(); !ok {
 		return &ValidationError{Name: "display_name", err: errors.New(`ent: missing required field "Account.display_name"`)}
@@ -289,30 +199,6 @@ func (_c *AccountCreate) createSpec() (*Account, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.UpdatedAt(); ok {
 		_spec.SetField(account.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
-	}
-	if value, ok := _c.mutation.Provider(); ok {
-		_spec.SetField(account.FieldProvider, field.TypeString, value)
-		_node.Provider = value
-	}
-	if value, ok := _c.mutation.ProviderAccountID(); ok {
-		_spec.SetField(account.FieldProviderAccountID, field.TypeString, value)
-		_node.ProviderAccountID = value
-	}
-	if value, ok := _c.mutation.Email(); ok {
-		_spec.SetField(account.FieldEmail, field.TypeString, value)
-		_node.Email = value
-	}
-	if value, ok := _c.mutation.EmailVerified(); ok {
-		_spec.SetField(account.FieldEmailVerified, field.TypeBool, value)
-		_node.EmailVerified = value
-	}
-	if value, ok := _c.mutation.Name(); ok {
-		_spec.SetField(account.FieldName, field.TypeString, value)
-		_node.Name = value
-	}
-	if value, ok := _c.mutation.Picture(); ok {
-		_spec.SetField(account.FieldPicture, field.TypeString, value)
-		_node.Picture = value
 	}
 	if value, ok := _c.mutation.DisplayName(); ok {
 		_spec.SetField(account.FieldDisplayName, field.TypeString, value)

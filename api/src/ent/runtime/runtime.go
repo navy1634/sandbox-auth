@@ -2,7 +2,7 @@
 
 package runtime
 
-// The schema-stitching logic is generated in sandbox-nextjs/api/src/ent/runtime.go
+// The schema-stitching logic is generated in github.com/sandbox-nextjs/src/ent/runtime.go
 
 const (
 	Version = "v0.14.6"                                         // Version of ent codegen.

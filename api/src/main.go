@@ -5,9 +5,9 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
-	"sandbox-nextjs/api/src/config"
-	"sandbox-nextjs/api/src/infrastructure/database"
-	"sandbox-nextjs/api/src/router"
+	"github.com/sandbox-nextjs/src/config"
+	"github.com/sandbox-nextjs/src/infrastructure/database"
+	"github.com/sandbox-nextjs/src/router"
 )
 
 func main() {

@@ -5,7 +5,7 @@ import (
 
 	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/go-webauthn/webauthn/webauthn"
-	"sandbox-nextjs/api/src/domain"
+	"github.com/sandbox-nextjs/src/domain"
 )
 
 type PasskeyService struct {

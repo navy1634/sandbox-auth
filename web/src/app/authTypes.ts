@@ -1,8 +1,13 @@
 export type Account = {
   id: number;
-  email: string;
-  name: string;
-  picture: string;
+  identity?: {
+    provider: string;
+    providerAccountId: string;
+    email: string;
+    emailVerified: boolean;
+    name: string;
+    picture: string;
+  };
   displayName: string;
   bio: string;
   registeredAt: string | null;
@@ -22,8 +27,7 @@ export type MeResponse = {
   };
 };
 
-export const apiBaseURL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
+export const apiBaseURL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
 
 export function webAuthnOptions<T>(optionsJSON: T | { publicKey: T }): T {
   if (typeof optionsJSON === "object" && optionsJSON !== null && "publicKey" in optionsJSON) {

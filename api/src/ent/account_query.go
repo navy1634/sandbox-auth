@@ -6,13 +6,13 @@ import (
 	"context"
 	"fmt"
 	"math"
-	"sandbox-nextjs/api/src/ent/account"
-	"sandbox-nextjs/api/src/ent/predicate"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/sandbox-nextjs/src/ent/account"
+	"github.com/sandbox-nextjs/src/ent/predicate"
 )
 
 // AccountQuery is the builder for querying Account entities.

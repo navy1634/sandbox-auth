@@ -14,6 +14,8 @@ type Tx struct {
 	config
 	// Account is the client for interacting with the Account builders.
 	Account *AccountClient
+	// AuthIdentity is the client for interacting with the AuthIdentity builders.
+	AuthIdentity *AuthIdentityClient
 	// WebauthnCredential is the client for interacting with the WebauthnCredential builders.
 	WebauthnCredential *WebauthnCredentialClient
 	// WebauthnSession is the client for interacting with the WebauthnSession builders.
@@ -150,6 +152,7 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.Account = NewAccountClient(tx.config)
+	tx.AuthIdentity = NewAuthIdentityClient(tx.config)
 	tx.WebauthnCredential = NewWebauthnCredentialClient(tx.config)
 	tx.WebauthnSession = NewWebauthnSessionClient(tx.config)
 }

@@ -5,12 +5,12 @@ package ent
 import (
 	"encoding/json"
 	"fmt"
-	"sandbox-nextjs/api/src/ent/webauthncredential"
 	"strings"
 	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/sandbox-nextjs/src/ent/webauthncredential"
 )
 
 // WebauthnCredential is the model entity for the WebauthnCredential schema.

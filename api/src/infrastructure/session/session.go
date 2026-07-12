@@ -9,16 +9,16 @@ import (
 	"errors"
 	"strings"
 
-	"sandbox-nextjs/api/src/domain"
+	"github.com/sandbox-nextjs/src/domain"
 )
 
 type User struct {
 	AccountID         int64  `json:"accountId"`
-	Provider          string `json:"provider"`
-	ProviderAccountID string `json:"providerAccountId"`
-	Email             string `json:"email"`
-	Name              string `json:"name"`
-	Picture           string `json:"picture"`
+	Provider          string `json:"provider,omitempty"`
+	ProviderAccountID string `json:"providerAccountId,omitempty"`
+	Email             string `json:"email,omitempty"`
+	Name              string `json:"name,omitempty"`
+	Picture           string `json:"picture,omitempty"`
 }
 
 type Manager struct {
@@ -75,14 +75,15 @@ func (m *Manager) Verify(value string) (User, error) {
 }
 
 func FromAccount(account domain.Account) User {
-	return User{
-		AccountID:         account.ID,
-		Provider:          account.Provider,
-		ProviderAccountID: account.ProviderAccountID,
-		Email:             account.Email,
-		Name:              account.Name,
-		Picture:           account.Picture,
+	user := User{AccountID: account.ID}
+	if account.Identity != nil {
+		user.Provider = account.Identity.Provider
+		user.ProviderAccountID = account.Identity.ProviderAccountID
+		user.Email = account.Identity.Email
+		user.Name = account.Identity.Name
+		user.Picture = account.Identity.Picture
 	}
+	return user
 }
 
 func RandomString(size int) (string, error) {

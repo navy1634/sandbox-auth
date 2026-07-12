@@ -17,18 +17,6 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
-	// FieldProvider holds the string denoting the provider field in the database.
-	FieldProvider = "provider"
-	// FieldProviderAccountID holds the string denoting the provider_account_id field in the database.
-	FieldProviderAccountID = "provider_account_id"
-	// FieldEmail holds the string denoting the email field in the database.
-	FieldEmail = "email"
-	// FieldEmailVerified holds the string denoting the email_verified field in the database.
-	FieldEmailVerified = "email_verified"
-	// FieldName holds the string denoting the name field in the database.
-	FieldName = "name"
-	// FieldPicture holds the string denoting the picture field in the database.
-	FieldPicture = "picture"
 	// FieldDisplayName holds the string denoting the display_name field in the database.
 	FieldDisplayName = "display_name"
 	// FieldBio holds the string denoting the bio field in the database.
@@ -46,12 +34,6 @@ var Columns = []string{
 	FieldID,
 	FieldCreatedAt,
 	FieldUpdatedAt,
-	FieldProvider,
-	FieldProviderAccountID,
-	FieldEmail,
-	FieldEmailVerified,
-	FieldName,
-	FieldPicture,
 	FieldDisplayName,
 	FieldBio,
 	FieldRegisteredAt,
@@ -75,12 +57,6 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
-	// DefaultEmailVerified holds the default value on creation for the "email_verified" field.
-	DefaultEmailVerified bool
-	// DefaultName holds the default value on creation for the "name" field.
-	DefaultName string
-	// DefaultPicture holds the default value on creation for the "picture" field.
-	DefaultPicture string
 	// DefaultDisplayName holds the default value on creation for the "display_name" field.
 	DefaultDisplayName string
 	// DefaultBio holds the default value on creation for the "bio" field.
@@ -103,36 +79,6 @@ func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByUpdatedAt orders the results by the updated_at field.
 func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
-}
-
-// ByProvider orders the results by the provider field.
-func ByProvider(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldProvider, opts...).ToFunc()
-}
-
-// ByProviderAccountID orders the results by the provider_account_id field.
-func ByProviderAccountID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldProviderAccountID, opts...).ToFunc()
-}
-
-// ByEmail orders the results by the email field.
-func ByEmail(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldEmail, opts...).ToFunc()
-}
-
-// ByEmailVerified orders the results by the email_verified field.
-func ByEmailVerified(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldEmailVerified, opts...).ToFunc()
-}
-
-// ByName orders the results by the name field.
-func ByName(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldName, opts...).ToFunc()
-}
-
-// ByPicture orders the results by the picture field.
-func ByPicture(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldPicture, opts...).ToFunc()
 }
 
 // ByDisplayName orders the results by the display_name field.

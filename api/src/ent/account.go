@@ -4,12 +4,12 @@ package ent
 
 import (
 	"fmt"
-	"sandbox-nextjs/api/src/ent/account"
 	"strings"
 	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/sandbox-nextjs/src/ent/account"
 )
 
 // Account is the model entity for the Account schema.
@@ -21,18 +21,6 @@ type Account struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// Provider holds the value of the "provider" field.
-	Provider string `json:"provider,omitempty"`
-	// ProviderAccountID holds the value of the "provider_account_id" field.
-	ProviderAccountID string `json:"provider_account_id,omitempty"`
-	// Email holds the value of the "email" field.
-	Email string `json:"email,omitempty"`
-	// EmailVerified holds the value of the "email_verified" field.
-	EmailVerified bool `json:"email_verified,omitempty"`
-	// Name holds the value of the "name" field.
-	Name string `json:"name,omitempty"`
-	// Picture holds the value of the "picture" field.
-	Picture string `json:"picture,omitempty"`
 	// DisplayName holds the value of the "display_name" field.
 	DisplayName string `json:"display_name,omitempty"`
 	// Bio holds the value of the "bio" field.
@@ -51,11 +39,9 @@ func (*Account) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case account.FieldWebauthnUserHandle:
 			values[i] = new([]byte)
-		case account.FieldEmailVerified:
-			values[i] = new(sql.NullBool)
 		case account.FieldID:
 			values[i] = new(sql.NullInt64)
-		case account.FieldProvider, account.FieldProviderAccountID, account.FieldEmail, account.FieldName, account.FieldPicture, account.FieldDisplayName, account.FieldBio:
+		case account.FieldDisplayName, account.FieldBio:
 			values[i] = new(sql.NullString)
 		case account.FieldCreatedAt, account.FieldUpdatedAt, account.FieldRegisteredAt:
 			values[i] = new(sql.NullTime)
@@ -91,42 +77,6 @@ func (_m *Account) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
 				_m.UpdatedAt = value.Time
-			}
-		case account.FieldProvider:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field provider", values[i])
-			} else if value.Valid {
-				_m.Provider = value.String
-			}
-		case account.FieldProviderAccountID:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field provider_account_id", values[i])
-			} else if value.Valid {
-				_m.ProviderAccountID = value.String
-			}
-		case account.FieldEmail:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field email", values[i])
-			} else if value.Valid {
-				_m.Email = value.String
-			}
-		case account.FieldEmailVerified:
-			if value, ok := values[i].(*sql.NullBool); !ok {
-				return fmt.Errorf("unexpected type %T for field email_verified", values[i])
-			} else if value.Valid {
-				_m.EmailVerified = value.Bool
-			}
-		case account.FieldName:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field name", values[i])
-			} else if value.Valid {
-				_m.Name = value.String
-			}
-		case account.FieldPicture:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field picture", values[i])
-			} else if value.Valid {
-				_m.Picture = value.String
 			}
 		case account.FieldDisplayName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -194,24 +144,6 @@ func (_m *Account) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
 	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("provider=")
-	builder.WriteString(_m.Provider)
-	builder.WriteString(", ")
-	builder.WriteString("provider_account_id=")
-	builder.WriteString(_m.ProviderAccountID)
-	builder.WriteString(", ")
-	builder.WriteString("email=")
-	builder.WriteString(_m.Email)
-	builder.WriteString(", ")
-	builder.WriteString("email_verified=")
-	builder.WriteString(fmt.Sprintf("%v", _m.EmailVerified))
-	builder.WriteString(", ")
-	builder.WriteString("name=")
-	builder.WriteString(_m.Name)
-	builder.WriteString(", ")
-	builder.WriteString("picture=")
-	builder.WriteString(_m.Picture)
 	builder.WriteString(", ")
 	builder.WriteString("display_name=")
 	builder.WriteString(_m.DisplayName)

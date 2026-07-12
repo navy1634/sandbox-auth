@@ -27,7 +27,7 @@ export default function RegisterPage() {
         }
 
         setMe(data);
-        setDisplayName(data.account?.displayName || data.account?.name || "");
+        setDisplayName(data.account?.displayName || data.account?.identity?.name || "");
         setBio(data.account?.bio || "");
         setStatus("ready");
       })
@@ -106,12 +106,12 @@ export default function RegisterPage() {
 
         {me.account ? (
           <div className={styles.user}>
-            {me.account.picture ? (
-              <img className={styles.avatar} src={me.account.picture} alt="" width={56} height={56} />
+            {me.account.identity?.picture ? (
+              <img className={styles.avatar} src={me.account.identity.picture} alt="" width={56} height={56} />
             ) : null}
             <div>
-              <p className={styles.name}>{me.account.name || "No name"}</p>
-              <p className={styles.email}>{me.account.email}</p>
+              <p className={styles.name}>{me.account.identity?.name || "No name"}</p>
+              <p className={styles.email}>{me.account.identity?.email}</p>
             </div>
           </div>
         ) : null}

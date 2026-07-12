@@ -3,10 +3,10 @@
 package webauthnsession
 
 import (
-	"sandbox-nextjs/api/src/ent/predicate"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/sandbox-nextjs/src/ent/predicate"
 )
 
 // ID filters vertices based on their ID field.

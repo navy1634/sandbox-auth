@@ -5,9 +5,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"sandbox-nextjs/api/src/domain"
-	"sandbox-nextjs/api/src/ent"
-	"sandbox-nextjs/api/src/infrastructure/session"
+	"github.com/sandbox-nextjs/src/domain"
+	"github.com/sandbox-nextjs/src/ent"
+	"github.com/sandbox-nextjs/src/infrastructure/session"
 )
 
 func (h *AuthHandler) Me(c *gin.Context) {
