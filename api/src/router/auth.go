@@ -8,12 +8,12 @@ import (
 	"github.com/sandbox-nextjs/src/ent"
 	"github.com/sandbox-nextjs/src/handler"
 	"github.com/sandbox-nextjs/src/infrastructure/database"
-	"github.com/sandbox-nextjs/src/repository"
+	"github.com/sandbox-nextjs/src/infrastructure/persistence"
 )
 
 func RegisterRoutes(engine *gin.Engine, cfg config.Config, db *ent.Client) error {
-	accountRepository := repository.NewAccountRepository(db)
-	passkeyRepository := repository.NewPasskeyRepository(db, accountRepository)
+	accountRepository := persistence.NewEntAccountRepository(db)
+	passkeyRepository := persistence.NewEntPasskeyRepository(db, accountRepository)
 	authHandler := handler.NewAuthHandler(cfg, accountRepository)
 	oauthHandler := handler.NewOAuthHandler(cfg, authHandler)
 	passkeyHandler, err := handler.NewPasskeyHandler(cfg, authHandler, passkeyRepository)

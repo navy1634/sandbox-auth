@@ -17,6 +17,25 @@ docker compose up --build
 
 フロントエンドは `http://localhost:3000`、バックエンドは `http://localhost:8080` で起動します。
 
+## リモートから使う
+
+リモート端末のブラウザから使う場合は、sandbox を動かすマシンの IP アドレスまたは DNS 名を指定して起動します。
+
+```txt
+SANDBOX_FRONTEND_URL=http://192.0.2.10:3000 \
+SANDBOX_API_URL=http://192.0.2.10:8080 \
+SANDBOX_RP_ID=192.0.2.10 \
+docker compose up --build
+```
+
+Google Cloud Console の OAuth callback URL には、次も登録してください。
+
+```txt
+http://192.0.2.10:8080/auth/google/callback
+```
+
+パスキーは HTTPS か `localhost` で使うのが前提です。IP アドレスの HTTP で動かす場合、ブラウザによってはパスキー登録やログインが失敗します。その場合は HTTPS のドメインを用意し、`SANDBOX_FRONTEND_URL`、`SANDBOX_API_URL`、`SANDBOX_RP_ID` をそのドメインに合わせてください。
+
 ## Google OAuth
 
 Google Cloud Console の OAuth callback URL には、次を登録してください。

@@ -16,11 +16,11 @@ import (
 
 type PasskeyHandler struct {
 	base     *AuthHandler
-	passkeys *repository.PasskeyRepository
+	passkeys repository.PasskeyRepository
 	passkey  *auth.PasskeyService
 }
 
-func NewPasskeyHandler(cfg config.Config, base *AuthHandler, passkeys *repository.PasskeyRepository) (*PasskeyHandler, error) {
+func NewPasskeyHandler(cfg config.Config, base *AuthHandler, passkeys repository.PasskeyRepository) (*PasskeyHandler, error) {
 	passkey, err := auth.NewPasskeyService(cfg.PasskeyRPID, cfg.PasskeyRPOrigin)
 	if err != nil {
 		return nil, err

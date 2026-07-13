@@ -1,6 +1,8 @@
 package domain
 
 import (
+	"errors"
+	"strings"
 	"time"
 
 	"github.com/go-webauthn/webauthn/webauthn"
@@ -30,6 +32,26 @@ type Account struct {
 type ProfileInput struct {
 	DisplayName string
 	Bio         string
+}
+
+func (input ProfileInput) Normalize() ProfileInput {
+	return ProfileInput{
+		DisplayName: strings.TrimSpace(input.DisplayName),
+		Bio:         strings.TrimSpace(input.Bio),
+	}
+}
+
+func (input ProfileInput) Validate() error {
+	if input.DisplayName == "" {
+		return errors.New("display name is required")
+	}
+	if len([]rune(input.DisplayName)) > 100 {
+		return errors.New("display name is too long")
+	}
+	if len([]rune(input.Bio)) > 500 {
+		return errors.New("bio is too long")
+	}
+	return nil
 }
 
 type PasskeySession struct {

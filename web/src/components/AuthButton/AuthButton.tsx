@@ -65,7 +65,7 @@ function AuthButtonContent() {
         fetch(`${apiBaseURL}/auth/logout`, {
           method: "POST",
           credentials: "include",
-        }).then(() => setMe({ authenticated: false }));
+        }).then(() => window.location.reload());
       }}
     />
   );

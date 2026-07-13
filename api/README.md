@@ -15,6 +15,15 @@ PASSKEY_RP_ID=localhost
 PASSKEY_RP_ORIGIN=http://localhost:3000
 ```
 
+Docker Compose でリモート端末から使う場合は、ルートディレクトリで公開 URL を指定します。
+
+```txt
+SANDBOX_FRONTEND_URL=http://192.0.2.10:3000 \
+SANDBOX_API_URL=http://192.0.2.10:8080 \
+SANDBOX_RP_ID=192.0.2.10 \
+docker compose up --build
+```
+
 Google Cloud Console の OAuth callback URL には、次を登録してください。
 
 ```txt

@@ -1,6 +1,7 @@
 "use client";
 
 import { startAuthentication } from "@simplewebauthn/browser";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { apiBaseURL, webAuthnOptions, type MeResponse } from "../authTypes";
@@ -31,18 +32,24 @@ export default function LoginPage() {
     setStatus("passkey");
 
     try {
-      const optionsResponse = await fetch(`${apiBaseURL}/passkeys/login/options`, {
-        method: "POST",
-        credentials: "include",
-      });
+      const optionsResponse = await fetch(
+        `${apiBaseURL}/passkeys/login/options`,
+        {
+          method: "POST",
+          credentials: "include",
+        },
+      );
       const optionsJSON = webAuthnOptions(await optionsResponse.json());
       const assertion = await startAuthentication({ optionsJSON });
-      const verifyResponse = await fetch(`${apiBaseURL}/passkeys/login/verify`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(assertion),
-      });
+      const verifyResponse = await fetch(
+        `${apiBaseURL}/passkeys/login/verify`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(assertion),
+        },
+      );
 
       if (!verifyResponse.ok) {
         throw new Error("failed to verify passkey");
@@ -65,7 +72,8 @@ export default function LoginPage() {
           <p className={styles.label}>Google Login</p>
           <h1 className={styles.title}>ログイン確認</h1>
           <p className={styles.description}>
-            Gin バックエンドで Google OAuth のログイン、ログアウト、セッション状態を確認できます。
+            Gin バックエンドで Google OAuth
+            のログイン、ログアウト、セッション状態を確認できます。
           </p>
         </div>
 
@@ -79,7 +87,7 @@ export default function LoginPage() {
         {user ? (
           <div className={styles.user}>
             {user.picture ? (
-              <img
+              <Image
                 className={styles.avatar}
                 src={user.picture}
                 alt=""
@@ -117,7 +125,10 @@ export default function LoginPage() {
             パスキーでログイン
           </button>
           {me.authenticated ? (
-            <Link className={styles.secondaryLink} href={me.needsRegistration ? "/register" : "/mypage"}>
+            <Link
+              className={styles.secondaryLink}
+              href={me.needsRegistration ? "/register" : "/mypage"}
+            >
               {me.needsRegistration ? "初回登録へ" : "マイページへ"}
             </Link>
           ) : null}
@@ -128,10 +139,7 @@ export default function LoginPage() {
               fetch(`${apiBaseURL}/auth/logout`, {
                 method: "POST",
                 credentials: "include",
-              }).then(() => {
-                setMe({ authenticated: false });
-                setStatus("unauthenticated");
-              });
+              }).then(() => window.location.reload());
             }}
           >
             ログアウト

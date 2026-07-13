@@ -45,6 +45,11 @@ var (
 		PrimaryKey: []*schema.Column{AuthIdentitiesColumns[0]},
 		Indexes: []*schema.Index{
 			{
+				Name:    "authidentity_account_id_provider",
+				Unique:  true,
+				Columns: []*schema.Column{AuthIdentitiesColumns[3], AuthIdentitiesColumns[4]},
+			},
+			{
 				Name:    "authidentity_provider_provider_account_id",
 				Unique:  true,
 				Columns: []*schema.Column{AuthIdentitiesColumns[4], AuthIdentitiesColumns[5]},

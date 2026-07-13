@@ -9,7 +9,8 @@ export default function Home() {
           <p className={styles.label}>Auth Sandbox</p>
           <h1>アカウント確認</h1>
           <p>
-            Google ログイン、初回登録、マイページ、パスキーの動作を確認できます。
+            Google
+            ログイン、初回登録、マイページ、パスキーの動作を確認できます。
           </p>
         </div>
         <div className={styles.ctas}>

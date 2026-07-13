@@ -1,7 +1,7 @@
 "use client";
 
 import { startRegistration } from "@simplewebauthn/browser";
-import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { apiBaseURL, webAuthnOptions, type MeResponse } from "../authTypes";
 import styles from "./page.module.css";
@@ -27,7 +27,9 @@ export default function MyPage() {
         }
 
         setMe(data);
-        setDisplayName(data.account?.displayName || data.account?.identity?.name || "");
+        setDisplayName(
+          data.account?.displayName || data.account?.identity?.name || "",
+        );
         setBio(data.account?.bio || "");
         setStatus("ready");
       })
@@ -64,18 +66,24 @@ export default function MyPage() {
     setMessage("");
 
     try {
-      const optionsResponse = await fetch(`${apiBaseURL}/passkeys/register/options`, {
-        method: "POST",
-        credentials: "include",
-      });
+      const optionsResponse = await fetch(
+        `${apiBaseURL}/passkeys/register/options`,
+        {
+          method: "POST",
+          credentials: "include",
+        },
+      );
       const optionsJSON = webAuthnOptions(await optionsResponse.json());
       const credential = await startRegistration({ optionsJSON });
-      const verifyResponse = await fetch(`${apiBaseURL}/passkeys/register/verify`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(credential),
-      });
+      const verifyResponse = await fetch(
+        `${apiBaseURL}/passkeys/register/verify`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(credential),
+        },
+      );
 
       if (!verifyResponse.ok) {
         throw new Error("failed to verify passkey");
@@ -118,10 +126,20 @@ export default function MyPage() {
         {me.account ? (
           <div className={styles.user}>
             {me.account.identity?.picture ? (
-              <img className={styles.avatar} src={me.account.identity.picture} alt="" width={56} height={56} />
+              <Image
+                className={styles.avatar}
+                src={me.account.identity.picture}
+                alt=""
+                width={56}
+                height={56}
+              />
             ) : null}
             <div>
-              <p className={styles.name}>{me.account.displayName || me.account.identity?.name || "No name"}</p>
+              <p className={styles.name}>
+                {me.account.displayName ||
+                  me.account.identity?.name ||
+                  "No name"}
+              </p>
               <p className={styles.email}>{me.account.identity?.email}</p>
             </div>
           </div>
@@ -129,19 +147,38 @@ export default function MyPage() {
 
         <label className={styles.field}>
           表示名
-          <input value={displayName} onChange={(event) => setDisplayName(event.target.value)} />
+          <input
+            value={displayName}
+            onChange={(event) => setDisplayName(event.target.value)}
+          />
         </label>
 
         <label className={styles.field}>
           自己紹介
-          <textarea value={bio} onChange={(event) => setBio(event.target.value)} rows={4} />
+          <textarea
+            value={bio}
+            onChange={(event) => setBio(event.target.value)}
+            rows={4}
+          />
         </label>
 
         {message ? <p className={styles.message}>{message}</p> : null}
 
         <div className={styles.actions}>
-          <button className={styles.primaryButton} type="button" onClick={saveProfile}>プロフィールを更新</button>
-          <button className={styles.secondaryButton} type="button" onClick={registerPasskey}>パスキーを追加</button>
+          <button
+            className={styles.primaryButton}
+            type="button"
+            onClick={saveProfile}
+          >
+            プロフィールを更新
+          </button>
+          <button
+            className={styles.secondaryButton}
+            type="button"
+            onClick={registerPasskey}
+          >
+            パスキーを追加
+          </button>
         </div>
       </section>
     </div>

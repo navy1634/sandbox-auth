@@ -19,11 +19,11 @@ const (
 
 type AuthHandler struct {
 	cfg      config.Config
-	accounts *repository.AccountRepository
+	accounts repository.AccountRepository
 	sessions *session.Manager
 }
 
-func NewAuthHandler(cfg config.Config, accounts *repository.AccountRepository) *AuthHandler {
+func NewAuthHandler(cfg config.Config, accounts repository.AccountRepository) *AuthHandler {
 	return &AuthHandler{
 		cfg:      cfg,
 		accounts: accounts,

@@ -27,10 +27,15 @@ export type MeResponse = {
   };
 };
 
-export const apiBaseURL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
+export const apiBaseURL =
+  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
 
 export function webAuthnOptions<T>(optionsJSON: T | { publicKey: T }): T {
-  if (typeof optionsJSON === "object" && optionsJSON !== null && "publicKey" in optionsJSON) {
+  if (
+    typeof optionsJSON === "object" &&
+    optionsJSON !== null &&
+    "publicKey" in optionsJSON
+  ) {
     return (optionsJSON as { publicKey: T }).publicKey;
   }
   return optionsJSON;

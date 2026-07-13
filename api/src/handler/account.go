@@ -1,13 +1,14 @@
 package handler
 
 import (
+	"errors"
 	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sandbox-nextjs/src/domain"
-	"github.com/sandbox-nextjs/src/ent"
 	"github.com/sandbox-nextjs/src/infrastructure/session"
+	"github.com/sandbox-nextjs/src/repository"
 )
 
 func (h *AuthHandler) Me(c *gin.Context) {
@@ -19,7 +20,7 @@ func (h *AuthHandler) Me(c *gin.Context) {
 
 	storedAccount, err := h.accounts.FindByID(c.Request.Context(), user.AccountID)
 	if err != nil {
-		if ent.IsNotFound(err) {
+		if errors.Is(err, repository.ErrNotFound) {
 			c.JSON(http.StatusOK, gin.H{"authenticated": false})
 			return
 		}
@@ -44,10 +45,15 @@ func (h *AuthHandler) UpdateProfile(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body"})
 		return
 	}
+	input = input.Normalize()
+	if err := input.Validate(); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
 	storedAccount, err := h.accounts.UpdateProfile(c.Request.Context(), user.AccountID, input)
 	if err != nil {
-		if ent.IsNotFound(err) {
+		if errors.Is(err, repository.ErrNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "account not found"})
 			return
 		}
