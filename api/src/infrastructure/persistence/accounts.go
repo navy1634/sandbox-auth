@@ -31,6 +31,7 @@ func (r *EntAccountRepository) UpsertProviderIdentity(ctx context.Context, ident
 		return domain.Account{}, err
 	}
 
+	// 既存の外部認証 ID があれば、最新のプロフィール情報だけ更新する。
 	storedIdentity, err := client.AuthIdentity.Query().
 		Where(
 			entidentity.Provider(identity.Provider),
@@ -53,6 +54,7 @@ func (r *EntAccountRepository) UpsertProviderIdentity(ctx context.Context, ident
 		return domain.Account{}, err
 	}
 
+	// 初回ログイン時は、WebAuthn のユーザーハンドルを持つアカウントも作成する。
 	userHandle, err := randomBytes(32)
 	if err != nil {
 		return domain.Account{}, err
@@ -106,6 +108,7 @@ func (r *EntAccountRepository) UpdateProfile(ctx context.Context, id int64, inpu
 		return domain.Account{}, err
 	}
 
+	// 初回プロフィール保存を登録完了として扱い、登録日時を一度だけ入れる。
 	builder := client.Account.UpdateOneID(int(id)).
 		SetDisplayName(input.DisplayName).
 		SetBio(input.Bio)
@@ -172,6 +175,7 @@ func (r *EntAccountRepository) primaryIdentity(ctx context.Context, accountID in
 		return nil, err
 	}
 
+	// 表示用の代表 ID として、最初に紐づいた外部認証 ID を使う。
 	storedIdentity, err := client.AuthIdentity.Query().
 		Where(entidentity.AccountID(accountID)).
 		Order(ent.Asc(entidentity.FieldCreatedAt)).
@@ -183,6 +187,7 @@ func (r *EntAccountRepository) primaryIdentity(ctx context.Context, accountID in
 }
 
 func toAccount(storedAccount *ent.Account, identity *ent.AuthIdentity) domain.Account {
+	// Ent の保存形式から、handler と usecase が扱う domain.Account へ詰め替える。
 	account := domain.Account{
 		ID:                 int64(storedAccount.ID),
 		DisplayName:        storedAccount.DisplayName,

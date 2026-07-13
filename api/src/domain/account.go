@@ -35,6 +35,7 @@ type ProfileInput struct {
 }
 
 func (input ProfileInput) Normalize() ProfileInput {
+	// 表示名と自己紹介の前後空白を取り除き、保存前の表記ゆれを減らす。
 	return ProfileInput{
 		DisplayName: strings.TrimSpace(input.DisplayName),
 		Bio:         strings.TrimSpace(input.Bio),
@@ -42,6 +43,7 @@ func (input ProfileInput) Normalize() ProfileInput {
 }
 
 func (input ProfileInput) Validate() error {
+	// プロフィールとして受け付ける必須項目と最大文字数を検証する。
 	if input.DisplayName == "" {
 		return errors.New("display name is required")
 	}
@@ -72,6 +74,7 @@ func (account Account) WebAuthnName() string {
 }
 
 func (account Account) WebAuthnDisplayName() string {
+	// WebAuthn に表示する名前は、プロフィール名、外部 ID 名、メールの順で選ぶ。
 	if account.DisplayName != "" {
 		return account.DisplayName
 	}

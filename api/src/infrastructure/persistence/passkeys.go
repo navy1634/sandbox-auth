@@ -28,6 +28,7 @@ func (r *EntPasskeyRepository) db(ctx context.Context) (*ent.Client, error) {
 }
 
 func (r *EntPasskeyRepository) FindWebAuthnUserByID(ctx context.Context, id int64) (domain.Account, error) {
+	// WebAuthn 検証に必要なアカウント情報と認証情報をまとめて返す。
 	account, err := r.accounts.FindByID(ctx, id)
 	if err != nil {
 		return domain.Account{}, err
@@ -63,6 +64,7 @@ func (r *EntPasskeyRepository) ListCredentials(ctx context.Context, accountID in
 		return nil, err
 	}
 
+	// DB には JSON で保存している認証情報を、WebAuthn ライブラリの型へ戻す。
 	storedCredentials, err := client.WebauthnCredential.Query().
 		Where(entcredential.AccountID(accountID)).
 		Order(ent.Asc(entcredential.FieldCreatedAt)).
@@ -89,6 +91,7 @@ func (r *EntPasskeyRepository) SaveCredential(ctx context.Context, accountID int
 		return err
 	}
 
+	// WebAuthn の認証情報は構造が大きいため、そのまま JSON として保存する。
 	raw, err := json.Marshal(credential)
 	if err != nil {
 		return err
@@ -98,6 +101,7 @@ func (r *EntPasskeyRepository) SaveCredential(ctx context.Context, accountID int
 		Where(entcredential.CredentialID(credential.ID)).
 		Only(ctx)
 	if err == nil {
+		// 同じ認証情報 ID が来た場合は、所有アカウントと内容を最新化する。
 		return client.WebauthnCredential.UpdateOneID(storedCredential.ID).
 			SetAccountID(accountID).
 			SetCredentialJSON(raw).
@@ -147,6 +151,7 @@ func (r *EntPasskeyRepository) SaveSession(ctx context.Context, id string, accou
 		return err
 	}
 
+	// チャレンジの検証に必要なセッションデータを、有効期限付きで保存する。
 	raw, err := json.Marshal(session)
 	if err != nil {
 		return err
@@ -167,6 +172,7 @@ func (r *EntPasskeyRepository) ConsumeSession(ctx context.Context, id string, ce
 		return domain.PasskeySession{}, err
 	}
 
+	// 処理種別と有効期限が一致するセッションだけを使い、再利用を防ぐため削除する。
 	storedSession, err := client.WebauthnSession.Query().
 		Where(
 			entsession.ID(id),

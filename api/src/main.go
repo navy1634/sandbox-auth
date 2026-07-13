@@ -11,6 +11,7 @@ import (
 )
 
 func main() {
+	// 設定、DB、ルーティングを組み立てて API サーバーを起動する。
 	cfg, err := config.Load()
 	if err != nil {
 		log.Fatal(err)
@@ -20,7 +21,11 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer db.Close()
+	defer func() {
+		if err := db.Close(); err != nil {
+			log.Printf("failed to close database: %v", err)
+		}
+	}()
 
 	gin.SetMode(config.GetEnv("GIN_MODE", gin.DebugMode))
 	engine := gin.Default()

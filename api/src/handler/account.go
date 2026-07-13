@@ -18,7 +18,7 @@ func (h *AuthHandler) Me(c *gin.Context) {
 		return
 	}
 
-	storedAccount, err := h.accounts.FindByID(c.Request.Context(), user.AccountID)
+	storedAccount, err := h.accounts.Me(c.Request.Context(), user.AccountID)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
 			c.JSON(http.StatusOK, gin.H{"authenticated": false})
@@ -45,12 +45,8 @@ func (h *AuthHandler) UpdateProfile(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body"})
 		return
 	}
-	input = input.Normalize()
-	if err := input.Validate(); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
 
+	// ログイン中のアカウントのプロフィールを更新する。
 	storedAccount, err := h.accounts.UpdateProfile(c.Request.Context(), user.AccountID, input)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {

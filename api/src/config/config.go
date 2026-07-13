@@ -19,6 +19,7 @@ type Config struct {
 }
 
 func Load() (Config, error) {
+	// 環境変数から API の起動設定と外部サービス設定を読み込む。
 	cfg := Config{
 		Addr:              GetEnv("ADDR", ":8080"),
 		FrontendURL:       strings.TrimRight(GetEnv("FRONTEND_URL", "http://localhost:3000"), "/"),
@@ -34,6 +35,7 @@ func Load() (Config, error) {
 	if cfg.GoogleClientID == "" || cfg.GoogleSecret == "" {
 		return cfg, errors.New("GOOGLE_ID and GOOGLE_SECRET are required")
 	}
+	// Cookie セッションの署名に使うため、短すぎるシークレットは拒否する。
 	if len(cfg.SessionSecret) < 32 {
 		return cfg, errors.New("AUTH_SECRET must be at least 32 bytes")
 	}

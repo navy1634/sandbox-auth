@@ -7,19 +7,28 @@ import (
 	"github.com/sandbox-nextjs/src/config"
 	"github.com/sandbox-nextjs/src/ent"
 	"github.com/sandbox-nextjs/src/handler"
+	"github.com/sandbox-nextjs/src/infrastructure/auth"
 	"github.com/sandbox-nextjs/src/infrastructure/database"
 	"github.com/sandbox-nextjs/src/infrastructure/persistence"
+	"github.com/sandbox-nextjs/src/usecase"
 )
 
 func RegisterRoutes(engine *gin.Engine, cfg config.Config, db *ent.Client) error {
+	// ルート登録前に、永続化、認証、ユースケース、HTTP ハンドラを組み立てる。
 	accountRepository := persistence.NewEntAccountRepository(db)
 	passkeyRepository := persistence.NewEntPasskeyRepository(db, accountRepository)
-	authHandler := handler.NewAuthHandler(cfg, accountRepository)
-	oauthHandler := handler.NewOAuthHandler(cfg, authHandler)
-	passkeyHandler, err := handler.NewPasskeyHandler(cfg, authHandler, passkeyRepository)
+	accountUsecase := usecase.NewAccountUsecase(accountRepository)
+	oauthUsecase := usecase.NewOAuthUsecase(accountRepository, map[string]auth.OAuthProvider{
+		"google": auth.NewGoogleProvider(cfg.GoogleClientID, cfg.GoogleSecret, cfg.GoogleRedirectURL),
+	})
+	passkeyService, err := auth.NewPasskeyService(cfg.PasskeyRPID, cfg.PasskeyRPOrigin)
 	if err != nil {
 		return err
 	}
+	passkeyUsecase := usecase.NewPasskeyUsecase(passkeyRepository, passkeyService)
+	authHandler := handler.NewAuthHandler(cfg, accountUsecase)
+	oauthHandler := handler.NewOAuthHandler(authHandler, oauthUsecase)
+	passkeyHandler := handler.NewPasskeyHandler(authHandler, passkeyUsecase)
 
 	engine.Use(corsMiddleware(cfg.FrontendURL))
 	engine.Use(database.TransactionMiddleware(db))

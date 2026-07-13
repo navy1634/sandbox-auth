@@ -1,26 +1,24 @@
 package handler
 
 import (
+	"errors"
 	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sandbox-nextjs/src/config"
-	"github.com/sandbox-nextjs/src/infrastructure/auth"
 	"github.com/sandbox-nextjs/src/infrastructure/session"
+	"github.com/sandbox-nextjs/src/usecase"
 )
 
 type OAuthHandler struct {
-	base      *AuthHandler
-	providers map[string]auth.OAuthProvider
+	base  *AuthHandler
+	oauth *usecase.OAuthUsecase
 }
 
-func NewOAuthHandler(cfg config.Config, base *AuthHandler) *OAuthHandler {
+func NewOAuthHandler(base *AuthHandler, oauth *usecase.OAuthUsecase) *OAuthHandler {
 	return &OAuthHandler{
-		base: base,
-		providers: map[string]auth.OAuthProvider{
-			"google": auth.NewGoogleProvider(cfg.GoogleClientID, cfg.GoogleSecret, cfg.GoogleRedirectURL),
-		},
+		base:  base,
+		oauth: oauth,
 	}
 }
 
@@ -30,30 +28,23 @@ func (h *OAuthHandler) RegisterRoutes(routes gin.IRoutes) {
 }
 
 func (h *OAuthHandler) Login(c *gin.Context) {
-	provider, ok := h.providers[c.Param("provider")]
-	if !ok {
+	// OAuth 認可を開始し、状態値を Cookie に保持してから認証画面へ移動する。
+	state, authURL, err := h.oauth.BeginLogin(c.Param("provider"))
+	if errors.Is(err, usecase.ErrAuthProviderNotFound) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "auth provider not found"})
 		return
 	}
-
-	state, err := session.RandomString(32)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create oauth state"})
 		return
 	}
 
 	h.base.setCookie(c, stateCookieName, state, 300, true)
-	c.Redirect(http.StatusFound, provider.AuthCodeURL(state))
+	c.Redirect(http.StatusFound, authURL)
 }
 
 func (h *OAuthHandler) Callback(c *gin.Context) {
 	providerName := c.Param("provider")
-	provider, ok := h.providers[providerName]
-	if !ok {
-		c.JSON(http.StatusNotFound, gin.H{"error": "auth provider not found"})
-		return
-	}
-
 	if oauthError := c.Query("error"); oauthError != "" {
 		log.Printf("%s oauth callback returned error: %s", providerName, oauthError)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "oauth authorization failed"})
@@ -71,14 +62,17 @@ func (h *OAuthHandler) Callback(c *gin.Context) {
 		return
 	}
 
-	identity, err := provider.ExchangeAndValidate(c.Request.Context(), code)
-	if err != nil {
+	// OAuth コールバックを検証し、アプリのログインセッションを発行する。
+	storedAccount, err := h.oauth.Callback(c.Request.Context(), providerName, code)
+	if errors.Is(err, usecase.ErrAuthProviderNotFound) {
+		c.JSON(http.StatusNotFound, gin.H{"error": "auth provider not found"})
+		return
+	}
+	if errors.Is(err, usecase.ErrOAuthExchangeFailed) {
 		log.Printf("%s oauth code exchange failed: %v", providerName, err)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "failed to exchange oauth code"})
 		return
 	}
-
-	storedAccount, err := h.base.accounts.UpsertProviderIdentity(c.Request.Context(), identity)
 	if err != nil {
 		log.Printf("failed to save provider identity: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to save account"})

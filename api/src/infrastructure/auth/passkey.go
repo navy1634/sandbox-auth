@@ -13,6 +13,7 @@ type PasskeyService struct {
 }
 
 func NewPasskeyService(rpID string, rpOrigin string) (*PasskeyService, error) {
+	// このアプリの RP 情報と認証器要件を WebAuthn ライブラリへ渡す。
 	passkey, err := webauthn.New(&webauthn.Config{
 		RPID:          rpID,
 		RPDisplayName: "sandbox_nextjs",
@@ -30,6 +31,7 @@ func NewPasskeyService(rpID string, rpOrigin string) (*PasskeyService, error) {
 }
 
 func (s *PasskeyService) BeginRegistration(user domain.Account) (*protocol.CredentialCreation, *webauthn.SessionData, error) {
+	// 登録済みの認証情報を除外し、同じ認証器の重複登録を避ける。
 	return s.webauthn.BeginRegistration(
 		user,
 		webauthn.WithResidentKeyRequirement(protocol.ResidentKeyRequirementRequired),
@@ -43,6 +45,7 @@ func (s *PasskeyService) FinishRegistration(user domain.Account, session webauth
 }
 
 func (s *PasskeyService) BeginLogin() (*protocol.CredentialAssertion, *webauthn.SessionData, error) {
+	// ユーザー名入力なしで、認証器からユーザーを解決するログインを開始する。
 	return s.webauthn.BeginDiscoverableLogin(webauthn.WithUserVerification(protocol.VerificationPreferred))
 }
 

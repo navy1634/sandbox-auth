@@ -13,6 +13,7 @@ import (
 )
 
 func Connect(ctx context.Context, databaseURL string) (*ent.Client, error) {
+	// コンテナ起動直後の DB 待ちを吸収するため、接続できるまで短時間リトライする。
 	deadline := time.Now().Add(30 * time.Second)
 
 	for {
@@ -34,7 +35,7 @@ func Connect(ctx context.Context, databaseURL string) (*ent.Client, error) {
 			return ent.NewClient(ent.Driver(driver)), nil
 		}
 
-		db.Close()
+		_ = db.Close()
 		if time.Now().After(deadline) {
 			return nil, fmt.Errorf("database is not ready: %w", err)
 		}

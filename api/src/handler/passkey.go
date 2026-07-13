@@ -1,36 +1,25 @@
 package handler
 
 import (
+	"errors"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-webauthn/webauthn/webauthn"
-	"github.com/sandbox-nextjs/src/config"
-	"github.com/sandbox-nextjs/src/domain"
-	"github.com/sandbox-nextjs/src/infrastructure/auth"
 	"github.com/sandbox-nextjs/src/infrastructure/session"
-	"github.com/sandbox-nextjs/src/repository"
+	"github.com/sandbox-nextjs/src/usecase"
 )
 
 type PasskeyHandler struct {
 	base     *AuthHandler
-	passkeys repository.PasskeyRepository
-	passkey  *auth.PasskeyService
+	passkeys *usecase.PasskeyUsecase
 }
 
-func NewPasskeyHandler(cfg config.Config, base *AuthHandler, passkeys repository.PasskeyRepository) (*PasskeyHandler, error) {
-	passkey, err := auth.NewPasskeyService(cfg.PasskeyRPID, cfg.PasskeyRPOrigin)
-	if err != nil {
-		return nil, err
-	}
-
+func NewPasskeyHandler(base *AuthHandler, passkeys *usecase.PasskeyUsecase) *PasskeyHandler {
 	return &PasskeyHandler{
 		base:     base,
 		passkeys: passkeys,
-		passkey:  passkey,
-	}, nil
+	}
 }
 
 func (h *PasskeyHandler) RegisterRoutes(routes gin.IRoutes) {
@@ -47,34 +36,25 @@ func (h *PasskeyHandler) BeginRegistration(c *gin.Context) {
 		return
 	}
 
-	storedAccount, err := h.passkeys.FindWebAuthnUserByID(c.Request.Context(), user.AccountID)
-	if err != nil {
+	// ログイン中のアカウントにパスキー登録を開始させる。
+	options, err := h.passkeys.BeginRegistration(c.Request.Context(), user.AccountID)
+	if errors.Is(err, usecase.ErrPasskeyLoadAccountFailed) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to load account"})
 		return
 	}
-
-	creation, passkeySession, err := h.passkey.BeginRegistration(storedAccount)
+	if errors.Is(err, usecase.ErrPasskeySaveSessionFailed) {
+		log.Printf("failed to save passkey registration session: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to save passkey session"})
+		return
+	}
 	if err != nil {
 		log.Printf("failed to begin passkey registration: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create passkey registration options"})
 		return
 	}
 
-	sessionID, err := session.RandomString(32)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create passkey session"})
-		return
-	}
-
-	accountID := storedAccount.ID
-	if err := h.passkeys.SaveSession(c.Request.Context(), sessionID, &accountID, passkeyRegisterCeremony, passkeySession, 5*time.Minute); err != nil {
-		log.Printf("failed to save passkey registration session: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to save passkey session"})
-		return
-	}
-
-	h.base.setCookie(c, passkeySessionCookieName, sessionID, 300, true)
-	c.JSON(http.StatusOK, creation)
+	h.base.setCookie(c, passkeySessionCookieName, options.SessionID, 300, true)
+	c.JSON(http.StatusOK, options.Creation)
 }
 
 func (h *PasskeyHandler) FinishRegistration(c *gin.Context) {
@@ -90,32 +70,28 @@ func (h *PasskeyHandler) FinishRegistration(c *gin.Context) {
 		return
 	}
 
-	passkeySession, err := h.passkeys.ConsumeSession(c.Request.Context(), sessionID, passkeyRegisterCeremony)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid passkey session"})
-		return
-	}
-	if passkeySession.AccountID == nil || *passkeySession.AccountID != user.AccountID {
+	// 登録開始時のセッションを使って、認証器からの登録応答を検証する。
+	err = h.passkeys.FinishRegistration(c.Request.Context(), user.AccountID, sessionID, c.Request)
+	if errors.Is(err, usecase.ErrPasskeySessionAccountMismatch) {
 		c.JSON(http.StatusForbidden, gin.H{"error": "passkey session does not match account"})
 		return
 	}
-
-	storedAccount, err := h.passkeys.FindWebAuthnUserByID(c.Request.Context(), user.AccountID)
-	if err != nil {
+	if errors.Is(err, usecase.ErrPasskeySessionInvalid) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid passkey session"})
+		return
+	}
+	if errors.Is(err, usecase.ErrPasskeyLoadAccountFailed) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to load account"})
 		return
 	}
-
-	credential, err := h.passkey.FinishRegistration(storedAccount, passkeySession.Session, c.Request)
+	if errors.Is(err, usecase.ErrPasskeySaveCredentialFailed) {
+		log.Printf("failed to save passkey credential: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to save passkey credential"})
+		return
+	}
 	if err != nil {
 		log.Printf("failed to verify passkey registration: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "failed to verify passkey registration"})
-		return
-	}
-
-	if err := h.passkeys.SaveCredential(c.Request.Context(), storedAccount.ID, credential); err != nil {
-		log.Printf("failed to save passkey credential: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to save passkey credential"})
 		return
 	}
 
@@ -124,27 +100,21 @@ func (h *PasskeyHandler) FinishRegistration(c *gin.Context) {
 }
 
 func (h *PasskeyHandler) BeginLogin(c *gin.Context) {
-	assertion, passkeySession, err := h.passkey.BeginLogin()
+	// パスキーによるログインを開始し、検証用セッションを Cookie に保持する。
+	options, err := h.passkeys.BeginLogin(c.Request.Context())
+	if errors.Is(err, usecase.ErrPasskeySaveSessionFailed) {
+		log.Printf("failed to save passkey login session: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to save passkey session"})
+		return
+	}
 	if err != nil {
 		log.Printf("failed to begin passkey login: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create passkey login options"})
 		return
 	}
 
-	sessionID, err := session.RandomString(32)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create passkey session"})
-		return
-	}
-
-	if err := h.passkeys.SaveSession(c.Request.Context(), sessionID, nil, passkeyLoginCeremony, passkeySession, 5*time.Minute); err != nil {
-		log.Printf("failed to save passkey login session: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to save passkey session"})
-		return
-	}
-
-	h.base.setCookie(c, passkeySessionCookieName, sessionID, 300, true)
-	c.JSON(http.StatusOK, assertion)
+	h.base.setCookie(c, passkeySessionCookieName, options.SessionID, 300, true)
+	c.JSON(http.StatusOK, options.Assertion)
 }
 
 func (h *PasskeyHandler) FinishLogin(c *gin.Context) {
@@ -154,30 +124,24 @@ func (h *PasskeyHandler) FinishLogin(c *gin.Context) {
 		return
 	}
 
-	passkeySession, err := h.passkeys.ConsumeSession(c.Request.Context(), sessionID, passkeyLoginCeremony)
-	if err != nil {
+	// ログイン開始時のセッションを使って、認証器からのログイン応答を検証する。
+	storedAccount, err := h.passkeys.FinishLogin(c.Request.Context(), sessionID, c.Request)
+	if errors.Is(err, usecase.ErrPasskeySessionInvalid) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid passkey session"})
 		return
 	}
-
-	validatedUser, validatedCredential, err := h.passkey.FinishLogin(func(rawID []byte, userHandle []byte) (webauthn.User, error) {
-		return h.passkeys.FindWebAuthnUserByHandle(c.Request.Context(), userHandle)
-	}, passkeySession.Session, c.Request)
-	if err != nil {
-		log.Printf("failed to verify passkey login: %v", err)
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "failed to verify passkey login"})
-		return
-	}
-
-	storedAccount, ok := validatedUser.(domain.Account)
-	if !ok {
+	if errors.Is(err, usecase.ErrInvalidPasskeyUser) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to load passkey account"})
 		return
 	}
-
-	if err := h.passkeys.UpdateCredential(c.Request.Context(), storedAccount.ID, validatedCredential); err != nil {
+	if errors.Is(err, usecase.ErrPasskeyUpdateCredentialFailed) {
 		log.Printf("failed to update passkey credential: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update passkey credential"})
+		return
+	}
+	if err != nil {
+		log.Printf("failed to verify passkey login: %v", err)
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "failed to verify passkey login"})
 		return
 	}
 

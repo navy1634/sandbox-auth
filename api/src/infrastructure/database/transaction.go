@@ -16,6 +16,7 @@ type requestTransaction struct {
 }
 
 func ClientFromContext(ctx context.Context, fallback *ent.Client) (*ent.Client, error) {
+	// リクエスト内で初めて DB を使うタイミングまでトランザクションの開始を遅らせる。
 	transaction, ok := ctx.Value(transactionClientKey{}).(*requestTransaction)
 	if !ok {
 		return fallback, nil
@@ -46,6 +47,7 @@ func (t *requestTransaction) Rollback() error {
 
 func TransactionMiddleware(client *ent.Client) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		// ハンドラが正常終了したリクエストだけコミットし、失敗時はロールバックする。
 		transaction := &requestTransaction{root: client}
 		committed := false
 		defer func() {
@@ -68,7 +70,7 @@ func TransactionMiddleware(client *ent.Client) gin.HandlerFunc {
 		}
 
 		if err := transaction.Commit(); err != nil {
-			c.Error(err)
+			_ = c.Error(err)
 			return
 		}
 		committed = true

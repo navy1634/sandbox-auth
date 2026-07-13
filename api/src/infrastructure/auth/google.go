@@ -21,6 +21,7 @@ type GoogleProvider struct {
 }
 
 func NewGoogleProvider(clientID string, clientSecret string, redirectURL string) *GoogleProvider {
+	// Google OAuth で ID 情報を取得するため、openid、email、profile を要求する。
 	return &GoogleProvider{
 		clientID: clientID,
 		oauth: &oauth2.Config{
@@ -38,6 +39,7 @@ func (s *GoogleProvider) AuthCodeURL(state string) string {
 }
 
 func (s *GoogleProvider) ExchangeAndValidate(ctx context.Context, code string) (domain.ProviderIdentity, error) {
+	// 認可コードをトークンに交換し、ID トークンからアプリで使う ID 情報を取り出す。
 	token, err := s.oauth.Exchange(ctx, code)
 	if err != nil {
 		return domain.ProviderIdentity{}, err
@@ -52,6 +54,7 @@ func (s *GoogleProvider) ExchangeAndValidate(ctx context.Context, code string) (
 }
 
 func validateGoogleIDToken(ctx context.Context, rawIDToken string, clientID string) (domain.ProviderIdentity, error) {
+	// Google が発行した ID トークンか検証し、メール確認済みのユーザーだけ許可する。
 	payload, err := idtoken.Validate(ctx, rawIDToken, clientID)
 	if err != nil {
 		return domain.ProviderIdentity{}, err
