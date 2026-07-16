@@ -18,7 +18,7 @@ export default function RegisterPage() {
       .then((response) => response.json())
       .then((data: MeResponse) => {
         if (!data.authenticated) {
-          window.location.replace("/login");
+          setStatus("unauthenticated");
           return;
         }
         if (!data.needsRegistration) {
@@ -97,7 +97,25 @@ export default function RegisterPage() {
     return (
       <div className={styles.page}>
         <section className={styles.panel}>
-          <h1 className={styles.title}>ログインへ移動しています</h1>
+          <div>
+            <p className={styles.label}>Registration</p>
+            <h1 className={styles.title}>登録</h1>
+            <p className={styles.description}>
+              Google アカウントでログインして、プロフィール登録を開始します。
+            </p>
+          </div>
+
+          <div className={styles.actions}>
+            <button
+              className={styles.primaryButton}
+              type="button"
+              onClick={() => {
+                window.location.href = `${apiBaseURL}/auth/google/login`;
+              }}
+            >
+              Google で登録を始める
+            </button>
+          </div>
         </section>
       </div>
     );

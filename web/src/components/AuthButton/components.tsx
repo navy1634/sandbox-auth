@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 
+const apiBaseURL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
+
 export type AuthButtonViewProps = {
   userName?: string | null;
   userEmail?: string | null;
@@ -41,9 +43,6 @@ type MeResponse = {
   };
 };
 
-const apiBaseURL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
-
 function AuthButtonContent() {
   const [me, setMe] = useState<MeResponse>({ authenticated: false });
 
@@ -61,11 +60,21 @@ function AuthButtonContent() {
       onLogin={() => {
         window.location.href = `${apiBaseURL}/auth/google/login`;
       }}
-      onLogout={() => {
-        fetch(`${apiBaseURL}/auth/logout`, {
-          method: "POST",
-          credentials: "include",
-        }).then(() => window.location.reload());
+      onLogout={async () => {
+        try {
+          const response = await fetch(`${apiBaseURL}/auth/logout`, {
+            method: "POST",
+            credentials: "include",
+          });
+
+          if (!response.ok) {
+            throw new Error("failed to logout");
+          }
+
+          window.location.reload();
+        } catch (error) {
+          console.error(error);
+        }
       }}
     />
   );

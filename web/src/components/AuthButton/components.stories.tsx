@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { AuthButtonView } from "./AuthButton";
+import { AuthButtonView } from "./components";
 
 const meta = {
   component: AuthButtonView,

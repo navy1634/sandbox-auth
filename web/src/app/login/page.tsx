@@ -16,8 +16,15 @@ export default function LoginPage() {
     fetch(`${apiBaseURL}/me`, { credentials: "include" })
       .then((response) => response.json())
       .then((data: MeResponse) => {
+        if (data.authenticated) {
+          window.location.replace(
+            data.needsRegistration ? "/register" : "/mypage",
+          );
+          return;
+        }
+
         setMe(data);
-        setStatus(data.authenticated ? "authenticated" : "unauthenticated");
+        setStatus("unauthenticated");
       })
       .catch(() => {
         setMe({ authenticated: false });
@@ -62,6 +69,27 @@ export default function LoginPage() {
     } catch {
       setStatus(me.authenticated ? "authenticated" : "unauthenticated");
       setMessage("パスキーでログインできませんでした。");
+    }
+  };
+
+  const handleLogout = async () => {
+    setMessage("");
+
+    try {
+      const response = await fetch(`${apiBaseURL}/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error("failed to logout");
+      }
+
+      window.location.reload();
+    } catch {
+      setMessage(
+        "ログアウトできませんでした。API サーバーの起動状態を確認してください。",
+      );
     }
   };
 
@@ -135,12 +163,7 @@ export default function LoginPage() {
           <button
             className={styles.secondaryButton}
             type="button"
-            onClick={() => {
-              fetch(`${apiBaseURL}/auth/logout`, {
-                method: "POST",
-                credentials: "include",
-              }).then(() => window.location.reload());
-            }}
+            onClick={handleLogout}
           >
             ログアウト
           </button>

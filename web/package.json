@@ -10,6 +10,7 @@
     "lint:js": "oxlint --fix .",
     "lint:css": "stylelint \"**/*.css\" --fix",
     "format": "oxfmt --write .",
+    "typecheck": "tsc --noEmit --skipLibCheck false",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },

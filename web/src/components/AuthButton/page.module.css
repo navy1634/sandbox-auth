@@ -1,0 +1,32 @@
+.headerShell {
+  background: #fff;
+  color: #111827;
+}
+
+.header {
+  width: min(100%, 1120px);
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 109px;
+  min-height: 53px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 28px;
+  line-height: 1;
+}
+
+.logo a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 53px;
+}
