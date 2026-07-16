@@ -1,0 +1,18 @@
+{
+  "priority": 10,
+  "request": {
+    "method": "POST",
+    "url": "/passkeys/register/verify"
+  },
+  "response": {
+    "status": 400,
+    "headers": {
+      "Access-Control-Allow-Origin": "http://localhost:3000",
+      "Access-Control-Allow-Credentials": "true",
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "error": "passkey session is missing"
+    }
+  }
+}

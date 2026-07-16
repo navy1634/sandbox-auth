@@ -1,0 +1,50 @@
+{
+  "priority": 1,
+  "request": {
+    "method": "POST",
+    "url": "/passkeys/register/options",
+    "cookies": {
+      "app_session": {
+        "matches": ".*"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Access-Control-Allow-Origin": "http://localhost:3000",
+      "Access-Control-Allow-Credentials": "true",
+      "Content-Type": "application/json",
+      "Set-Cookie": "passkey_session=wiremock-passkey-registration; Path=/; Max-Age=300; HttpOnly; SameSite=Lax"
+    },
+    "jsonBody": {
+      "rp": {
+        "name": "sandbox_nextjs",
+        "id": "localhost"
+      },
+      "user": {
+        "id": "d2lyZW1vY2stdXNlcg",
+        "name": "wiremock@example.com",
+        "displayName": "WireMock User"
+      },
+      "challenge": "d2lyZW1vY2stcmVnaXN0ZXItY2hhbGxlbmdl",
+      "pubKeyCredParams": [
+        {
+          "type": "public-key",
+          "alg": -7
+        },
+        {
+          "type": "public-key",
+          "alg": -257
+        }
+      ],
+      "timeout": 300000,
+      "attestation": "none",
+      "authenticatorSelection": {
+        "residentKey": "preferred",
+        "userVerification": "preferred"
+      },
+      "excludeCredentials": []
+    }
+  }
+}

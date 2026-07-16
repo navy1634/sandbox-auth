@@ -1,0 +1,15 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/auth/google/login"
+  },
+  "response": {
+    "status": 302,
+    "headers": {
+      "Access-Control-Allow-Origin": "http://localhost:3000",
+      "Access-Control-Allow-Credentials": "true",
+      "Location": "http://localhost:3000/mypage",
+      "Set-Cookie": "app_session=wiremock-session; Path=/; Max-Age=86400; HttpOnly; SameSite=Lax"
+    }
+  }
+}

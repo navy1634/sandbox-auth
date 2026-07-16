@@ -17,6 +17,25 @@ docker compose up --build
 
 フロントエンドは `http://localhost:3000`、バックエンドは `http://localhost:8080` で起動します。
 
+## API なしで WireMock を使う
+
+API サーバーを用意せず、フロントエンドの接続先を WireMock に向ける場合は次のように起動します。
+
+```txt
+SANDBOX_API_URL=http://localhost:8081 docker compose --profile mock up --build web wiremock
+```
+
+WireMock は `http://localhost:8081` で起動します。スタブは `wiremock/mappings` に置いています。
+
+現在のスタブは、フロントエンドが使う次のエンドポイントを返します。
+
+- `GET /me` は、`app_session` Cookie があればログイン済み、なければ未ログインとして返します。
+- `GET /auth/google/login` は、モック用の `app_session` Cookie を発行してマイページへリダイレクトします。
+- `POST /auth/logout` は、`app_session` Cookie を削除します。
+- `POST /account/profile` は、ログイン済みならプロフィール更新済みのレスポンスを返します。
+- `POST /passkeys/login/options` と `POST /passkeys/register/options` は、ブラウザ API に渡す公開鍵オプションを返します。
+- `POST /passkeys/login/verify` と `POST /passkeys/register/verify` は、検証成功のレスポンスを返します。
+
 ## リモートから使う
 
 リモート端末のブラウザから使う場合は、sandbox を動かすマシンの IP アドレスまたは DNS 名を指定して起動します。

@@ -1,0 +1,22 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/passkeys/login/options"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Access-Control-Allow-Origin": "http://localhost:3000",
+      "Access-Control-Allow-Credentials": "true",
+      "Content-Type": "application/json",
+      "Set-Cookie": "passkey_session=wiremock-passkey-login; Path=/; Max-Age=300; HttpOnly; SameSite=Lax"
+    },
+    "jsonBody": {
+      "challenge": "d2lyZW1vY2stbG9naW4tY2hhbGxlbmdl",
+      "timeout": 300000,
+      "rpId": "localhost",
+      "allowCredentials": [],
+      "userVerification": "preferred"
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "priority": 1,
+  "request": {
+    "method": "POST",
+    "url": "/passkeys/login/verify",
+    "cookies": {
+      "passkey_session": {
+        "matches": ".*"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Access-Control-Allow-Origin": "http://localhost:3000",
+      "Access-Control-Allow-Credentials": "true",
+      "Content-Type": "application/json",
+      "Set-Cookie": "app_session=wiremock-session; Path=/; Max-Age=86400; HttpOnly; SameSite=Lax"
+    },
+    "jsonBody": {
+      "authenticated": true,
+      "needsRegistration": false,
+      "account": {
+        "id": 1,
+        "identity": {
+          "provider": "google",
+          "providerAccountId": "wiremock-google-account",
+          "email": "wiremock@example.com",
+          "emailVerified": true,
+          "name": "WireMock User",
+          "picture": "https://placehold.co/112x112/png"
+        },
+        "displayName": "WireMock User",
+        "bio": "WireMock から返しているプロフィールです。",
+        "createdAt": "2026-07-16T00:00:00Z",
+        "updatedAt": "2026-07-16T00:00:00Z",
+        "registeredAt": "2026-07-16T00:00:00Z"
+      },
+      "user": {
+        "accountId": 1,
+        "email": "wiremock@example.com",
+        "name": "WireMock User",
+        "picture": "https://placehold.co/112x112/png",
+        "provider": "google",
+        "providerAccountId": "wiremock-google-account"
+      }
+    }
+  }
+}

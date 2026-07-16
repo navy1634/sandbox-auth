@@ -1,0 +1,27 @@
+{
+  "priority": 1,
+  "request": {
+    "method": "POST",
+    "url": "/passkeys/register/verify",
+    "cookies": {
+      "app_session": {
+        "matches": ".*"
+      },
+      "passkey_session": {
+        "matches": ".*"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Access-Control-Allow-Origin": "http://localhost:3000",
+      "Access-Control-Allow-Credentials": "true",
+      "Content-Type": "application/json",
+      "Set-Cookie": "passkey_session=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax"
+    },
+    "jsonBody": {
+      "ok": true
+    }
+  }
+}
