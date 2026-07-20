@@ -6,7 +6,7 @@
   "automerge": false,
   "automergeType": "pr",
   "ignoreTests": false,
-  "baseBranches": [
+  "baseBranchPatterns": [
     "main"
   ],
   "reviewers": [
