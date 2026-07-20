@@ -39,7 +39,7 @@ services:
     volumes:
       - ./wiremock:/home/wiremock
     ports:
-      - 8081:8080
+      - 8080:8080
     command: ["--global-response-templating", "--verbose"]
 
   db:

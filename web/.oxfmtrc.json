@@ -11,5 +11,10 @@
   "arrowParens": "always",
   "bracketSameLine": false,
   "bracketSpacing": true,
-  "ignorePatterns": ["node_modules", ".next", "dist", "build"]
+  "ignorePatterns": [
+    "node_modules",
+    ".next",
+    "dist",
+    "build"
+  ]
 }
