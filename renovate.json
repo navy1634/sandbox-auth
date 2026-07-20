@@ -4,6 +4,8 @@
     "config:recommended"
   ],
   "automerge": false,
+  "automergeType": "pr",
+  "ignoreTests": false,
   "baseBranches": [
     "main"
   ],

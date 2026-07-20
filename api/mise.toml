@@ -26,6 +26,9 @@ run = "go tool goose -dir ./migrations postgres \"$DATABASE_URL\" down"
 [tasks.format]
 run = "go fmt ./..."
 
+[tasks."format:check"]
+run = "test -z \"$(gofmt -l .)\""
+
 [tasks.lint]
 run = "golangci-lint run ./..."
 

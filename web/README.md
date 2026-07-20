@@ -4,12 +4,12 @@ Next.js の認証フロントエンドです。Google OAuth ログイン、プ�
 
 ## 主な画面
 
-| パス | 内容 |
-| ---- | ---- |
-| `/` | トップページです。 |
-| `/login` | Google OAuth とパスキーでログインできます。 |
+| パス        | 内容                                                      |
+| ----------- | --------------------------------------------------------- |
+| `/`         | トップページです。                                        |
+| `/login`    | Google OAuth とパスキーでログインできます。               |
 | `/register` | Google ログイン後にプロフィールとパスキーを登録できます。 |
-| `/mypage` | リポジトリ単独で認証後の戻り先を確認できます。 |
+| `/mypage`   | リポジトリ単独で認証後の戻り先を確認できます。            |
 
 ## バックエンド連携
 
@@ -33,15 +33,15 @@ pnpm dev
 
 ## コマンド
 
-| コマンド | 内容 |
-| -------- | ---- |
-| `pnpm dev` | Next.js を開発起動します。 |
-| `pnpm build` | Next.js をビルドします。 |
-| `pnpm start` | ビルド済みの Next.js を起動します。 |
-| `pnpm lint` | JavaScript と CSS の lint を実行します。 |
-| `pnpm lint:js` | oxlint を実行します。 |
-| `pnpm lint:css` | stylelint を実行します。 |
-| `pnpm format` | oxfmt で整形します。 |
-| `pnpm typecheck` | TypeScript の型チェックを実行します。 |
-| `pnpm storybook` | Storybook を起動します。 |
-| `pnpm build-storybook` | Storybook をビルドします。 |
+| コマンド               | 内容                                     |
+| ---------------------- | ---------------------------------------- |
+| `pnpm dev`             | Next.js を開発起動します。               |
+| `pnpm build`           | Next.js をビルドします。                 |
+| `pnpm start`           | ビルド済みの Next.js を起動します。      |
+| `pnpm lint`            | JavaScript と CSS の lint を実行します。 |
+| `pnpm lint:js`         | oxlint を実行します。                    |
+| `pnpm lint:css`        | stylelint を実行します。                 |
+| `pnpm format`          | oxfmt で整形します。                     |
+| `pnpm typecheck`       | TypeScript の型チェックを実行します。    |
+| `pnpm storybook`       | Storybook を起動します。                 |
+| `pnpm build-storybook` | Storybook をビルドします。               |

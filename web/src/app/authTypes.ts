@@ -31,7 +31,8 @@ export type MeResponse = {
 export const apiBaseURL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
 
-const configuredDefaultRedirectURL = process.env.NEXT_PUBLIC_DEFAULT_REDIRECT_URL;
+const configuredDefaultRedirectURL =
+  process.env.NEXT_PUBLIC_DEFAULT_REDIRECT_URL;
 
 export function defaultRedirectURL(): string {
   if (configuredDefaultRedirectURL) {

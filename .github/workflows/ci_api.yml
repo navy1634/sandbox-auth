@@ -1,0 +1,53 @@
+name: CI for Backend
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+      - develop
+    paths:
+      - "api/**"
+      - ".github/workflows/ci_api.yml"
+      - "!api/README.md"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: api CI
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: api/
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up mise
+        uses: jdx/mise-action@dad1bfd3df957f44999b559dd69dc1671cb4e9ea # v4.2.1
+        with:
+          working_directory: api
+          cache: true
+          install: true
+
+      - name: Install dependencies
+        run: mise run install
+
+      - name: Run lint check
+        run: mise run lint
+
+      - name: Run format check
+        run: mise run format:check
+
+      - name: Run tests
+        run: mise run test
+
+      - name: Run build check
+        run: mise run build

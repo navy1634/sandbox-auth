@@ -9,8 +9,10 @@
     "lint": "pnpm lint:js && pnpm lint:css",
     "lint:js": "oxlint --fix .",
     "lint:css": "stylelint \"**/*.css\" --fix",
+    "lint:check": "oxlint . && stylelint \"**/*.css\"",
     "format": "oxfmt --write .",
-    "typecheck": "tsc --noEmit --skipLibCheck false",
+    "format:check": "oxfmt --check src",
+    "typecheck": "tsc --noEmit",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
