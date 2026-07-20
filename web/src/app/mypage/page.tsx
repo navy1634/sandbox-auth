@@ -9,7 +9,8 @@ export default function MyPage() {
           <p className={styles.label}>Redirect Complete</p>
           <h1>認証が完了しました</h1>
           <p>
-            このページは、SSO 認証サービス単独で戻り先の動作を確認するためのデフォルト画面です。
+            このページは、SSO
+            認証サービス単独で戻り先の動作を確認するためのデフォルト画面です。
           </p>
         </div>
         <div className={styles.ctas}>
