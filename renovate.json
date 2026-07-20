@@ -1,0 +1,105 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "automerge": false,
+  "baseBranches": [
+    "main"
+  ],
+  "reviewers": [
+    "navy1634"
+  ],
+  "timezone": "Asia/Tokyo",
+  "minimumReleaseAge": "3 days",
+  "schedule": [
+    "before 5am on tuesday"
+  ],
+  "labels": [
+    "renovate"
+  ],
+  "docker-compose": {
+    "enabled": true
+  },
+  "dockerfile": {
+    "enabled": true
+  },
+  "enabledManagers": [
+    "custom.regex",
+    "docker-compose",
+    "dockerfile",
+    "gomod",
+    "mise",
+    "npm"
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/(^|/)Dockerfile(\\.dev)?$/"
+      ],
+      "matchStrings": [
+        "corepack prepare (?<depName>pnpm)@(?<currentValue>[^\\s]+) --activate"
+      ],
+      "datasourceTemplate": "npm"
+    }
+  ],
+  "packageRules": [
+    {
+      "matchManagers": [
+        "docker-compose",
+        "dockerfile"
+      ],
+      "groupName": "container images"
+    },
+    {
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "matchPackageNames": [
+        "pnpm"
+      ],
+      "groupName": "pnpm in Dockerfiles"
+    },
+    {
+      "matchManagers": [
+        "gomod"
+      ],
+      "groupName": "go dependencies"
+    },
+    {
+      "matchManagers": [
+        "npm"
+      ],
+      "matchFileNames": [
+        "web/package.json"
+      ],
+      "groupName": "web dependencies"
+    },
+    {
+      "matchManagers": [
+        "mise"
+      ],
+      "groupName": "tool versions"
+    },
+    {
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "automerge": true
+    },
+    {
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "dependencyDashboardApproval": true
+    }
+  ],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": [
+      "before 5am on tuesday"
+    ]
+  }
+}

@@ -1,5 +1,6 @@
 [tools]
-node = "latest"
+node = "26.5.0"
+pnpm = "11.15.1"
 
 [env]
 _.file = { path = ".env.local", redact = true }

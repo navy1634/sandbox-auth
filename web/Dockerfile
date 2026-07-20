@@ -1,7 +1,7 @@
-FROM node:24-alpine AS base
+FROM node:26-alpine AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable && corepack prepare pnpm@11.9.0 --activate
+RUN corepack enable && corepack prepare pnpm@11.15.1 --activate
 
 # Dependencies
 FROM base AS deps
