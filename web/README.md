@@ -1,6 +1,6 @@
 # web
 
-Next.js のフロントエンドです。Google OAuth ログイン、プロフィール登録、パスキー登録、パスキーログインの画面を提供します。
+Next.js の認証フロントエンドです。Google OAuth ログイン、プロフィール登録、パスキー登録、パスキーログインの画面を提供し、認証完了後は別リポジトリの本体アプリへ戻します。
 
 ## 主な画面
 
@@ -9,17 +9,18 @@ Next.js のフロントエンドです。Google OAuth ログイン、プロフ�
 | `/` | トップページです。 |
 | `/login` | Google OAuth とパスキーでログインできます。 |
 | `/register` | Google ログイン後にプロフィールとパスキーを登録できます。 |
-| `/mypage` | ログイン中のユーザー情報、プロフィール更新、パスキー登録を確認できます。 |
+| `/mypage` | リポジトリ単独で認証後の戻り先を確認できます。 |
 
 ## バックエンド連携
 
-API の接続先は `NEXT_PUBLIC_API_BASE_URL` で指定します。
+API の接続先は `NEXT_PUBLIC_API_BASE_URL`、認証完了後のデフォルト戻り先は `NEXT_PUBLIC_DEFAULT_REDIRECT_URL` で指定します。未指定の場合は、同じオリジンの `/mypage` を使います。
 
 ```txt
 NEXT_PUBLIC_API_BASE_URL=http://localhost:8080
+NEXT_PUBLIC_DEFAULT_REDIRECT_URL=http://localhost:3000/mypage
 ```
 
-Docker Compose で起動する場合は、ルートディレクトリの `SANDBOX_API_URL` が `NEXT_PUBLIC_API_BASE_URL` に渡されます。
+Docker Compose で起動する場合は、ルートディレクトリの `SANDBOX_API_URL` が `NEXT_PUBLIC_API_BASE_URL` に、`SANDBOX_DEFAULT_REDIRECT_URL` が `NEXT_PUBLIC_DEFAULT_REDIRECT_URL` に渡されます。
 
 ## ローカル起動
 

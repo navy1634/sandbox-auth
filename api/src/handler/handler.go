@@ -12,6 +12,7 @@ import (
 const (
 	sessionCookieName        = "app_session"
 	stateCookieName          = "oauth_state"
+	redirectCookieName       = "auth_redirect"
 	passkeySessionCookieName = "passkey_session"
 )
 

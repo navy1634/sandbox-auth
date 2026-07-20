@@ -13,7 +13,6 @@ export const Default: Story = {
       { href: "/", label: "ホーム" },
       { href: "/login", label: "ログイン" },
       { href: "/register", label: "登録" },
-      { href: "/mypage", label: "マイページ" },
     ],
   },
 };
@@ -24,7 +23,6 @@ export const ManyItems: Story = {
       { href: "/", label: "ホーム" },
       { href: "/login", label: "ログイン" },
       { href: "/register", label: "登録" },
-      { href: "/mypage", label: "マイページ" },
       { href: "#settings", label: "設定" },
       { href: "#help", label: "ヘルプ" },
     ],

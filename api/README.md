@@ -8,6 +8,13 @@ Gin で動く認証 API サーバーです。Google OAuth の callback、アプ�
 
 `AUTH_SECRET` は Cookie セッションの署名に使うため、32 バイト以上の推測されにくい文字列にしてください。
 
+認証完了後のデフォルト戻り先は `DEFAULT_REDIRECT_URL` で指定します。未指定の場合は、認証 web 内の `http://localhost:3000/mypage` を使います。別リポジトリの本体アプリへ戻す場合は、`ALLOWED_REDIRECT_URLS` に許可する URL をカンマ区切りで指定してください。`redirect_to` には、この許可リストに含まれる任意の戻り先を指定できます。
+
+```txt
+DEFAULT_REDIRECT_URL=http://localhost:3000/mypage
+ALLOWED_REDIRECT_URLS=http://localhost:3000/mypage,http://localhost:3001,https://app.example.com
+```
+
 Google OAuth を使う場合は、Google Cloud Console の OAuth callback URL に次の URL を登録してください。
 
 ```txt
@@ -43,12 +50,12 @@ mise run migrate:down
 | `GET` | `/me` | ログイン中のユーザー情報を返します。 |
 | `POST` | `/account/profile` | プロフィールを更新します。 |
 | `POST` | `/auth/logout` | セッション Cookie を削除します。 |
-| `GET` | `/auth/:provider/login` | OAuth ログインを開始します。 |
+| `GET` | `/auth/:provider/login` | OAuth ログインを開始します。`redirect_to` で認証後の戻り先を指定できます。 |
 | `GET` | `/auth/:provider/callback` | OAuth callback を処理します。 |
 | `POST` | `/passkeys/register/options` | パスキー登録用の公開鍵オプションを返します。 |
 | `POST` | `/passkeys/register/verify` | パスキー登録結果を検証します。 |
-| `POST` | `/passkeys/login/options` | パスキーログイン用の公開鍵オプションを返します。 |
-| `POST` | `/passkeys/login/verify` | パスキーログイン結果を検証します。 |
+| `POST` | `/passkeys/login/options` | パスキーログイン用の公開鍵オプションを返します。`redirect_to` で認証後の戻り先を指定できます。 |
+| `POST` | `/passkeys/login/verify` | パスキーログイン結果を検証し、`redirectTo` を返します。 |
 
 ## コマンド
 

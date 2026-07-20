@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "GET",
-    "url": "/auth/google/login"
+    "urlPath": "/auth/google/login"
   },
   "response": {
     "status": 302,

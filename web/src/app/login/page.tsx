@@ -4,21 +4,34 @@ import { startAuthentication } from "@simplewebauthn/browser";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { apiBaseURL, webAuthnOptions, type MeResponse } from "../authTypes";
+import {
+  apiBaseURL,
+  authRedirectTo,
+  defaultRedirectURL,
+  oauthLoginURL,
+  registrationURL,
+  webAuthnOptions,
+  type MeResponse,
+} from "../authTypes";
 import styles from "./page.module.css";
 
 export default function LoginPage() {
   const [me, setMe] = useState<MeResponse>({ authenticated: false });
   const [status, setStatus] = useState("loading");
   const [message, setMessage] = useState("");
+  const redirectTo = authRedirectTo();
 
   useEffect(() => {
-    fetch(`${apiBaseURL}/me`, { credentials: "include" })
+    fetch(`${apiBaseURL}/me?redirect_to=${encodeURIComponent(redirectTo)}`, {
+      credentials: "include",
+    })
       .then((response) => response.json())
       .then((data: MeResponse) => {
         if (data.authenticated) {
           window.location.replace(
-            data.needsRegistration ? "/register" : "/mypage",
+            data.needsRegistration
+              ? registrationURL(redirectTo)
+              : data.redirectTo || defaultRedirectURL(),
           );
           return;
         }
@@ -30,7 +43,7 @@ export default function LoginPage() {
         setMe({ authenticated: false });
         setStatus("error");
       });
-  }, []);
+  }, [redirectTo]);
 
   const user = me.user;
 
@@ -40,7 +53,7 @@ export default function LoginPage() {
 
     try {
       const optionsResponse = await fetch(
-        `${apiBaseURL}/passkeys/login/options`,
+        `${apiBaseURL}/passkeys/login/options?redirect_to=${encodeURIComponent(redirectTo)}`,
         {
           method: "POST",
           credentials: "include",
@@ -65,7 +78,7 @@ export default function LoginPage() {
       const data = (await verifyResponse.json()) as MeResponse;
       setMe(data);
       setStatus("authenticated");
-      window.location.href = data.needsRegistration ? "/register" : "/mypage";
+      window.location.href = data.redirectTo || defaultRedirectURL();
     } catch {
       setStatus(me.authenticated ? "authenticated" : "unauthenticated");
       setMessage("パスキーでログインできませんでした。");
@@ -140,7 +153,7 @@ export default function LoginPage() {
             className={styles.primaryButton}
             type="button"
             onClick={() => {
-              window.location.href = `${apiBaseURL}/auth/google/login`;
+              window.location.href = oauthLoginURL(redirectTo);
             }}
           >
             Google でログイン
@@ -155,9 +168,13 @@ export default function LoginPage() {
           {me.authenticated ? (
             <Link
               className={styles.secondaryLink}
-              href={me.needsRegistration ? "/register" : "/mypage"}
+              href={
+                me.needsRegistration
+                  ? registrationURL(redirectTo)
+                  : me.redirectTo || defaultRedirectURL()
+              }
             >
-              {me.needsRegistration ? "初回登録へ" : "マイページへ"}
+              {me.needsRegistration ? "初回登録へ" : "アプリへ戻る"}
             </Link>
           ) : null}
           <button

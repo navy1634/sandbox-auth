@@ -113,6 +113,7 @@ func (h *PasskeyHandler) BeginLogin(c *gin.Context) {
 		return
 	}
 
+	h.base.storeAuthRedirect(c)
 	h.base.setCookie(c, passkeySessionCookieName, options.SessionID, 300, true)
 	c.JSON(http.StatusOK, options.Assertion)
 }
@@ -153,5 +154,5 @@ func (h *PasskeyHandler) FinishLogin(c *gin.Context) {
 
 	h.base.clearCookie(c, passkeySessionCookieName)
 	h.base.setCookie(c, sessionCookieName, sessionValue, 86400, true)
-	h.base.respondAuthenticated(c, storedAccount)
+	h.base.respondAuthenticatedWithRedirect(c, storedAccount)
 }

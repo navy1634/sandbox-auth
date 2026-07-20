@@ -1,6 +1,6 @@
 # sandbox_auth
 
-Next.js と Go Gin で作った認証サンプルです。Google OAuth でログインし、アプリ用の Cookie セッションを発行します。ログイン後はプロフィール登録、パスキー登録、パスキーによるログインを確認できます。
+Next.js と Go Gin で作った SSO 認証サービスです。Google OAuth でログインし、アプリ用の Cookie セッションを発行します。ログイン後は必要に応じてプロフィール登録とパスキー登録を済ませ、別リポジトリの本体アプリへ戻します。
 
 ## 構成
 
@@ -36,8 +36,9 @@ docker compose up --build
 
 | 用途 | URL |
 | ---- | --- |
-| フロントエンド | http://localhost:3000 |
-| API | http://localhost:8080 |
+| フロントエンド | <http://localhost:3000> |
+| API | <http://localhost:8080> |
+| 単独確認用の戻り先 | <http://localhost:3000/mypage> |
 
 ## API なしで確認する
 

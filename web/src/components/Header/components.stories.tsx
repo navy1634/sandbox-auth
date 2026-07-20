@@ -13,7 +13,6 @@ export const LoggedOut: Story = {
       { href: "/", label: "ホーム" },
       { href: "/login", label: "ログイン" },
       { href: "/register", label: "登録" },
-      { href: "/mypage", label: "マイページ" },
     ],
   },
 };
@@ -24,7 +23,6 @@ export const LoggedIn: Story = {
       { href: "/", label: "ホーム" },
       { href: "/login", label: "ログイン" },
       { href: "/register", label: "登録" },
-      { href: "/mypage", label: "マイページ" },
     ],
   },
 };

@@ -10,7 +10,7 @@
 docker compose --profile mock up --build web wiremock
 ```
 
-WireMock は `http://localhost:8080` で起動します。web のデフォルト接続先も `http://localhost:8080` なので、追加の環境変数は不要です。
+WireMock は `http://localhost:8080` で起動します。web のデフォルト接続先も `http://localhost:8080` なので、追加の環境変数は不要です。OAuth 完了後の戻り先は、単独確認用の `http://localhost:3000/mypage` です。
 
 ## スタブ
 

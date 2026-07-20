@@ -43,6 +43,29 @@ func (h *AuthHandler) clearCookie(c *gin.Context, name string) {
 	c.SetCookie(name, "", -1, "/", "", isHTTPS(h.cfg.FrontendURL), true)
 }
 
+func (h *AuthHandler) storeAuthRedirect(c *gin.Context) {
+	// 認証完了後に戻す本体アプリの URL を検証して Cookie に保持する。
+	h.setCookie(c, redirectCookieName, h.cfg.AuthRedirectURL(c.Query("redirect_to")), 1800, true)
+}
+
+func (h *AuthHandler) authRedirect(c *gin.Context) string {
+	value, err := c.Cookie(redirectCookieName)
+	if err != nil {
+		return h.cfg.DefaultRedirectURL
+	}
+	return h.cfg.AuthRedirectURL(value)
+}
+
+func (h *AuthHandler) consumeAuthRedirect(c *gin.Context) string {
+	redirectURL := h.authRedirect(c)
+	h.clearCookie(c, redirectCookieName)
+	return redirectURL
+}
+
+func (h *AuthHandler) registrationURL() string {
+	return h.cfg.FrontendURL + "/register"
+}
+
 func isHTTPS(rawURL string) bool {
 	return strings.HasPrefix(rawURL, "https://")
 }

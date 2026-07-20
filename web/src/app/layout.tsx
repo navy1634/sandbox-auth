@@ -24,7 +24,6 @@ const navItems: NavbarItem[] = [
   { href: "/", label: "ホーム" },
   { href: "/login", label: "ログイン" },
   { href: "/register", label: "登録" },
-  { href: "/mypage", label: "マイページ" },
 ];
 
 export default function RootLayout({

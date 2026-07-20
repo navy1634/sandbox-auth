@@ -3,7 +3,14 @@
 import { startRegistration } from "@simplewebauthn/browser";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { apiBaseURL, webAuthnOptions, type MeResponse } from "../authTypes";
+import {
+  apiBaseURL,
+  authRedirectTo,
+  defaultRedirectURL,
+  oauthLoginURL,
+  webAuthnOptions,
+  type MeResponse,
+} from "../authTypes";
 import styles from "./page.module.css";
 
 export default function RegisterPage() {
@@ -12,9 +19,12 @@ export default function RegisterPage() {
   const [bio, setBio] = useState("");
   const [status, setStatus] = useState("loading");
   const [message, setMessage] = useState("");
+  const redirectTo = authRedirectTo();
 
   useEffect(() => {
-    fetch(`${apiBaseURL}/me`, { credentials: "include" })
+    fetch(`${apiBaseURL}/me?redirect_to=${encodeURIComponent(redirectTo)}`, {
+      credentials: "include",
+    })
       .then((response) => response.json())
       .then((data: MeResponse) => {
         if (!data.authenticated) {
@@ -22,7 +32,7 @@ export default function RegisterPage() {
           return;
         }
         if (!data.needsRegistration) {
-          window.location.replace("/mypage");
+          window.location.replace(data.redirectTo || defaultRedirectURL());
           return;
         }
 
@@ -36,7 +46,7 @@ export default function RegisterPage() {
       .catch(() => {
         setStatus("error");
       });
-  }, []);
+  }, [redirectTo]);
 
   const saveProfile = async () => {
     setMessage("");
@@ -54,7 +64,8 @@ export default function RegisterPage() {
         return;
       }
 
-      window.location.href = "/mypage";
+      const data = (await response.json()) as MeResponse;
+      window.location.href = data.redirectTo || defaultRedirectURL();
     } catch {
       setMessage("プロフィールを保存できませんでした。");
     }
@@ -110,7 +121,7 @@ export default function RegisterPage() {
               className={styles.primaryButton}
               type="button"
               onClick={() => {
-                window.location.href = `${apiBaseURL}/auth/google/login`;
+                window.location.href = oauthLoginURL(redirectTo);
               }}
             >
               Google で登録を始める
@@ -177,7 +188,7 @@ export default function RegisterPage() {
             type="button"
             onClick={saveProfile}
           >
-            保存してマイページへ
+            保存してアプリへ戻る
           </button>
           <button
             className={styles.secondaryButton}

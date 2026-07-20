@@ -57,7 +57,7 @@ func (h *AuthHandler) UpdateProfile(c *gin.Context) {
 		return
 	}
 
-	h.respondAuthenticated(c, storedAccount)
+	h.respondAuthenticatedWithRedirect(c, storedAccount)
 }
 
 func (h *AuthHandler) respondAuthenticated(c *gin.Context, storedAccount domain.Account) {
@@ -65,6 +65,30 @@ func (h *AuthHandler) respondAuthenticated(c *gin.Context, storedAccount domain.
 		"account":           storedAccount,
 		"authenticated":     true,
 		"needsRegistration": storedAccount.RegisteredAt == nil,
+		"redirectTo":        h.cfg.AuthRedirectURL(c.Query("redirect_to")),
+		"user":              session.FromAccount(storedAccount),
+	})
+}
+
+func (h *AuthHandler) respondAuthenticatedWithRedirect(c *gin.Context, storedAccount domain.Account) {
+	redirectURL := h.registrationURL()
+	if storedAccount.RegisteredAt == nil {
+		c.JSON(http.StatusOK, gin.H{
+			"account":           storedAccount,
+			"authenticated":     true,
+			"needsRegistration": true,
+			"redirectTo":        redirectURL,
+			"user":              session.FromAccount(storedAccount),
+		})
+		return
+	}
+
+	redirectURL = h.consumeAuthRedirect(c)
+	c.JSON(http.StatusOK, gin.H{
+		"account":           storedAccount,
+		"authenticated":     true,
+		"needsRegistration": false,
+		"redirectTo":        redirectURL,
 		"user":              session.FromAccount(storedAccount),
 	})
 }

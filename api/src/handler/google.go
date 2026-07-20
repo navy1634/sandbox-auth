@@ -39,6 +39,7 @@ func (h *OAuthHandler) Login(c *gin.Context) {
 		return
 	}
 
+	h.base.storeAuthRedirect(c)
 	h.base.setCookie(c, stateCookieName, state, 300, true)
 	c.Redirect(http.StatusFound, authURL)
 }
@@ -88,9 +89,9 @@ func (h *OAuthHandler) Callback(c *gin.Context) {
 	h.base.clearCookie(c, stateCookieName)
 	h.base.setCookie(c, sessionCookieName, sessionValue, 86400, true)
 	if storedAccount.RegisteredAt == nil {
-		c.Redirect(http.StatusFound, h.base.cfg.FrontendURL+"/register")
+		c.Redirect(http.StatusFound, h.base.registrationURL())
 		return
 	}
 
-	c.Redirect(http.StatusFound, h.base.cfg.FrontendURL+"/mypage")
+	c.Redirect(http.StatusFound, h.base.consumeAuthRedirect(c))
 }

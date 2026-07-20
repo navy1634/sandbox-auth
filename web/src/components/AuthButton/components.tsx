@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { defaultRedirectURL, oauthLoginURL } from "@/app/authTypes";
 
 const apiBaseURL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
 
@@ -58,7 +59,7 @@ function AuthButtonContent() {
       userName={me.user?.name}
       userEmail={me.user?.email}
       onLogin={() => {
-        window.location.href = `${apiBaseURL}/auth/google/login`;
+        window.location.href = oauthLoginURL(defaultRedirectURL());
       }}
       onLogout={async () => {
         try {

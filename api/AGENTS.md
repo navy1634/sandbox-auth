@@ -31,8 +31,8 @@
 
 ## 認証とセッション
 
-- `GET /auth/:provider/login` は OAuth state を `oauth_state` Cookie に保存し、Google の認可 URL に redirect します。
-- `GET /auth/:provider/callback` は state、code、Google ID token を検証し、`app_session` Cookie を発行します。
+- `GET /auth/:provider/login` は OAuth state を `oauth_state` Cookie に保存し、検証済みの戻り先を `auth_redirect` Cookie に保存してから Google の認可 URL に redirect します。
+- `GET /auth/:provider/callback` は state、code、Google ID token を検証し、`app_session` Cookie を発行します。初回登録が必要なら認証 web の `/register`、登録済みなら検証済みの戻り先へ redirect します。
 - `GET /me` は `app_session` を検証し、アカウント情報を返します。
 - `POST /auth/logout` は `app_session` を削除します。
 - `POST /account/profile` はログイン済みユーザーのプロフィールを更新します。
@@ -44,7 +44,7 @@
 - `POST /passkeys/register/options` はログイン済みユーザー用の registration ceremony session を作ります。
 - `POST /passkeys/register/verify` は registration ceremony session を消費し、credential を保存します。
 - `POST /passkeys/login/options` は discoverable login の ceremony session を作ります。
-- `POST /passkeys/login/verify` は ceremony session を消費し、credential を検証して `app_session` を発行します。
+- `POST /passkeys/login/verify` は ceremony session を消費し、credential を検証して `app_session` を発行し、認証後の `redirectTo` を返します。
 - WebAuthn の RP ID と origin は `PASSKEY_RP_ID` と `PASSKEY_RP_ORIGIN` で決まります。
 - パスキーの ceremony session は `webauthn_sessions` に保存し、Cookie には session ID だけを入れます。
 
