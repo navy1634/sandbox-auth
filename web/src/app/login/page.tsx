@@ -1,7 +1,6 @@
 "use client";
 
 import { startAuthentication } from "@simplewebauthn/browser";
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
@@ -9,7 +8,6 @@ import {
   authRedirectTo,
   defaultRedirectURL,
   oauthLoginURL,
-  registrationURL,
   webAuthnOptions,
   type MeResponse,
 } from "../authTypes";
@@ -28,11 +26,7 @@ export default function LoginPage() {
       .then((response) => response.json())
       .then((data: MeResponse) => {
         if (data.authenticated) {
-          window.location.replace(
-            data.needsRegistration
-              ? registrationURL(redirectTo)
-              : data.redirectTo || defaultRedirectURL(),
-          );
+          window.location.replace(data.redirectTo || defaultRedirectURL());
           return;
         }
 
@@ -127,21 +121,9 @@ export default function LoginPage() {
 
         {user ? (
           <div className={styles.user}>
-            {user.picture ? (
-              <Image
-                className={styles.avatar}
-                src={user.picture}
-                alt=""
-                width={56}
-                height={56}
-              />
-            ) : null}
             <div>
-              <p className={styles.name}>{user.name ?? "No name"}</p>
+              <p className={styles.name}>Account ID: {user.accountId}</p>
               <p className={styles.email}>{user.email}</p>
-              {me.needsRegistration ? (
-                <p className={styles.email}>初回登録が必要です。</p>
-              ) : null}
             </div>
           </div>
         ) : (
@@ -168,13 +150,9 @@ export default function LoginPage() {
           {me.authenticated ? (
             <Link
               className={styles.secondaryLink}
-              href={
-                me.needsRegistration
-                  ? registrationURL(redirectTo)
-                  : me.redirectTo || defaultRedirectURL()
-              }
+              href={me.redirectTo || defaultRedirectURL()}
             >
-              {me.needsRegistration ? "初回登録へ" : "アプリへ戻る"}
+              アプリへ戻る
             </Link>
           ) : null}
           <button

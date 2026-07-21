@@ -62,10 +62,6 @@ func (h *AuthHandler) consumeAuthRedirect(c *gin.Context) string {
 	return redirectURL
 }
 
-func (h *AuthHandler) registrationURL() string {
-	return h.cfg.FrontendURL + "/register"
-}
-
 func isHTTPS(rawURL string) bool {
 	return strings.HasPrefix(rawURL, "https://")
 }

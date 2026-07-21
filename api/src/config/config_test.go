@@ -5,7 +5,7 @@ import "testing"
 func TestConfigAuthRedirectURL(t *testing.T) {
 	cfg := Config{
 		DefaultRedirectURL:  "http://localhost:3000/mypage",
-		AllowedRedirectURLs: []string{"http://localhost:3000/mypage", "http://localhost:3001", "https://app.example.com/dashboard"},
+		AllowedRedirectURLs: []string{"http://localhost:3000/mypage", "http://localhost:3100", "https://app.example.com/dashboard"},
 	}
 
 	tests := []struct {
@@ -30,8 +30,8 @@ func TestConfigAuthRedirectURL(t *testing.T) {
 		},
 		{
 			name: "allowed external application redirect is returned",
-			raw:  "http://localhost:3001/projects/1",
-			want: "http://localhost:3001/projects/1",
+			raw:  "http://localhost:3100/dashboard",
+			want: "http://localhost:3100/dashboard",
 		},
 		{
 			name: "allowed absolute redirect is returned",
@@ -64,11 +64,11 @@ func TestConfigCORSOrigins(t *testing.T) {
 	cfg := Config{
 		FrontendURL:         "http://localhost:3000",
 		DefaultRedirectURL:  "http://localhost:3000/mypage",
-		AllowedRedirectURLs: []string{"http://localhost:3000/mypage", "http://localhost:3001/projects", "https://app.example.com/dashboard"},
+		AllowedRedirectURLs: []string{"http://localhost:3000/mypage", "http://localhost:3100/dashboard", "https://app.example.com/dashboard"},
 	}
 
 	got := cfg.CORSOrigins()
-	want := []string{"http://localhost:3000", "http://localhost:3001", "https://app.example.com"}
+	want := []string{"http://localhost:3000", "http://localhost:3100", "https://app.example.com"}
 	if len(got) != len(want) {
 		t.Fatalf("CORSOrigins() = %v, want %v", got, want)
 	}

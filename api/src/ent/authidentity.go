@@ -31,11 +31,7 @@ type AuthIdentity struct {
 	Email string `json:"email,omitempty"`
 	// EmailVerified holds the value of the "email_verified" field.
 	EmailVerified bool `json:"email_verified,omitempty"`
-	// Name holds the value of the "name" field.
-	Name string `json:"name,omitempty"`
-	// Picture holds the value of the "picture" field.
-	Picture      string `json:"picture,omitempty"`
-	selectValues sql.SelectValues
+	selectValues  sql.SelectValues
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -47,7 +43,7 @@ func (*AuthIdentity) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case authidentity.FieldID, authidentity.FieldAccountID:
 			values[i] = new(sql.NullInt64)
-		case authidentity.FieldProvider, authidentity.FieldProviderAccountID, authidentity.FieldEmail, authidentity.FieldName, authidentity.FieldPicture:
+		case authidentity.FieldProvider, authidentity.FieldProviderAccountID, authidentity.FieldEmail:
 			values[i] = new(sql.NullString)
 		case authidentity.FieldCreatedAt, authidentity.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -114,18 +110,6 @@ func (_m *AuthIdentity) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.EmailVerified = value.Bool
 			}
-		case authidentity.FieldName:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field name", values[i])
-			} else if value.Valid {
-				_m.Name = value.String
-			}
-		case authidentity.FieldPicture:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field picture", values[i])
-			} else if value.Valid {
-				_m.Picture = value.String
-			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
 		}
@@ -182,12 +166,6 @@ func (_m *AuthIdentity) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("email_verified=")
 	builder.WriteString(fmt.Sprintf("%v", _m.EmailVerified))
-	builder.WriteString(", ")
-	builder.WriteString("name=")
-	builder.WriteString(_m.Name)
-	builder.WriteString(", ")
-	builder.WriteString("picture=")
-	builder.WriteString(_m.Picture)
 	builder.WriteByte(')')
 	return builder.String()
 }

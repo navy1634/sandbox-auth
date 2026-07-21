@@ -16,7 +16,7 @@ export const LoggedOut: Story = {};
 
 export const LoggedIn: Story = {
   args: {
-    userName: "Test User",
+    accountId: 1,
     userEmail: "test@example.com",
   },
 };

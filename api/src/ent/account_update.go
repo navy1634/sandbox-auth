@@ -34,54 +34,6 @@ func (_u *AccountUpdate) SetUpdatedAt(v time.Time) *AccountUpdate {
 	return _u
 }
 
-// SetDisplayName sets the "display_name" field.
-func (_u *AccountUpdate) SetDisplayName(v string) *AccountUpdate {
-	_u.mutation.SetDisplayName(v)
-	return _u
-}
-
-// SetNillableDisplayName sets the "display_name" field if the given value is not nil.
-func (_u *AccountUpdate) SetNillableDisplayName(v *string) *AccountUpdate {
-	if v != nil {
-		_u.SetDisplayName(*v)
-	}
-	return _u
-}
-
-// SetBio sets the "bio" field.
-func (_u *AccountUpdate) SetBio(v string) *AccountUpdate {
-	_u.mutation.SetBio(v)
-	return _u
-}
-
-// SetNillableBio sets the "bio" field if the given value is not nil.
-func (_u *AccountUpdate) SetNillableBio(v *string) *AccountUpdate {
-	if v != nil {
-		_u.SetBio(*v)
-	}
-	return _u
-}
-
-// SetRegisteredAt sets the "registered_at" field.
-func (_u *AccountUpdate) SetRegisteredAt(v time.Time) *AccountUpdate {
-	_u.mutation.SetRegisteredAt(v)
-	return _u
-}
-
-// SetNillableRegisteredAt sets the "registered_at" field if the given value is not nil.
-func (_u *AccountUpdate) SetNillableRegisteredAt(v *time.Time) *AccountUpdate {
-	if v != nil {
-		_u.SetRegisteredAt(*v)
-	}
-	return _u
-}
-
-// ClearRegisteredAt clears the value of the "registered_at" field.
-func (_u *AccountUpdate) ClearRegisteredAt() *AccountUpdate {
-	_u.mutation.ClearRegisteredAt()
-	return _u
-}
-
 // SetWebauthnUserHandle sets the "webauthn_user_handle" field.
 func (_u *AccountUpdate) SetWebauthnUserHandle(v []byte) *AccountUpdate {
 	_u.mutation.SetWebauthnUserHandle(v)
@@ -141,18 +93,6 @@ func (_u *AccountUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(account.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := _u.mutation.DisplayName(); ok {
-		_spec.SetField(account.FieldDisplayName, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.Bio(); ok {
-		_spec.SetField(account.FieldBio, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.RegisteredAt(); ok {
-		_spec.SetField(account.FieldRegisteredAt, field.TypeTime, value)
-	}
-	if _u.mutation.RegisteredAtCleared() {
-		_spec.ClearField(account.FieldRegisteredAt, field.TypeTime)
-	}
 	if value, ok := _u.mutation.WebauthnUserHandle(); ok {
 		_spec.SetField(account.FieldWebauthnUserHandle, field.TypeBytes, value)
 	}
@@ -179,54 +119,6 @@ type AccountUpdateOne struct {
 // SetUpdatedAt sets the "updated_at" field.
 func (_u *AccountUpdateOne) SetUpdatedAt(v time.Time) *AccountUpdateOne {
 	_u.mutation.SetUpdatedAt(v)
-	return _u
-}
-
-// SetDisplayName sets the "display_name" field.
-func (_u *AccountUpdateOne) SetDisplayName(v string) *AccountUpdateOne {
-	_u.mutation.SetDisplayName(v)
-	return _u
-}
-
-// SetNillableDisplayName sets the "display_name" field if the given value is not nil.
-func (_u *AccountUpdateOne) SetNillableDisplayName(v *string) *AccountUpdateOne {
-	if v != nil {
-		_u.SetDisplayName(*v)
-	}
-	return _u
-}
-
-// SetBio sets the "bio" field.
-func (_u *AccountUpdateOne) SetBio(v string) *AccountUpdateOne {
-	_u.mutation.SetBio(v)
-	return _u
-}
-
-// SetNillableBio sets the "bio" field if the given value is not nil.
-func (_u *AccountUpdateOne) SetNillableBio(v *string) *AccountUpdateOne {
-	if v != nil {
-		_u.SetBio(*v)
-	}
-	return _u
-}
-
-// SetRegisteredAt sets the "registered_at" field.
-func (_u *AccountUpdateOne) SetRegisteredAt(v time.Time) *AccountUpdateOne {
-	_u.mutation.SetRegisteredAt(v)
-	return _u
-}
-
-// SetNillableRegisteredAt sets the "registered_at" field if the given value is not nil.
-func (_u *AccountUpdateOne) SetNillableRegisteredAt(v *time.Time) *AccountUpdateOne {
-	if v != nil {
-		_u.SetRegisteredAt(*v)
-	}
-	return _u
-}
-
-// ClearRegisteredAt clears the value of the "registered_at" field.
-func (_u *AccountUpdateOne) ClearRegisteredAt() *AccountUpdateOne {
-	_u.mutation.ClearRegisteredAt()
 	return _u
 }
 
@@ -318,18 +210,6 @@ func (_u *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err er
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(account.FieldUpdatedAt, field.TypeTime, value)
-	}
-	if value, ok := _u.mutation.DisplayName(); ok {
-		_spec.SetField(account.FieldDisplayName, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.Bio(); ok {
-		_spec.SetField(account.FieldBio, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.RegisteredAt(); ok {
-		_spec.SetField(account.FieldRegisteredAt, field.TypeTime, value)
-	}
-	if _u.mutation.RegisteredAtCleared() {
-		_spec.ClearField(account.FieldRegisteredAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.WebauthnUserHandle(); ok {
 		_spec.SetField(account.FieldWebauthnUserHandle, field.TypeBytes, value)

@@ -10,6 +10,8 @@
 ## プロジェクト概要
 
 - Next.js 16、React 19 の App Router 構成です。
+- 認証 web はローカルでは `http://localhost:3000` 固定で扱います。`pnpm dev` は 3000 番ポートを明示して起動します。
+- 3000 番ポートが使用中の場合は、別ポートで作業を続けず、先に 3000 番を使っているプロセスを止めてください。API の `FRONTEND_URL`、OAuth callback、`redirect_to` の確認がずれます。
 - アプリケーションコードは `src` 配下に集約されています。
 - TypeScript の import alias は `@/*` が `./src/*` を指します。
 - 静的アセットは Next.js の規約どおり、ルート直下の `public` に置きます。
@@ -35,6 +37,7 @@
 ## スクリプト
 
 - 開発サーバーは `pnpm dev` で起動します。
+- `pnpm dev` は `next dev --hostname 0.0.0.0 --port 3000` を実行します。
 - 本番ビルドは `pnpm build` で確認します。
 - lint は `pnpm lint` を使います。
 - JavaScript と TypeScript の lint は `pnpm lint:js` で実行します。

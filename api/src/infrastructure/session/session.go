@@ -17,8 +17,6 @@ type User struct {
 	Provider          string `json:"provider,omitempty"`
 	ProviderAccountID string `json:"providerAccountId,omitempty"`
 	Email             string `json:"email,omitempty"`
-	Name              string `json:"name,omitempty"`
-	Picture           string `json:"picture,omitempty"`
 }
 
 type Manager struct {
@@ -83,8 +81,6 @@ func FromAccount(account domain.Account) User {
 		user.Provider = account.Identity.Provider
 		user.ProviderAccountID = account.Identity.ProviderAccountID
 		user.Email = account.Identity.Email
-		user.Name = account.Identity.Name
-		user.Picture = account.Identity.Picture
 	}
 	return user
 }

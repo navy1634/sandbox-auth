@@ -1,6 +1,6 @@
 # sandbox_auth
 
-Next.js と Go Gin で作った SSO 認証サービスです。Google OAuth でログインし、アプリ用の Cookie セッションを発行します。ログイン後は必要に応じてプロフィール登録とパスキー登録を済ませ、別リポジトリの本体アプリへ戻します。
+Next.js と Go Gin で作った SSO 認証サービスです。Google OAuth とパスキーでログインし、共通アカウント ID を持つ Cookie セッションを発行します。ログイン後は別リポジトリの本体アプリへ戻します。
 
 ## 構成
 
@@ -40,9 +40,17 @@ docker compose up --build
 | API | <http://localhost:8080> |
 | 単独確認用の戻り先 | <http://localhost:3000/mypage> |
 
-## API なしで確認する
+認証 web は 3000 番ポート固定で扱います。3000 番が別プロセスで使われている場合は、Next.js を別ポートへ逃がさず、先にそのプロセスを止めてください。
 
-API サーバーを用意せずにフロントエンドを確認する場合は、WireMock を使います。起動方法とスタブの内容は `wiremock/README.md` を参照してください。
+## 本体アプリへ戻す
+
+別リポジトリの本体アプリから認証を開始する場合は、認証 web の `/login` に `redirect_to` を付けます。
+
+```txt
+http://localhost:3000/login?redirect_to=http%3A%2F%2Flocalhost%3A3100%2Fdashboard
+```
+
+API 側の `ALLOWED_REDIRECT_URLS` に戻り先の origin を含めてください。`mise run dev` で API を起動する場合は `api/.env.local`、Docker Compose で起動する場合は `SANDBOX_ALLOWED_REDIRECT_URLS` または `compose.yml` のデフォルト値が使われます。設定を変えた後は API の再起動が必要です。
 
 ## 詳細
 

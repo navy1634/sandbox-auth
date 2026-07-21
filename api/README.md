@@ -1,6 +1,6 @@
 # api
 
-Gin で動く認証 API サーバーです。Google OAuth の callback、アプリ用 Cookie セッションの発行、プロフィール更新、パスキー登録とパスキーログインを担当します。
+Gin で動く認証 API サーバーです。Google OAuth の callback、共通アカウント ID を持つ Cookie セッションの発行、パスキー登録とパスキーログインを担当します。
 
 ## 環境変数
 
@@ -12,8 +12,10 @@ Gin で動く認証 API サーバーです。Google OAuth の callback、アプ�
 
 ```txt
 DEFAULT_REDIRECT_URL=http://localhost:3000/mypage
-ALLOWED_REDIRECT_URLS=http://localhost:3000/mypage,http://localhost:3001,https://app.example.com
+ALLOWED_REDIRECT_URLS=http://localhost:3000/mypage,http://localhost:3100,https://app.example.com
 ```
+
+`mise run dev` で起動する場合は `api/.env.local` の値が使われます。`compose.yml` の `SANDBOX_ALLOWED_REDIRECT_URLS` は Docker Compose 起動時だけ有効です。
 
 Google OAuth を使う場合は、Google Cloud Console の OAuth callback URL に次の URL を登録してください。
 
@@ -26,6 +28,8 @@ http://localhost:8080/auth/google/callback
 ```txt
 mise run dev
 ```
+
+環境変数を変更した場合は、起動中の API を止めてから `mise run dev` を実行し直してください。
 
 通常の `go run` で起動する場合は、次のコマンドを使います。
 
@@ -40,7 +44,7 @@ mise run migrate:up
 mise run migrate:down
 ```
 
-`accounts` にアカウントとプロフィール、`auth_identities` に OAuth の認証情報、`webauthn_credentials` と `webauthn_sessions` にパスキーの credential と ceremony session を保存します。
+`accounts` に共通アカウント ID と WebAuthn user handle、`auth_identities` に OAuth の認証情報、`webauthn_credentials` と `webauthn_sessions` にパスキーの credential と ceremony session を保存します。
 
 ## エンドポイント
 
@@ -48,7 +52,6 @@ mise run migrate:down
 | -------- | ---- | ---- |
 | `GET` | `/health` | ヘルスチェックを返します。 |
 | `GET` | `/me` | ログイン中のユーザー情報を返します。 |
-| `POST` | `/account/profile` | プロフィールを更新します。 |
 | `POST` | `/auth/logout` | セッション Cookie を削除します。 |
 | `GET` | `/auth/:provider/login` | OAuth ログインを開始します。`redirect_to` で認証後の戻り先を指定できます。 |
 | `GET` | `/auth/:provider/callback` | OAuth callback を処理します。 |
@@ -86,3 +89,17 @@ mise run migrate:down
 ### パスキー登録やログインが失敗する
 
 `PASSKEY_RP_ID` と `PASSKEY_RP_ORIGIN` が、ブラウザでアクセスしているホストと合っているか確認してください。パスキーは HTTPS か `localhost` で使うことが前提です。
+
+### 認証後に `/mypage` へ戻ってしまう
+
+`redirect_to` の origin が `ALLOWED_REDIRECT_URLS` に含まれていない場合、API は `DEFAULT_REDIRECT_URL` に戻します。例えば次の URL で認証を開始する場合、
+
+```txt
+http://localhost:3000/login?redirect_to=http%3A%2F%2Flocalhost%3A3100%2Fdashboard
+```
+
+`api/.env.local` に `http://localhost:3100` を含めてから API を再起動してください。
+
+```txt
+ALLOWED_REDIRECT_URLS=http://localhost:3000/mypage,http://localhost:3100
+```

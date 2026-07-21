@@ -1,28 +1,28 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { defaultRedirectURL, oauthLoginURL } from "@/app/authTypes";
+import { authRedirectTo, oauthLoginURL } from "@/app/authTypes";
 
 const apiBaseURL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
 
 export type AuthButtonViewProps = {
-  userName?: string | null;
+  accountId?: number | null;
   userEmail?: string | null;
   onLogin: () => void;
   onLogout: () => void;
 };
 
 export function AuthButtonView({
-  userName,
+  accountId,
   userEmail,
   onLogin,
   onLogout,
 }: AuthButtonViewProps) {
-  if (userEmail) {
+  if (userEmail || accountId) {
     return (
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        <span style={{ fontSize: 14 }}>{userName ?? userEmail}</span>
+        <span style={{ fontSize: 14 }}>{userEmail ?? `Account ID: ${accountId}`}</span>
         <button type="button" onClick={onLogout}>
           Logout
         </button>
@@ -40,8 +40,8 @@ export function AuthButtonView({
 type MeResponse = {
   authenticated: boolean;
   user?: {
+    accountId?: number;
     email?: string;
-    name?: string;
   };
 };
 
@@ -57,10 +57,10 @@ function AuthButtonContent() {
 
   return (
     <AuthButtonView
-      userName={me.user?.name}
+      accountId={me.user?.accountId}
       userEmail={me.user?.email}
       onLogin={() => {
-        window.location.href = oauthLoginURL(defaultRedirectURL());
+        window.location.href = oauthLoginURL(authRedirectTo());
       }}
       onLogout={async () => {
         try {

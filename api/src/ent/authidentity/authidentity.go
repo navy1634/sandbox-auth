@@ -27,10 +27,6 @@ const (
 	FieldEmail = "email"
 	// FieldEmailVerified holds the string denoting the email_verified field in the database.
 	FieldEmailVerified = "email_verified"
-	// FieldName holds the string denoting the name field in the database.
-	FieldName = "name"
-	// FieldPicture holds the string denoting the picture field in the database.
-	FieldPicture = "picture"
 	// Table holds the table name of the authidentity in the database.
 	Table = "auth_identities"
 )
@@ -45,8 +41,6 @@ var Columns = []string{
 	FieldProviderAccountID,
 	FieldEmail,
 	FieldEmailVerified,
-	FieldName,
-	FieldPicture,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -68,10 +62,6 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// DefaultEmailVerified holds the default value on creation for the "email_verified" field.
 	DefaultEmailVerified bool
-	// DefaultName holds the default value on creation for the "name" field.
-	DefaultName string
-	// DefaultPicture holds the default value on creation for the "picture" field.
-	DefaultPicture string
 )
 
 // OrderOption defines the ordering options for the AuthIdentity queries.
@@ -115,14 +105,4 @@ func ByEmail(opts ...sql.OrderTermOption) OrderOption {
 // ByEmailVerified orders the results by the email_verified field.
 func ByEmailVerified(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEmailVerified, opts...).ToFunc()
-}
-
-// ByName orders the results by the name field.
-func ByName(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldName, opts...).ToFunc()
-}
-
-// ByPicture orders the results by the picture field.
-func ByPicture(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldPicture, opts...).ToFunc()
 }

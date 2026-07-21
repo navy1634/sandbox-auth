@@ -21,14 +21,14 @@ type GoogleProvider struct {
 }
 
 func NewGoogleProvider(clientID string, clientSecret string, redirectURL string) *GoogleProvider {
-	// Google OAuth で ID 情報を取得するため、openid、email、profile を要求する。
+	// Google OAuth で認証 ID とメール確認状態だけを取得する。
 	return &GoogleProvider{
 		clientID: clientID,
 		oauth: &oauth2.Config{
 			ClientID:     clientID,
 			ClientSecret: clientSecret,
 			RedirectURL:  redirectURL,
-			Scopes:       []string{"openid", "email", "profile"},
+			Scopes:       []string{"openid", "email"},
 			Endpoint:     google.Endpoint,
 		},
 	}
@@ -66,15 +66,10 @@ func validateGoogleIDToken(ctx context.Context, rawIDToken string, clientID stri
 		return domain.ProviderIdentity{}, errors.New("email is not verified")
 	}
 
-	name, _ := payload.Claims["name"].(string)
-	picture, _ := payload.Claims["picture"].(string)
-
 	return domain.ProviderIdentity{
 		Provider:          "google",
 		ProviderAccountID: payload.Subject,
 		Email:             email,
 		EmailVerified:     emailVerified,
-		Name:              name,
-		Picture:           picture,
 	}, nil
 }

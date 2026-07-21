@@ -25,8 +25,6 @@ func (AuthIdentity) Fields() []ent.Field {
 		field.String("provider_account_id"),
 		field.String("email"),
 		field.Bool("email_verified").Default(false),
-		field.String("name").Default(""),
-		field.String("picture").Default(""),
 	}
 }
 

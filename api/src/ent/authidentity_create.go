@@ -86,34 +86,6 @@ func (_c *AuthIdentityCreate) SetNillableEmailVerified(v *bool) *AuthIdentityCre
 	return _c
 }
 
-// SetName sets the "name" field.
-func (_c *AuthIdentityCreate) SetName(v string) *AuthIdentityCreate {
-	_c.mutation.SetName(v)
-	return _c
-}
-
-// SetNillableName sets the "name" field if the given value is not nil.
-func (_c *AuthIdentityCreate) SetNillableName(v *string) *AuthIdentityCreate {
-	if v != nil {
-		_c.SetName(*v)
-	}
-	return _c
-}
-
-// SetPicture sets the "picture" field.
-func (_c *AuthIdentityCreate) SetPicture(v string) *AuthIdentityCreate {
-	_c.mutation.SetPicture(v)
-	return _c
-}
-
-// SetNillablePicture sets the "picture" field if the given value is not nil.
-func (_c *AuthIdentityCreate) SetNillablePicture(v *string) *AuthIdentityCreate {
-	if v != nil {
-		_c.SetPicture(*v)
-	}
-	return _c
-}
-
 // Mutation returns the AuthIdentityMutation object of the builder.
 func (_c *AuthIdentityCreate) Mutation() *AuthIdentityMutation {
 	return _c.mutation
@@ -161,14 +133,6 @@ func (_c *AuthIdentityCreate) defaults() {
 		v := authidentity.DefaultEmailVerified
 		_c.mutation.SetEmailVerified(v)
 	}
-	if _, ok := _c.mutation.Name(); !ok {
-		v := authidentity.DefaultName
-		_c.mutation.SetName(v)
-	}
-	if _, ok := _c.mutation.Picture(); !ok {
-		v := authidentity.DefaultPicture
-		_c.mutation.SetPicture(v)
-	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -193,12 +157,6 @@ func (_c *AuthIdentityCreate) check() error {
 	}
 	if _, ok := _c.mutation.EmailVerified(); !ok {
 		return &ValidationError{Name: "email_verified", err: errors.New(`ent: missing required field "AuthIdentity.email_verified"`)}
-	}
-	if _, ok := _c.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "AuthIdentity.name"`)}
-	}
-	if _, ok := _c.mutation.Picture(); !ok {
-		return &ValidationError{Name: "picture", err: errors.New(`ent: missing required field "AuthIdentity.picture"`)}
 	}
 	return nil
 }
@@ -253,14 +211,6 @@ func (_c *AuthIdentityCreate) createSpec() (*AuthIdentity, *sqlgraph.CreateSpec)
 	if value, ok := _c.mutation.EmailVerified(); ok {
 		_spec.SetField(authidentity.FieldEmailVerified, field.TypeBool, value)
 		_node.EmailVerified = value
-	}
-	if value, ok := _c.mutation.Name(); ok {
-		_spec.SetField(authidentity.FieldName, field.TypeString, value)
-		_node.Name = value
-	}
-	if value, ok := _c.mutation.Picture(); ok {
-		_spec.SetField(authidentity.FieldPicture, field.TypeString, value)
-		_node.Picture = value
 	}
 	return _node, _spec
 }

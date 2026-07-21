@@ -12,7 +12,7 @@ export const LoggedOut: Story = {
     navItems: [
       { href: "/", label: "ホーム" },
       { href: "/login", label: "ログイン" },
-      { href: "/register", label: "登録" },
+      { href: "/register", label: "パスキー" },
     ],
   },
 };
@@ -22,7 +22,7 @@ export const LoggedIn: Story = {
     navItems: [
       { href: "/", label: "ホーム" },
       { href: "/login", label: "ログイン" },
-      { href: "/register", label: "登録" },
+      { href: "/register", label: "パスキー" },
     ],
   },
 };

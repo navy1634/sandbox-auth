@@ -1,6 +1,6 @@
 # wiremock
 
-フロントエンドを API サーバーなしで確認するための WireMock スタブです。Google OAuth、セッション、プロフィール更新、パスキー登録、パスキーログインで使う API レスポンスを返します。
+フロントエンドを API サーバーなしで確認するための WireMock スタブです。Google OAuth、セッション、パスキー登録、パスキーログインで使う API レスポンスを返します。
 
 ## 起動
 
@@ -22,6 +22,5 @@ WireMock は `http://localhost:8080` で起動します。web のデフォルト
 | `me` | Cookie の有無に応じてログイン状態を返します。 |
 | `auth-google` | Google OAuth のログイン開始と callback を模擬します。 |
 | `auth-logout` | セッション Cookie の削除を模擬します。 |
-| `account-profile` | プロフィール更新を模擬します。 |
 | `passkeys-login` | パスキーログインの options と verify を模擬します。 |
 | `passkeys-register` | パスキー登録の options と verify を模擬します。 |

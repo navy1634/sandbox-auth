@@ -21,12 +21,6 @@ type Account struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// DisplayName holds the value of the "display_name" field.
-	DisplayName string `json:"display_name,omitempty"`
-	// Bio holds the value of the "bio" field.
-	Bio string `json:"bio,omitempty"`
-	// RegisteredAt holds the value of the "registered_at" field.
-	RegisteredAt *time.Time `json:"registered_at,omitempty"`
 	// WebauthnUserHandle holds the value of the "webauthn_user_handle" field.
 	WebauthnUserHandle []byte `json:"webauthn_user_handle,omitempty"`
 	selectValues       sql.SelectValues
@@ -41,9 +35,7 @@ func (*Account) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case account.FieldID:
 			values[i] = new(sql.NullInt64)
-		case account.FieldDisplayName, account.FieldBio:
-			values[i] = new(sql.NullString)
-		case account.FieldCreatedAt, account.FieldUpdatedAt, account.FieldRegisteredAt:
+		case account.FieldCreatedAt, account.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -77,25 +69,6 @@ func (_m *Account) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
 				_m.UpdatedAt = value.Time
-			}
-		case account.FieldDisplayName:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field display_name", values[i])
-			} else if value.Valid {
-				_m.DisplayName = value.String
-			}
-		case account.FieldBio:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field bio", values[i])
-			} else if value.Valid {
-				_m.Bio = value.String
-			}
-		case account.FieldRegisteredAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field registered_at", values[i])
-			} else if value.Valid {
-				_m.RegisteredAt = new(time.Time)
-				*_m.RegisteredAt = value.Time
 			}
 		case account.FieldWebauthnUserHandle:
 			if value, ok := values[i].(*[]byte); !ok {
@@ -144,17 +117,6 @@ func (_m *Account) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
 	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("display_name=")
-	builder.WriteString(_m.DisplayName)
-	builder.WriteString(", ")
-	builder.WriteString("bio=")
-	builder.WriteString(_m.Bio)
-	builder.WriteString(", ")
-	if v := _m.RegisteredAt; v != nil {
-		builder.WriteString("registered_at=")
-		builder.WriteString(v.Format(time.ANSIC))
-	}
 	builder.WriteString(", ")
 	builder.WriteString("webauthn_user_handle=")
 	builder.WriteString(fmt.Sprintf("%v", _m.WebauthnUserHandle))

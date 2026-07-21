@@ -1,7 +1,6 @@
 "use client";
 
 import { startRegistration } from "@simplewebauthn/browser";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import {
   apiBaseURL,
@@ -15,8 +14,6 @@ import styles from "./page.module.css";
 
 export default function RegisterPage() {
   const [me, setMe] = useState<MeResponse>({ authenticated: false });
-  const [displayName, setDisplayName] = useState("");
-  const [bio, setBio] = useState("");
   const [status, setStatus] = useState("loading");
   const [message, setMessage] = useState("");
   const redirectTo = authRedirectTo();
@@ -27,49 +24,13 @@ export default function RegisterPage() {
     })
       .then((response) => response.json())
       .then((data: MeResponse) => {
-        if (!data.authenticated) {
-          setStatus("unauthenticated");
-          return;
-        }
-        if (!data.needsRegistration) {
-          window.location.replace(data.redirectTo || defaultRedirectURL());
-          return;
-        }
-
         setMe(data);
-        setDisplayName(
-          data.account?.displayName || data.account?.identity?.name || "",
-        );
-        setBio(data.account?.bio || "");
-        setStatus("ready");
+        setStatus(data.authenticated ? "ready" : "unauthenticated");
       })
       .catch(() => {
         setStatus("error");
       });
   }, [redirectTo]);
-
-  const saveProfile = async () => {
-    setMessage("");
-
-    try {
-      const response = await fetch(`${apiBaseURL}/account/profile`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ displayName, bio }),
-      });
-
-      if (!response.ok) {
-        setMessage("プロフィールを保存できませんでした。");
-        return;
-      }
-
-      const data = (await response.json()) as MeResponse;
-      window.location.href = data.redirectTo || defaultRedirectURL();
-    } catch {
-      setMessage("プロフィールを保存できませんでした。");
-    }
-  };
 
   const registerPasskey = async () => {
     setMessage("");
@@ -109,10 +70,10 @@ export default function RegisterPage() {
       <div className={styles.page}>
         <section className={styles.panel}>
           <div>
-            <p className={styles.label}>Registration</p>
-            <h1 className={styles.title}>登録</h1>
+            <p className={styles.label}>Passkey</p>
+            <h1 className={styles.title}>パスキー登録</h1>
             <p className={styles.description}>
-              Google アカウントでログインして、プロフィール登録を開始します。
+              Google アカウントでログインして、パスキーを登録します。
             </p>
           </div>
 
@@ -124,7 +85,7 @@ export default function RegisterPage() {
                 window.location.href = oauthLoginURL(redirectTo);
               }}
             >
-              Google で登録を始める
+              Google でログイン
             </button>
           </div>
         </section>
@@ -136,49 +97,21 @@ export default function RegisterPage() {
     <div className={styles.page}>
       <section className={styles.panel}>
         <div>
-          <p className={styles.label}>Registration</p>
-          <h1 className={styles.title}>初回登録</h1>
+          <p className={styles.label}>Passkey</p>
+          <h1 className={styles.title}>パスキー登録</h1>
           <p className={styles.description}>
-            Google アカウントに紐づくプロフィールを保存します。
+            共通アカウント ID に紐づくパスキーを登録します。
           </p>
         </div>
 
-        {me.account ? (
+        {me.user ? (
           <div className={styles.user}>
-            {me.account.identity?.picture ? (
-              <Image
-                className={styles.avatar}
-                src={me.account.identity.picture}
-                alt=""
-                width={56}
-                height={56}
-              />
-            ) : null}
             <div>
-              <p className={styles.name}>
-                {me.account.identity?.name || "No name"}
-              </p>
-              <p className={styles.email}>{me.account.identity?.email}</p>
+              <p className={styles.name}>Account ID: {me.user.accountId}</p>
+              <p className={styles.email}>{me.user.email}</p>
             </div>
           </div>
         ) : null}
-
-        <label className={styles.field}>
-          表示名
-          <input
-            value={displayName}
-            onChange={(event) => setDisplayName(event.target.value)}
-          />
-        </label>
-
-        <label className={styles.field}>
-          自己紹介
-          <textarea
-            value={bio}
-            onChange={(event) => setBio(event.target.value)}
-            rows={4}
-          />
-        </label>
 
         {message ? <p className={styles.message}>{message}</p> : null}
 
@@ -186,16 +119,18 @@ export default function RegisterPage() {
           <button
             className={styles.primaryButton}
             type="button"
-            onClick={saveProfile}
+            onClick={registerPasskey}
           >
-            保存してアプリへ戻る
+            パスキーを登録
           </button>
           <button
             className={styles.secondaryButton}
             type="button"
-            onClick={registerPasskey}
+            onClick={() => {
+              window.location.href = me.redirectTo || defaultRedirectURL();
+            }}
           >
-            パスキーを登録
+            アプリへ戻る
           </button>
         </div>
       </section>

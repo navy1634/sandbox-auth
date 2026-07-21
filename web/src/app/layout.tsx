@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 const navItems: NavbarItem[] = [
   { href: "/", label: "ホーム" },
   { href: "/login", label: "ログイン" },
-  { href: "/register", label: "登録" },
+  { href: "/register", label: "パスキー" },
 ];
 
 export default function RootLayout({

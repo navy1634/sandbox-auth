@@ -5,24 +5,18 @@ export type Account = {
     providerAccountId: string;
     email: string;
     emailVerified: boolean;
-    name: string;
-    picture: string;
   };
-  displayName: string;
-  bio: string;
-  registeredAt: string | null;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type MeResponse = {
   authenticated: boolean;
-  needsRegistration?: boolean;
   redirectTo?: string;
   account?: Account;
   user?: {
     accountId?: number;
     email?: string;
-    name?: string;
-    picture?: string;
     provider?: string;
     providerAccountId?: string;
   };
@@ -54,10 +48,6 @@ export function authRedirectTo(): string {
     new URLSearchParams(window.location.search).get("redirect_to") ??
     defaultRedirectURL()
   );
-}
-
-export function registrationURL(redirectTo: string): string {
-  return `/register?redirect_to=${encodeURIComponent(redirectTo)}`;
 }
 
 export function oauthLoginURL(redirectTo: string): string {

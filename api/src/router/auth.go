@@ -35,7 +35,6 @@ func RegisterRoutes(engine *gin.Engine, cfg config.Config, db *ent.Client) error
 
 	engine.GET("/health", authHandler.Health)
 	engine.GET("/me", authHandler.Me)
-	engine.POST("/account/profile", authHandler.UpdateProfile)
 	engine.POST("/auth/logout", authHandler.Logout)
 
 	for _, authMethod := range []handler.AuthMethodHandler{oauthHandler, passkeyHandler} {

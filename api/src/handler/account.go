@@ -33,62 +33,20 @@ func (h *AuthHandler) Me(c *gin.Context) {
 	h.respondAuthenticated(c, storedAccount)
 }
 
-func (h *AuthHandler) UpdateProfile(c *gin.Context) {
-	user, err := h.readSession(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "authentication required"})
-		return
-	}
-
-	var input domain.ProfileInput
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body"})
-		return
-	}
-
-	// ログイン中のアカウントのプロフィールを更新する。
-	storedAccount, err := h.accounts.UpdateProfile(c.Request.Context(), user.AccountID, input)
-	if err != nil {
-		if errors.Is(err, repository.ErrNotFound) {
-			c.JSON(http.StatusNotFound, gin.H{"error": "account not found"})
-			return
-		}
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	h.respondAuthenticatedWithRedirect(c, storedAccount)
-}
-
 func (h *AuthHandler) respondAuthenticated(c *gin.Context, storedAccount domain.Account) {
 	c.JSON(http.StatusOK, gin.H{
-		"account":           storedAccount,
-		"authenticated":     true,
-		"needsRegistration": storedAccount.RegisteredAt == nil,
-		"redirectTo":        h.cfg.AuthRedirectURL(c.Query("redirect_to")),
-		"user":              session.FromAccount(storedAccount),
+		"account":       storedAccount,
+		"authenticated": true,
+		"redirectTo":    h.cfg.AuthRedirectURL(c.Query("redirect_to")),
+		"user":          session.FromAccount(storedAccount),
 	})
 }
 
 func (h *AuthHandler) respondAuthenticatedWithRedirect(c *gin.Context, storedAccount domain.Account) {
-	redirectURL := h.registrationURL()
-	if storedAccount.RegisteredAt == nil {
-		c.JSON(http.StatusOK, gin.H{
-			"account":           storedAccount,
-			"authenticated":     true,
-			"needsRegistration": true,
-			"redirectTo":        redirectURL,
-			"user":              session.FromAccount(storedAccount),
-		})
-		return
-	}
-
-	redirectURL = h.consumeAuthRedirect(c)
 	c.JSON(http.StatusOK, gin.H{
-		"account":           storedAccount,
-		"authenticated":     true,
-		"needsRegistration": false,
-		"redirectTo":        redirectURL,
-		"user":              session.FromAccount(storedAccount),
+		"account":       storedAccount,
+		"authenticated": true,
+		"redirectTo":    h.consumeAuthRedirect(c),
+		"user":          session.FromAccount(storedAccount),
 	})
 }

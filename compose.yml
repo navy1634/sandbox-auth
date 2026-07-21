@@ -3,7 +3,7 @@ services:
     build:
       context: ./web
       dockerfile: Dockerfile.dev
-    container_name: sandbox-web-container
+    container_name: sandbox-auth-web-container
     environment:
       - NEXT_PUBLIC_API_BASE_URL=${SANDBOX_API_URL:-http://localhost:8080}
       - NEXT_PUBLIC_DEFAULT_REDIRECT_URL=${SANDBOX_DEFAULT_REDIRECT_URL:-http://localhost:3000/mypage}
@@ -20,13 +20,13 @@ services:
     build:
       context: ./api
       dockerfile: Dockerfile
-    container_name: sandbox-api-container
+    container_name: sandbox-auth-api-container
     env_file:
       - ./api/.env.local
     environment:
       - FRONTEND_URL=${SANDBOX_FRONTEND_URL:-http://localhost:3000}
       - DEFAULT_REDIRECT_URL=${SANDBOX_DEFAULT_REDIRECT_URL:-http://localhost:3000/mypage}
-      - ALLOWED_REDIRECT_URLS=${SANDBOX_ALLOWED_REDIRECT_URLS:-http://localhost:3000/mypage,http://localhost:3001}
+      - ALLOWED_REDIRECT_URLS=${SANDBOX_ALLOWED_REDIRECT_URLS:-http://localhost:3000/mypage,http://localhost:3001,http://localhost:3100}
       - GOOGLE_REDIRECT_URL=${SANDBOX_API_URL:-http://localhost:8080}/auth/google/callback
       - DATABASE_URL=postgres://postgres:password@db:5432/test?sslmode=disable
       - PASSKEY_RP_ID=${SANDBOX_RP_ID:-localhost}
@@ -36,7 +36,7 @@ services:
 
   wiremock:
     image: wiremock/wiremock:3.9.1
-    container_name: sandbox-wiremock-container
+    container_name: sandbox-auth-wiremock-container
     profiles:
       - mock
     volumes:
@@ -47,7 +47,7 @@ services:
 
   db:
     image: postgres:17.1
-    container_name: sandbox-db-container
+    container_name: sandbox-auth-db-container
     environment:
       - POSTGRES_DB=test
       - POSTGRES_USER=postgres

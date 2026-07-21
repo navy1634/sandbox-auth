@@ -14,9 +14,6 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "display_name", Type: field.TypeString, Default: ""},
-		{Name: "bio", Type: field.TypeString, Default: ""},
-		{Name: "registered_at", Type: field.TypeTime, Nullable: true},
 		{Name: "webauthn_user_handle", Type: field.TypeBytes, Unique: true},
 	}
 	// AccountsTable holds the schema information for the "accounts" table.
@@ -35,8 +32,6 @@ var (
 		{Name: "provider_account_id", Type: field.TypeString},
 		{Name: "email", Type: field.TypeString},
 		{Name: "email_verified", Type: field.TypeBool, Default: false},
-		{Name: "name", Type: field.TypeString, Default: ""},
-		{Name: "picture", Type: field.TypeString, Default: ""},
 	}
 	// AuthIdentitiesTable holds the schema information for the "auth_identities" table.
 	AuthIdentitiesTable = &schema.Table{

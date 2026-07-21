@@ -17,12 +17,6 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
-	// FieldDisplayName holds the string denoting the display_name field in the database.
-	FieldDisplayName = "display_name"
-	// FieldBio holds the string denoting the bio field in the database.
-	FieldBio = "bio"
-	// FieldRegisteredAt holds the string denoting the registered_at field in the database.
-	FieldRegisteredAt = "registered_at"
 	// FieldWebauthnUserHandle holds the string denoting the webauthn_user_handle field in the database.
 	FieldWebauthnUserHandle = "webauthn_user_handle"
 	// Table holds the table name of the account in the database.
@@ -34,9 +28,6 @@ var Columns = []string{
 	FieldID,
 	FieldCreatedAt,
 	FieldUpdatedAt,
-	FieldDisplayName,
-	FieldBio,
-	FieldRegisteredAt,
 	FieldWebauthnUserHandle,
 }
 
@@ -57,10 +48,6 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
-	// DefaultDisplayName holds the default value on creation for the "display_name" field.
-	DefaultDisplayName string
-	// DefaultBio holds the default value on creation for the "bio" field.
-	DefaultBio string
 )
 
 // OrderOption defines the ordering options for the Account queries.
@@ -79,19 +66,4 @@ func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByUpdatedAt orders the results by the updated_at field.
 func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
-}
-
-// ByDisplayName orders the results by the display_name field.
-func ByDisplayName(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldDisplayName, opts...).ToFunc()
-}
-
-// ByBio orders the results by the bio field.
-func ByBio(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldBio, opts...).ToFunc()
-}
-
-// ByRegisteredAt orders the results by the registered_at field.
-func ByRegisteredAt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldRegisteredAt, opts...).ToFunc()
 }

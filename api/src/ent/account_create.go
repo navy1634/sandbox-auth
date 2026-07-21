@@ -48,48 +48,6 @@ func (_c *AccountCreate) SetNillableUpdatedAt(v *time.Time) *AccountCreate {
 	return _c
 }
 
-// SetDisplayName sets the "display_name" field.
-func (_c *AccountCreate) SetDisplayName(v string) *AccountCreate {
-	_c.mutation.SetDisplayName(v)
-	return _c
-}
-
-// SetNillableDisplayName sets the "display_name" field if the given value is not nil.
-func (_c *AccountCreate) SetNillableDisplayName(v *string) *AccountCreate {
-	if v != nil {
-		_c.SetDisplayName(*v)
-	}
-	return _c
-}
-
-// SetBio sets the "bio" field.
-func (_c *AccountCreate) SetBio(v string) *AccountCreate {
-	_c.mutation.SetBio(v)
-	return _c
-}
-
-// SetNillableBio sets the "bio" field if the given value is not nil.
-func (_c *AccountCreate) SetNillableBio(v *string) *AccountCreate {
-	if v != nil {
-		_c.SetBio(*v)
-	}
-	return _c
-}
-
-// SetRegisteredAt sets the "registered_at" field.
-func (_c *AccountCreate) SetRegisteredAt(v time.Time) *AccountCreate {
-	_c.mutation.SetRegisteredAt(v)
-	return _c
-}
-
-// SetNillableRegisteredAt sets the "registered_at" field if the given value is not nil.
-func (_c *AccountCreate) SetNillableRegisteredAt(v *time.Time) *AccountCreate {
-	if v != nil {
-		_c.SetRegisteredAt(*v)
-	}
-	return _c
-}
-
 // SetWebauthnUserHandle sets the "webauthn_user_handle" field.
 func (_c *AccountCreate) SetWebauthnUserHandle(v []byte) *AccountCreate {
 	_c.mutation.SetWebauthnUserHandle(v)
@@ -139,14 +97,6 @@ func (_c *AccountCreate) defaults() {
 		v := account.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := _c.mutation.DisplayName(); !ok {
-		v := account.DefaultDisplayName
-		_c.mutation.SetDisplayName(v)
-	}
-	if _, ok := _c.mutation.Bio(); !ok {
-		v := account.DefaultBio
-		_c.mutation.SetBio(v)
-	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -156,12 +106,6 @@ func (_c *AccountCreate) check() error {
 	}
 	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Account.updated_at"`)}
-	}
-	if _, ok := _c.mutation.DisplayName(); !ok {
-		return &ValidationError{Name: "display_name", err: errors.New(`ent: missing required field "Account.display_name"`)}
-	}
-	if _, ok := _c.mutation.Bio(); !ok {
-		return &ValidationError{Name: "bio", err: errors.New(`ent: missing required field "Account.bio"`)}
 	}
 	if _, ok := _c.mutation.WebauthnUserHandle(); !ok {
 		return &ValidationError{Name: "webauthn_user_handle", err: errors.New(`ent: missing required field "Account.webauthn_user_handle"`)}
@@ -199,18 +143,6 @@ func (_c *AccountCreate) createSpec() (*Account, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.UpdatedAt(); ok {
 		_spec.SetField(account.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
-	}
-	if value, ok := _c.mutation.DisplayName(); ok {
-		_spec.SetField(account.FieldDisplayName, field.TypeString, value)
-		_node.DisplayName = value
-	}
-	if value, ok := _c.mutation.Bio(); ok {
-		_spec.SetField(account.FieldBio, field.TypeString, value)
-		_node.Bio = value
-	}
-	if value, ok := _c.mutation.RegisteredAt(); ok {
-		_spec.SetField(account.FieldRegisteredAt, field.TypeTime, value)
-		_node.RegisteredAt = &value
 	}
 	if value, ok := _c.mutation.WebauthnUserHandle(); ok {
 		_spec.SetField(account.FieldWebauthnUserHandle, field.TypeBytes, value)

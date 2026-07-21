@@ -3,7 +3,6 @@ package persistence
 import (
 	"context"
 	"crypto/rand"
-	"time"
 
 	"github.com/sandbox-nextjs/src/domain"
 	"github.com/sandbox-nextjs/src/ent"
@@ -31,7 +30,7 @@ func (r *EntAccountRepository) UpsertProviderIdentity(ctx context.Context, ident
 		return domain.Account{}, err
 	}
 
-	// 既存の外部認証 ID があれば、最新のプロフィール情報だけ更新する。
+	// 既存の外部認証 ID があれば、メールと確認状態を更新する。
 	storedIdentity, err := client.AuthIdentity.Query().
 		Where(
 			entidentity.Provider(identity.Provider),
@@ -42,8 +41,6 @@ func (r *EntAccountRepository) UpsertProviderIdentity(ctx context.Context, ident
 		updatedIdentity, err := client.AuthIdentity.UpdateOneID(storedIdentity.ID).
 			SetEmail(identity.Email).
 			SetEmailVerified(identity.EmailVerified).
-			SetName(identity.Name).
-			SetPicture(identity.Picture).
 			Save(ctx)
 		if err != nil {
 			return domain.Account{}, err
@@ -73,8 +70,6 @@ func (r *EntAccountRepository) UpsertProviderIdentity(ctx context.Context, ident
 		SetProviderAccountID(identity.ProviderAccountID).
 		SetEmail(identity.Email).
 		SetEmailVerified(identity.EmailVerified).
-		SetName(identity.Name).
-		SetPicture(identity.Picture).
 		Save(ctx)
 	if err != nil {
 		return domain.Account{}, err
@@ -100,38 +95,6 @@ func (r *EntAccountRepository) FindByID(ctx context.Context, id int64) (domain.A
 	}
 
 	return toAccount(storedAccount, storedIdentity), nil
-}
-
-func (r *EntAccountRepository) UpdateProfile(ctx context.Context, id int64, input domain.ProfileInput) (domain.Account, error) {
-	client, err := r.db(ctx)
-	if err != nil {
-		return domain.Account{}, err
-	}
-
-	// 初回プロフィール保存を登録完了として扱い、登録日時を一度だけ入れる。
-	builder := client.Account.UpdateOneID(int(id)).
-		SetDisplayName(input.DisplayName).
-		SetBio(input.Bio)
-
-	storedAccount, err := client.Account.Get(ctx, int(id))
-	if err != nil {
-		return domain.Account{}, mapError(err)
-	}
-	if storedAccount.RegisteredAt == nil {
-		builder.SetRegisteredAt(time.Now())
-	}
-
-	updatedAccount, err := builder.Save(ctx)
-	if err != nil {
-		return domain.Account{}, mapError(err)
-	}
-
-	storedIdentity, err := r.primaryIdentity(ctx, id)
-	if err != nil {
-		return domain.Account{}, err
-	}
-
-	return toAccount(updatedAccount, storedIdentity), nil
 }
 
 func (r *EntAccountRepository) FindByWebAuthnUserHandle(ctx context.Context, handle []byte) (domain.Account, error) {
@@ -190,9 +153,6 @@ func toAccount(storedAccount *ent.Account, identity *ent.AuthIdentity) domain.Ac
 	// Ent の保存形式から、handler と usecase が扱う domain.Account へ詰め替える。
 	account := domain.Account{
 		ID:                 int64(storedAccount.ID),
-		DisplayName:        storedAccount.DisplayName,
-		Bio:                storedAccount.Bio,
-		RegisteredAt:       storedAccount.RegisteredAt,
 		CreatedAt:          storedAccount.CreatedAt,
 		UpdatedAt:          storedAccount.UpdatedAt,
 		WebAuthnUserHandle: storedAccount.WebauthnUserHandle,
@@ -203,8 +163,6 @@ func toAccount(storedAccount *ent.Account, identity *ent.AuthIdentity) domain.Ac
 			ProviderAccountID: identity.ProviderAccountID,
 			Email:             identity.Email,
 			EmailVerified:     identity.EmailVerified,
-			Name:              identity.Name,
-			Picture:           identity.Picture,
 		}
 	}
 	return account

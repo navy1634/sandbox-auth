@@ -22,9 +22,6 @@ func (Account) Annotations() []schema.Annotation {
 
 func (Account) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("display_name").Default(""),
-		field.String("bio").Default(""),
-		field.Time("registered_at").Optional().Nillable(),
 		field.Bytes("webauthn_user_handle").Unique(),
 	}
 }

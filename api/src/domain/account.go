@@ -1,8 +1,6 @@
 package domain
 
 import (
-	"errors"
-	"strings"
 	"time"
 
 	"github.com/go-webauthn/webauthn/webauthn"
@@ -13,47 +11,15 @@ type ProviderIdentity struct {
 	ProviderAccountID string
 	Email             string
 	EmailVerified     bool
-	Name              string
-	Picture           string
 }
 
 type Account struct {
 	ID                 int64                 `json:"id"`
 	Identity           *ProviderIdentity     `json:"identity,omitempty"`
-	DisplayName        string                `json:"displayName"`
-	Bio                string                `json:"bio"`
 	Credentials        []webauthn.Credential `json:"-"`
 	WebAuthnUserHandle []byte                `json:"-"`
 	CreatedAt          time.Time             `json:"createdAt"`
 	UpdatedAt          time.Time             `json:"updatedAt"`
-	RegisteredAt       *time.Time            `json:"registeredAt"`
-}
-
-type ProfileInput struct {
-	DisplayName string
-	Bio         string
-}
-
-func (input ProfileInput) Normalize() ProfileInput {
-	// 表示名と自己紹介の前後空白を取り除き、保存前の表記ゆれを減らす。
-	return ProfileInput{
-		DisplayName: strings.TrimSpace(input.DisplayName),
-		Bio:         strings.TrimSpace(input.Bio),
-	}
-}
-
-func (input ProfileInput) Validate() error {
-	// プロフィールとして受け付ける必須項目と最大文字数を検証する。
-	if input.DisplayName == "" {
-		return errors.New("display name is required")
-	}
-	if len([]rune(input.DisplayName)) > 100 {
-		return errors.New("display name is too long")
-	}
-	if len([]rune(input.Bio)) > 500 {
-		return errors.New("bio is too long")
-	}
-	return nil
 }
 
 type PasskeySession struct {
@@ -74,13 +40,7 @@ func (account Account) WebAuthnName() string {
 }
 
 func (account Account) WebAuthnDisplayName() string {
-	// WebAuthn に表示する名前は、プロフィール名、外部 ID 名、メールの順で選ぶ。
-	if account.DisplayName != "" {
-		return account.DisplayName
-	}
-	if account.Identity != nil && account.Identity.Name != "" {
-		return account.Identity.Name
-	}
+	// WebAuthn に表示する名前は、共通アカウントに紐づく認証 ID のメールを使う。
 	return account.WebAuthnName()
 }
 

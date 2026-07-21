@@ -25,7 +25,7 @@
       "user": {
         "id": "d2lyZW1vY2stdXNlcg",
         "name": "wiremock@example.com",
-        "displayName": "WireMock User"
+        "displayName": "wiremock@example.com"
       },
       "challenge": "d2lyZW1vY2stcmVnaXN0ZXItY2hhbGxlbmdl",
       "pubKeyCredParams": [

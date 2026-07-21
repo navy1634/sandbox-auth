@@ -111,34 +111,6 @@ func (_u *AuthIdentityUpdate) SetNillableEmailVerified(v *bool) *AuthIdentityUpd
 	return _u
 }
 
-// SetName sets the "name" field.
-func (_u *AuthIdentityUpdate) SetName(v string) *AuthIdentityUpdate {
-	_u.mutation.SetName(v)
-	return _u
-}
-
-// SetNillableName sets the "name" field if the given value is not nil.
-func (_u *AuthIdentityUpdate) SetNillableName(v *string) *AuthIdentityUpdate {
-	if v != nil {
-		_u.SetName(*v)
-	}
-	return _u
-}
-
-// SetPicture sets the "picture" field.
-func (_u *AuthIdentityUpdate) SetPicture(v string) *AuthIdentityUpdate {
-	_u.mutation.SetPicture(v)
-	return _u
-}
-
-// SetNillablePicture sets the "picture" field if the given value is not nil.
-func (_u *AuthIdentityUpdate) SetNillablePicture(v *string) *AuthIdentityUpdate {
-	if v != nil {
-		_u.SetPicture(*v)
-	}
-	return _u
-}
-
 // Mutation returns the AuthIdentityMutation object of the builder.
 func (_u *AuthIdentityUpdate) Mutation() *AuthIdentityMutation {
 	return _u.mutation
@@ -209,12 +181,6 @@ func (_u *AuthIdentityUpdate) sqlSave(ctx context.Context) (_node int, err error
 	}
 	if value, ok := _u.mutation.EmailVerified(); ok {
 		_spec.SetField(authidentity.FieldEmailVerified, field.TypeBool, value)
-	}
-	if value, ok := _u.mutation.Name(); ok {
-		_spec.SetField(authidentity.FieldName, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.Picture(); ok {
-		_spec.SetField(authidentity.FieldPicture, field.TypeString, value)
 	}
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -319,34 +285,6 @@ func (_u *AuthIdentityUpdateOne) SetNillableEmailVerified(v *bool) *AuthIdentity
 	return _u
 }
 
-// SetName sets the "name" field.
-func (_u *AuthIdentityUpdateOne) SetName(v string) *AuthIdentityUpdateOne {
-	_u.mutation.SetName(v)
-	return _u
-}
-
-// SetNillableName sets the "name" field if the given value is not nil.
-func (_u *AuthIdentityUpdateOne) SetNillableName(v *string) *AuthIdentityUpdateOne {
-	if v != nil {
-		_u.SetName(*v)
-	}
-	return _u
-}
-
-// SetPicture sets the "picture" field.
-func (_u *AuthIdentityUpdateOne) SetPicture(v string) *AuthIdentityUpdateOne {
-	_u.mutation.SetPicture(v)
-	return _u
-}
-
-// SetNillablePicture sets the "picture" field if the given value is not nil.
-func (_u *AuthIdentityUpdateOne) SetNillablePicture(v *string) *AuthIdentityUpdateOne {
-	if v != nil {
-		_u.SetPicture(*v)
-	}
-	return _u
-}
-
 // Mutation returns the AuthIdentityMutation object of the builder.
 func (_u *AuthIdentityUpdateOne) Mutation() *AuthIdentityMutation {
 	return _u.mutation
@@ -447,12 +385,6 @@ func (_u *AuthIdentityUpdateOne) sqlSave(ctx context.Context) (_node *AuthIdenti
 	}
 	if value, ok := _u.mutation.EmailVerified(); ok {
 		_spec.SetField(authidentity.FieldEmailVerified, field.TypeBool, value)
-	}
-	if value, ok := _u.mutation.Name(); ok {
-		_spec.SetField(authidentity.FieldName, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.Picture(); ok {
-		_spec.SetField(authidentity.FieldPicture, field.TypeString, value)
 	}
 	_node = &AuthIdentity{config: _u.config}
 	_spec.Assign = _node.assignValues

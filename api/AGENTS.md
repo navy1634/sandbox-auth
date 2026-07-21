@@ -32,12 +32,14 @@
 ## 認証とセッション
 
 - `GET /auth/:provider/login` は OAuth state を `oauth_state` Cookie に保存し、検証済みの戻り先を `auth_redirect` Cookie に保存してから Google の認可 URL に redirect します。
-- `GET /auth/:provider/callback` は state、code、Google ID token を検証し、`app_session` Cookie を発行します。初回登録が必要なら認証 web の `/register`、登録済みなら検証済みの戻り先へ redirect します。
+- `GET /auth/:provider/callback` は state、code、Google ID token を検証し、`app_session` Cookie を発行して検証済みの戻り先へ redirect します。
 - `GET /me` は `app_session` を検証し、アカウント情報を返します。
 - `POST /auth/logout` は `app_session` を削除します。
-- `POST /account/profile` はログイン済みユーザーのプロフィールを更新します。
 - `app_session` は JSON payload に HMAC-SHA256 署名を付けた値です。暗号化や payload 内の期限はありません。
 - Cookie は `SameSite=Lax`、`HttpOnly` を基本にし、`Secure` は `FRONTEND_URL` が `https://` のときだけ有効になります。
+- `redirect_to` の戻り先は `ALLOWED_REDIRECT_URLS` で許可します。パスなしの origin を指定すると、その origin 配下のパスを許可します。
+- `mise run dev` は `api/.env.local` を読みます。Docker Compose の `SANDBOX_ALLOWED_REDIRECT_URLS` は `mise run dev` には効きません。
+- ローカル本体アプリを `http://localhost:3100/dashboard` へ戻す場合は、`api/.env.local` の `ALLOWED_REDIRECT_URLS` に `http://localhost:3100` を含めます。
 
 ## パスキー
 
@@ -50,7 +52,7 @@
 
 ## DB と migration
 
-- `accounts` はプロフィール、登録完了時刻、WebAuthn user handle を持ちます。
+- `accounts` は共通アカウント ID と WebAuthn user handle を持ちます。
 - `auth_identities` は Google などの provider identity を持ちます。
 - `webauthn_credentials` は WebAuthn credential を JSON として保存します。
 - `webauthn_sessions` は WebAuthn ceremony session を TTL 付きで保存します。
@@ -63,7 +65,7 @@
 - OAuth を触るときは、`src/handler/google.go` と `src/infrastructure/auth/google.go` をセットで確認してください。
 - パスキーを触るときは、`src/handler/passkey.go`、`src/infrastructure/auth/passkey.go`、`src/infrastructure/persistence/passkeys.go` をセットで確認してください。
 - DB 更新を触るときは、request transaction middleware の挙動を確認してください。HTTP 400 以上または `c.Errors` がある場合は commit されません。
-- プロフィール入力の制約は `src/domain/account.go` の `ProfileInput.Validate` にあります。
+- リダイレクト不具合を見るときは、起動中の API が読んでいる `DEFAULT_REDIRECT_URL` と `ALLOWED_REDIRECT_URLS` を最初に確認してください。設定変更後は API の再起動が必要です。
 - セキュリティレビューでは、Cookie の属性、セッション期限、CSRF 境界、WebAuthn ceremony session の一回消費、エラー内容の漏えいを重点的に確認してください。
 
 ## スクリプト

@@ -1,9 +1,6 @@
 -- +goose Up
 CREATE TABLE accounts (
   id BIGSERIAL PRIMARY KEY,
-  display_name TEXT NOT NULL DEFAULT '',
-  bio TEXT NOT NULL DEFAULT '',
-  registered_at TIMESTAMPTZ,
   webauthn_user_handle BYTEA NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -17,8 +14,6 @@ CREATE TABLE auth_identities (
   provider_account_id TEXT NOT NULL,
   email TEXT NOT NULL,
   email_verified BOOLEAN NOT NULL DEFAULT false,
-  name TEXT NOT NULL DEFAULT '',
-  picture TEXT NOT NULL DEFAULT '',
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   CONSTRAINT auth_identities_account_provider_unique UNIQUE (account_id, provider),

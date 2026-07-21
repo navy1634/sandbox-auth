@@ -42,9 +42,6 @@ type AccountMutation struct {
 	id                   *int
 	created_at           *time.Time
 	updated_at           *time.Time
-	display_name         *string
-	bio                  *string
-	registered_at        *time.Time
 	webauthn_user_handle *[]byte
 	clearedFields        map[string]struct{}
 	done                 bool
@@ -222,127 +219,6 @@ func (m *AccountMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
-// SetDisplayName sets the "display_name" field.
-func (m *AccountMutation) SetDisplayName(s string) {
-	m.display_name = &s
-}
-
-// DisplayName returns the value of the "display_name" field in the mutation.
-func (m *AccountMutation) DisplayName() (r string, exists bool) {
-	v := m.display_name
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldDisplayName returns the old "display_name" field's value of the Account entity.
-// If the Account object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AccountMutation) OldDisplayName(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldDisplayName is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldDisplayName requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDisplayName: %w", err)
-	}
-	return oldValue.DisplayName, nil
-}
-
-// ResetDisplayName resets all changes to the "display_name" field.
-func (m *AccountMutation) ResetDisplayName() {
-	m.display_name = nil
-}
-
-// SetBio sets the "bio" field.
-func (m *AccountMutation) SetBio(s string) {
-	m.bio = &s
-}
-
-// Bio returns the value of the "bio" field in the mutation.
-func (m *AccountMutation) Bio() (r string, exists bool) {
-	v := m.bio
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldBio returns the old "bio" field's value of the Account entity.
-// If the Account object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AccountMutation) OldBio(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldBio is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldBio requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldBio: %w", err)
-	}
-	return oldValue.Bio, nil
-}
-
-// ResetBio resets all changes to the "bio" field.
-func (m *AccountMutation) ResetBio() {
-	m.bio = nil
-}
-
-// SetRegisteredAt sets the "registered_at" field.
-func (m *AccountMutation) SetRegisteredAt(t time.Time) {
-	m.registered_at = &t
-}
-
-// RegisteredAt returns the value of the "registered_at" field in the mutation.
-func (m *AccountMutation) RegisteredAt() (r time.Time, exists bool) {
-	v := m.registered_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldRegisteredAt returns the old "registered_at" field's value of the Account entity.
-// If the Account object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AccountMutation) OldRegisteredAt(ctx context.Context) (v *time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldRegisteredAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldRegisteredAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldRegisteredAt: %w", err)
-	}
-	return oldValue.RegisteredAt, nil
-}
-
-// ClearRegisteredAt clears the value of the "registered_at" field.
-func (m *AccountMutation) ClearRegisteredAt() {
-	m.registered_at = nil
-	m.clearedFields[account.FieldRegisteredAt] = struct{}{}
-}
-
-// RegisteredAtCleared returns if the "registered_at" field was cleared in this mutation.
-func (m *AccountMutation) RegisteredAtCleared() bool {
-	_, ok := m.clearedFields[account.FieldRegisteredAt]
-	return ok
-}
-
-// ResetRegisteredAt resets all changes to the "registered_at" field.
-func (m *AccountMutation) ResetRegisteredAt() {
-	m.registered_at = nil
-	delete(m.clearedFields, account.FieldRegisteredAt)
-}
-
 // SetWebauthnUserHandle sets the "webauthn_user_handle" field.
 func (m *AccountMutation) SetWebauthnUserHandle(b []byte) {
 	m.webauthn_user_handle = &b
@@ -413,21 +289,12 @@ func (m *AccountMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AccountMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 3)
 	if m.created_at != nil {
 		fields = append(fields, account.FieldCreatedAt)
 	}
 	if m.updated_at != nil {
 		fields = append(fields, account.FieldUpdatedAt)
-	}
-	if m.display_name != nil {
-		fields = append(fields, account.FieldDisplayName)
-	}
-	if m.bio != nil {
-		fields = append(fields, account.FieldBio)
-	}
-	if m.registered_at != nil {
-		fields = append(fields, account.FieldRegisteredAt)
 	}
 	if m.webauthn_user_handle != nil {
 		fields = append(fields, account.FieldWebauthnUserHandle)
@@ -444,12 +311,6 @@ func (m *AccountMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case account.FieldUpdatedAt:
 		return m.UpdatedAt()
-	case account.FieldDisplayName:
-		return m.DisplayName()
-	case account.FieldBio:
-		return m.Bio()
-	case account.FieldRegisteredAt:
-		return m.RegisteredAt()
 	case account.FieldWebauthnUserHandle:
 		return m.WebauthnUserHandle()
 	}
@@ -465,12 +326,6 @@ func (m *AccountMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldCreatedAt(ctx)
 	case account.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
-	case account.FieldDisplayName:
-		return m.OldDisplayName(ctx)
-	case account.FieldBio:
-		return m.OldBio(ctx)
-	case account.FieldRegisteredAt:
-		return m.OldRegisteredAt(ctx)
 	case account.FieldWebauthnUserHandle:
 		return m.OldWebauthnUserHandle(ctx)
 	}
@@ -495,27 +350,6 @@ func (m *AccountMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdatedAt(v)
-		return nil
-	case account.FieldDisplayName:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetDisplayName(v)
-		return nil
-	case account.FieldBio:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetBio(v)
-		return nil
-	case account.FieldRegisteredAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetRegisteredAt(v)
 		return nil
 	case account.FieldWebauthnUserHandle:
 		v, ok := value.([]byte)
@@ -553,11 +387,7 @@ func (m *AccountMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *AccountMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(account.FieldRegisteredAt) {
-		fields = append(fields, account.FieldRegisteredAt)
-	}
-	return fields
+	return nil
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -570,11 +400,6 @@ func (m *AccountMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *AccountMutation) ClearField(name string) error {
-	switch name {
-	case account.FieldRegisteredAt:
-		m.ClearRegisteredAt()
-		return nil
-	}
 	return fmt.Errorf("unknown Account nullable field %s", name)
 }
 
@@ -587,15 +412,6 @@ func (m *AccountMutation) ResetField(name string) error {
 		return nil
 	case account.FieldUpdatedAt:
 		m.ResetUpdatedAt()
-		return nil
-	case account.FieldDisplayName:
-		m.ResetDisplayName()
-		return nil
-	case account.FieldBio:
-		m.ResetBio()
-		return nil
-	case account.FieldRegisteredAt:
-		m.ResetRegisteredAt()
 		return nil
 	case account.FieldWebauthnUserHandle:
 		m.ResetWebauthnUserHandle()
@@ -666,8 +482,6 @@ type AuthIdentityMutation struct {
 	provider_account_id *string
 	email               *string
 	email_verified      *bool
-	name                *string
-	picture             *string
 	clearedFields       map[string]struct{}
 	done                bool
 	oldValue            func(context.Context) (*AuthIdentity, error)
@@ -1044,78 +858,6 @@ func (m *AuthIdentityMutation) ResetEmailVerified() {
 	m.email_verified = nil
 }
 
-// SetName sets the "name" field.
-func (m *AuthIdentityMutation) SetName(s string) {
-	m.name = &s
-}
-
-// Name returns the value of the "name" field in the mutation.
-func (m *AuthIdentityMutation) Name() (r string, exists bool) {
-	v := m.name
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldName returns the old "name" field's value of the AuthIdentity entity.
-// If the AuthIdentity object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AuthIdentityMutation) OldName(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldName is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldName requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldName: %w", err)
-	}
-	return oldValue.Name, nil
-}
-
-// ResetName resets all changes to the "name" field.
-func (m *AuthIdentityMutation) ResetName() {
-	m.name = nil
-}
-
-// SetPicture sets the "picture" field.
-func (m *AuthIdentityMutation) SetPicture(s string) {
-	m.picture = &s
-}
-
-// Picture returns the value of the "picture" field in the mutation.
-func (m *AuthIdentityMutation) Picture() (r string, exists bool) {
-	v := m.picture
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldPicture returns the old "picture" field's value of the AuthIdentity entity.
-// If the AuthIdentity object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AuthIdentityMutation) OldPicture(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldPicture is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldPicture requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldPicture: %w", err)
-	}
-	return oldValue.Picture, nil
-}
-
-// ResetPicture resets all changes to the "picture" field.
-func (m *AuthIdentityMutation) ResetPicture() {
-	m.picture = nil
-}
-
 // Where appends a list predicates to the AuthIdentityMutation builder.
 func (m *AuthIdentityMutation) Where(ps ...predicate.AuthIdentity) {
 	m.predicates = append(m.predicates, ps...)
@@ -1150,7 +892,7 @@ func (m *AuthIdentityMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AuthIdentityMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 7)
 	if m.created_at != nil {
 		fields = append(fields, authidentity.FieldCreatedAt)
 	}
@@ -1171,12 +913,6 @@ func (m *AuthIdentityMutation) Fields() []string {
 	}
 	if m.email_verified != nil {
 		fields = append(fields, authidentity.FieldEmailVerified)
-	}
-	if m.name != nil {
-		fields = append(fields, authidentity.FieldName)
-	}
-	if m.picture != nil {
-		fields = append(fields, authidentity.FieldPicture)
 	}
 	return fields
 }
@@ -1200,10 +936,6 @@ func (m *AuthIdentityMutation) Field(name string) (ent.Value, bool) {
 		return m.Email()
 	case authidentity.FieldEmailVerified:
 		return m.EmailVerified()
-	case authidentity.FieldName:
-		return m.Name()
-	case authidentity.FieldPicture:
-		return m.Picture()
 	}
 	return nil, false
 }
@@ -1227,10 +959,6 @@ func (m *AuthIdentityMutation) OldField(ctx context.Context, name string) (ent.V
 		return m.OldEmail(ctx)
 	case authidentity.FieldEmailVerified:
 		return m.OldEmailVerified(ctx)
-	case authidentity.FieldName:
-		return m.OldName(ctx)
-	case authidentity.FieldPicture:
-		return m.OldPicture(ctx)
 	}
 	return nil, fmt.Errorf("unknown AuthIdentity field %s", name)
 }
@@ -1288,20 +1016,6 @@ func (m *AuthIdentityMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetEmailVerified(v)
-		return nil
-	case authidentity.FieldName:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetName(v)
-		return nil
-	case authidentity.FieldPicture:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetPicture(v)
 		return nil
 	}
 	return fmt.Errorf("unknown AuthIdentity field %s", name)
@@ -1387,12 +1101,6 @@ func (m *AuthIdentityMutation) ResetField(name string) error {
 		return nil
 	case authidentity.FieldEmailVerified:
 		m.ResetEmailVerified()
-		return nil
-	case authidentity.FieldName:
-		m.ResetName()
-		return nil
-	case authidentity.FieldPicture:
-		m.ResetPicture()
 		return nil
 	}
 	return fmt.Errorf("unknown AuthIdentity field %s", name)
