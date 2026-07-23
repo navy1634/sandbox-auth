@@ -28,6 +28,8 @@ var (
 	ErrPasskeySaveCredentialFailed   = errors.New("failed to save passkey credential")
 	ErrPasskeyUpdateCredentialFailed = errors.New("failed to update passkey credential")
 	ErrPasskeyVerifyFailed           = errors.New("failed to verify passkey")
+	ErrPasskeySessionLimitExceeded   = errors.New("too many passkey sessions")
+	ErrPasskeyCredentialExists       = errors.New("passkey credential already exists")
 )
 
 type PasskeyUsecase struct {
@@ -45,6 +47,7 @@ type PasskeyLoginOptions struct {
 	SessionID string
 }
 
+// パスキー認証のユースケースを作る。
 func NewPasskeyUsecase(passkeys repository.PasskeyRepository, passkey *auth.PasskeyService) *PasskeyUsecase {
 	return &PasskeyUsecase{
 		passkeys: passkeys,
@@ -52,6 +55,7 @@ func NewPasskeyUsecase(passkeys repository.PasskeyRepository, passkey *auth.Pass
 	}
 }
 
+// 指定アカウントのパスキー登録 ceremony を開始する。
 func (u *PasskeyUsecase) BeginRegistration(ctx context.Context, accountID int64) (PasskeyRegistrationOptions, error) {
 	// WebAuthn ユーザーを読み込み、登録用の選択肢を発行する。
 	storedAccount, err := u.passkeys.FindWebAuthnUserByID(ctx, accountID)
@@ -70,7 +74,9 @@ func (u *PasskeyUsecase) BeginRegistration(ctx context.Context, accountID int64)
 		return PasskeyRegistrationOptions{}, err
 	}
 
-	if err := u.passkeys.SaveSession(ctx, sessionID, &accountID, PasskeyRegisterCeremony, passkeySession, 5*time.Minute); err != nil {
+	if err := u.passkeys.SaveSession(ctx, sessionID, &accountID, PasskeyRegisterCeremony, passkeySession, 5*time.Minute); errors.Is(err, repository.ErrTooManyPasskeySessions) {
+		return PasskeyRegistrationOptions{}, errors.Join(ErrPasskeySessionLimitExceeded, err)
+	} else if err != nil {
 		return PasskeyRegistrationOptions{}, errors.Join(ErrPasskeySaveSessionFailed, err)
 	}
 
@@ -80,6 +86,7 @@ func (u *PasskeyUsecase) BeginRegistration(ctx context.Context, accountID int64)
 	}, nil
 }
 
+// 登録 ceremony のセッションと認証器応答を検証して credential を保存する。
 func (u *PasskeyUsecase) FinishRegistration(ctx context.Context, accountID int64, sessionID string, request *http.Request) error {
 	// チャレンジを消費し、ログイン中のアカウントのものか確認する。
 	passkeySession, err := u.passkeys.ConsumeSession(ctx, sessionID, PasskeyRegisterCeremony)
@@ -101,13 +108,16 @@ func (u *PasskeyUsecase) FinishRegistration(ctx context.Context, accountID int64
 		return errors.Join(ErrPasskeyVerifyFailed, err)
 	}
 
-	if err := u.passkeys.SaveCredential(ctx, storedAccount.ID, credential); err != nil {
+	if err := u.passkeys.SaveCredential(ctx, storedAccount.ID, credential); errors.Is(err, repository.ErrPasskeyCredentialExists) {
+		return errors.Join(ErrPasskeyCredentialExists, err)
+	} else if err != nil {
 		return errors.Join(ErrPasskeySaveCredentialFailed, err)
 	}
 
 	return nil
 }
 
+// ユーザー名なしのパスキーログイン ceremony を開始する。
 func (u *PasskeyUsecase) BeginLogin(ctx context.Context) (PasskeyLoginOptions, error) {
 	// ユーザー名なしログイン用のチャレンジを発行し、検証用に保存する。
 	assertion, passkeySession, err := u.passkey.BeginLogin()
@@ -120,7 +130,9 @@ func (u *PasskeyUsecase) BeginLogin(ctx context.Context) (PasskeyLoginOptions, e
 		return PasskeyLoginOptions{}, err
 	}
 
-	if err := u.passkeys.SaveSession(ctx, sessionID, nil, PasskeyLoginCeremony, passkeySession, 5*time.Minute); err != nil {
+	if err := u.passkeys.SaveSession(ctx, sessionID, nil, PasskeyLoginCeremony, passkeySession, 5*time.Minute); errors.Is(err, repository.ErrTooManyPasskeySessions) {
+		return PasskeyLoginOptions{}, errors.Join(ErrPasskeySessionLimitExceeded, err)
+	} else if err != nil {
 		return PasskeyLoginOptions{}, errors.Join(ErrPasskeySaveSessionFailed, err)
 	}
 
@@ -130,6 +142,7 @@ func (u *PasskeyUsecase) BeginLogin(ctx context.Context) (PasskeyLoginOptions, e
 	}, nil
 }
 
+// ログイン ceremony のセッションと認証器応答を検証してアカウントを返す。
 func (u *PasskeyUsecase) FinishLogin(ctx context.Context, sessionID string, request *http.Request) (domain.Account, error) {
 	// 認証器の応答を検証する前に、ログイン用チャレンジを消費する。
 	passkeySession, err := u.passkeys.ConsumeSession(ctx, sessionID, PasskeyLoginCeremony)

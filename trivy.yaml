@@ -1,0 +1,11 @@
+scan:
+  skip-dirs:
+    - .git
+    - web/node_modules
+    - web/.next
+severity:
+  - HIGH
+  - CRITICAL
+ignore-unfixed: true
+exit-code: 1
+quiet: true

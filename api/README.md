@@ -17,6 +17,12 @@ ALLOWED_REDIRECT_URLS=http://localhost:3000/mypage,http://localhost:3100,https:/
 
 `mise run dev` で起動する場合は `api/.env.local` の値が使われます。`compose.yml` の `SANDBOX_ALLOWED_REDIRECT_URLS` は Docker Compose 起動時だけ有効です。
 
+リバースプロキシ配下で起動する場合は、`TRUSTED_PROXIES` に信頼するプロキシの IP または CIDR をカンマ区切りで指定してください。未指定の場合は、`X-Forwarded-For` などの forwarded header を使わず、直接接続元の IP を使います。
+
+```txt
+TRUSTED_PROXIES=10.0.0.0/8,192.0.2.10
+```
+
 Google OAuth を使う場合は、Google Cloud Console の OAuth callback URL に次の URL を登録してください。
 
 ```txt

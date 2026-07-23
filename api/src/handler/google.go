@@ -15,6 +15,7 @@ type OAuthHandler struct {
 	oauth *usecase.OAuthUsecase
 }
 
+// OAuth 用の HTTP handler を作る。
 func NewOAuthHandler(base *AuthHandler, oauth *usecase.OAuthUsecase) *OAuthHandler {
 	return &OAuthHandler{
 		base:  base,
@@ -22,11 +23,13 @@ func NewOAuthHandler(base *AuthHandler, oauth *usecase.OAuthUsecase) *OAuthHandl
 	}
 }
 
+// OAuth login と callback のルートを登録する。
 func (h *OAuthHandler) RegisterRoutes(routes gin.IRoutes) {
 	routes.GET("/auth/:provider/login", h.Login)
 	routes.GET("/auth/:provider/callback", h.Callback)
 }
 
+// OAuth 認可を開始して provider の認可 URL へリダイレクトする。
 func (h *OAuthHandler) Login(c *gin.Context) {
 	// OAuth 認可を開始し、状態値を Cookie に保持してから認証画面へ移動する。
 	state, authURL, err := h.oauth.BeginLogin(c.Param("provider"))
@@ -44,10 +47,12 @@ func (h *OAuthHandler) Login(c *gin.Context) {
 	c.Redirect(http.StatusFound, authURL)
 }
 
+// OAuth callback を検証してアプリのログインセッションを発行する。
 func (h *OAuthHandler) Callback(c *gin.Context) {
 	providerName := c.Param("provider")
 	if oauthError := c.Query("error"); oauthError != "" {
-		log.Printf("%s oauth callback returned error: %s", providerName, oauthError)
+		// OAuth error は quoted string としてログに残す。
+		log.Printf("%q oauth callback returned error: %q", providerName, oauthError)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "oauth authorization failed"})
 		return
 	}

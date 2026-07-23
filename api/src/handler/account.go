@@ -11,6 +11,7 @@ import (
 	"github.com/sandbox-nextjs/src/repository"
 )
 
+// 現在のログインセッションに対応するアカウント情報を返す。
 func (h *AuthHandler) Me(c *gin.Context) {
 	user, err := h.readSession(c)
 	if err != nil {
@@ -30,23 +31,20 @@ func (h *AuthHandler) Me(c *gin.Context) {
 		return
 	}
 
-	h.respondAuthenticated(c, storedAccount)
+	h.respondAuthenticated(c, storedAccount, h.cfg.AuthRedirectURL(c.Query("redirect_to")))
 }
 
-func (h *AuthHandler) respondAuthenticated(c *gin.Context, storedAccount domain.Account) {
+// 認証済みレスポンスを指定した戻り先 URL と合わせて返す。
+func (h *AuthHandler) respondAuthenticated(c *gin.Context, storedAccount domain.Account, redirectTo string) {
 	c.JSON(http.StatusOK, gin.H{
 		"account":       storedAccount,
 		"authenticated": true,
-		"redirectTo":    h.cfg.AuthRedirectURL(c.Query("redirect_to")),
+		"redirectTo":    redirectTo,
 		"user":          session.FromAccount(storedAccount),
 	})
 }
 
+// 保存済み戻り先を消費して認証済みレスポンスを返す。
 func (h *AuthHandler) respondAuthenticatedWithRedirect(c *gin.Context, storedAccount domain.Account) {
-	c.JSON(http.StatusOK, gin.H{
-		"account":       storedAccount,
-		"authenticated": true,
-		"redirectTo":    h.consumeAuthRedirect(c),
-		"user":          session.FromAccount(storedAccount),
-	})
+	h.respondAuthenticated(c, storedAccount, h.consumeAuthRedirect(c))
 }

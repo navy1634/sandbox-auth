@@ -12,6 +12,7 @@ type Config struct {
 	FrontendURL         string
 	DefaultRedirectURL  string
 	AllowedRedirectURLs []string
+	CORSAllowedOrigins  []string
 	GoogleClientID      string
 	GoogleSecret        string
 	GoogleRedirectURL   string
@@ -19,8 +20,10 @@ type Config struct {
 	PasskeyRPID         string
 	PasskeyRPOrigin     string
 	SessionSecret       []byte
+	TrustedProxies      []string
 }
 
+// 環境変数から API 設定を読み込み、必須値を検証する。
 func Load() (Config, error) {
 	frontendURL := strings.TrimRight(GetEnv("FRONTEND_URL", "http://localhost:3000"), "/")
 	defaultRedirectURL := strings.TrimRight(GetEnv("DEFAULT_REDIRECT_URL", frontendURL+"/mypage"), "/")
@@ -31,6 +34,7 @@ func Load() (Config, error) {
 		FrontendURL:         frontendURL,
 		DefaultRedirectURL:  defaultRedirectURL,
 		AllowedRedirectURLs: splitURLs(GetEnv("ALLOWED_REDIRECT_URLS", defaultRedirectURL)),
+		CORSAllowedOrigins:  splitOrigins(GetEnv("CORS_ALLOWED_ORIGINS", originOf(frontendURL))),
 		GoogleClientID:      os.Getenv("GOOGLE_ID"),
 		GoogleSecret:        os.Getenv("GOOGLE_SECRET"),
 		GoogleRedirectURL:   GetEnv("GOOGLE_REDIRECT_URL", "http://localhost:8080/auth/google/callback"),
@@ -38,6 +42,7 @@ func Load() (Config, error) {
 		PasskeyRPID:         GetEnv("PASSKEY_RP_ID", "localhost"),
 		PasskeyRPOrigin:     GetEnv("PASSKEY_RP_ORIGIN", "http://localhost:3000"),
 		SessionSecret:       []byte(os.Getenv("AUTH_SECRET")),
+		TrustedProxies:      splitStrings(GetEnv("TRUSTED_PROXIES", "")),
 	}
 
 	if cfg.GoogleClientID == "" || cfg.GoogleSecret == "" {
@@ -56,10 +61,14 @@ func Load() (Config, error) {
 	if len(cfg.AllowedRedirectURLs) == 0 {
 		return cfg, errors.New("ALLOWED_REDIRECT_URLS must include at least one URL")
 	}
+	if len(cfg.CORSAllowedOrigins) == 0 {
+		return cfg, errors.New("CORS_ALLOWED_ORIGINS must include at least one origin")
+	}
 
 	return cfg, nil
 }
 
+// 環境変数が空なら fallback を返す。
 func GetEnv(key string, fallback string) string {
 	value := os.Getenv(key)
 	if value == "" {
@@ -68,6 +77,7 @@ func GetEnv(key string, fallback string) string {
 	return value
 }
 
+// カンマ区切りの URL 文字列を空要素なしのリストへ変換する。
 func splitURLs(raw string) []string {
 	values := strings.Split(raw, ",")
 	urls := make([]string, 0, len(values))
@@ -80,6 +90,23 @@ func splitURLs(raw string) []string {
 	return urls
 }
 
+// カンマ区切りの文字列を空要素なしのリストへ変換する。
+func splitStrings(raw string) []string {
+	values := strings.Split(raw, ",")
+	result := make([]string, 0, len(values))
+	for _, value := range values {
+		trimmed := strings.TrimSpace(value)
+		if trimmed != "" {
+			result = append(result, trimmed)
+		}
+	}
+	if len(result) == 0 {
+		return nil
+	}
+	return result
+}
+
+// 指定された戻り先 URL が許可済みならその URL を返す。
 func (cfg Config) AuthRedirectURL(raw string) string {
 	candidate := strings.TrimSpace(raw)
 	if candidate == "" {
@@ -97,14 +124,29 @@ func (cfg Config) AuthRedirectURL(raw string) string {
 	return cfg.DefaultRedirectURL
 }
 
+// credentialed CORS で許可する Origin の重複を除いて返す。
 func (cfg Config) CORSOrigins() []string {
-	origins := []string{originOf(cfg.FrontendURL)}
-	for _, redirectURL := range cfg.AllowedRedirectURLs {
-		origins = append(origins, originOf(redirectURL))
-	}
-	return compactStrings(origins)
+	return compactStrings(cfg.CORSAllowedOrigins)
 }
 
+// カンマ区切りの URL 文字列から Origin だけを取り出す。
+func splitOrigins(raw string) []string {
+	values := strings.Split(raw, ",")
+	origins := make([]string, 0, len(values))
+	for _, value := range values {
+		trimmed := strings.TrimRight(strings.TrimSpace(value), "/")
+		if trimmed == "" {
+			continue
+		}
+		origin := originOf(trimmed)
+		if origin == trimmed {
+			origins = append(origins, origin)
+		}
+	}
+	return origins
+}
+
+// 相対 URL と絶対 URL を検証済みの絶対 URL へ正規化する。
 func normalizeRedirectURL(raw string, applicationURL string) (string, bool) {
 	if strings.HasPrefix(raw, "/") && !strings.HasPrefix(raw, "//") {
 		baseURL, err := url.Parse(applicationURL)
@@ -128,6 +170,7 @@ func normalizeRedirectURL(raw string, applicationURL string) (string, bool) {
 	return parsedURL.String(), true
 }
 
+// 戻り先 URL が許可 URL の scheme、host、path 条件を満たすかを返す。
 func redirectAllowed(rawTargetURL string, rawAllowedURL string) bool {
 	targetURL, targetErr := url.Parse(rawTargetURL)
 	allowedURL, allowedErr := url.Parse(rawAllowedURL)
@@ -146,6 +189,7 @@ func redirectAllowed(rawTargetURL string, rawAllowedURL string) bool {
 	return targetPath == allowedPath || strings.HasPrefix(targetPath, allowedPath+"/")
 }
 
+// URL 文字列から scheme と host だけを取り出す。
 func originOf(raw string) string {
 	parsedURL, err := url.Parse(raw)
 	if err != nil || parsedURL.Scheme == "" || parsedURL.Host == "" {
@@ -154,6 +198,7 @@ func originOf(raw string) string {
 	return parsedURL.Scheme + "://" + parsedURL.Host
 }
 
+// 空文字と重複を取り除いた文字列リストを返す。
 func compactStrings(values []string) []string {
 	result := make([]string, 0, len(values))
 	seen := map[string]struct{}{}

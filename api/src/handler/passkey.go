@@ -15,6 +15,7 @@ type PasskeyHandler struct {
 	passkeys *usecase.PasskeyUsecase
 }
 
+// パスキー用の HTTP handler を作る。
 func NewPasskeyHandler(base *AuthHandler, passkeys *usecase.PasskeyUsecase) *PasskeyHandler {
 	return &PasskeyHandler{
 		base:     base,
@@ -22,6 +23,7 @@ func NewPasskeyHandler(base *AuthHandler, passkeys *usecase.PasskeyUsecase) *Pas
 	}
 }
 
+// パスキー登録とログインのルートを登録する。
 func (h *PasskeyHandler) RegisterRoutes(routes gin.IRoutes) {
 	routes.POST("/passkeys/register/options", h.BeginRegistration)
 	routes.POST("/passkeys/register/verify", h.FinishRegistration)
@@ -29,6 +31,7 @@ func (h *PasskeyHandler) RegisterRoutes(routes gin.IRoutes) {
 	routes.POST("/passkeys/login/verify", h.FinishLogin)
 }
 
+// ログイン中のアカウント用にパスキー登録 options を発行する。
 func (h *PasskeyHandler) BeginRegistration(c *gin.Context) {
 	user, err := h.base.readSession(c)
 	if err != nil {
@@ -40,6 +43,10 @@ func (h *PasskeyHandler) BeginRegistration(c *gin.Context) {
 	options, err := h.passkeys.BeginRegistration(c.Request.Context(), user.AccountID)
 	if errors.Is(err, usecase.ErrPasskeyLoadAccountFailed) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to load account"})
+		return
+	}
+	if errors.Is(err, usecase.ErrPasskeySessionLimitExceeded) {
+		c.JSON(http.StatusTooManyRequests, gin.H{"error": "too many passkey sessions"})
 		return
 	}
 	if errors.Is(err, usecase.ErrPasskeySaveSessionFailed) {
@@ -57,6 +64,7 @@ func (h *PasskeyHandler) BeginRegistration(c *gin.Context) {
 	c.JSON(http.StatusOK, options.Creation)
 }
 
+// 認証器から返った登録応答を検証して credential を保存する。
 func (h *PasskeyHandler) FinishRegistration(c *gin.Context) {
 	user, err := h.base.readSession(c)
 	if err != nil {
@@ -64,7 +72,7 @@ func (h *PasskeyHandler) FinishRegistration(c *gin.Context) {
 		return
 	}
 
-	sessionID, err := c.Cookie(passkeySessionCookieName)
+	sessionID, err := c.Cookie(h.base.cookieName(passkeySessionCookieName))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "passkey session is missing"})
 		return
@@ -84,6 +92,10 @@ func (h *PasskeyHandler) FinishRegistration(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to load account"})
 		return
 	}
+	if errors.Is(err, usecase.ErrPasskeyCredentialExists) {
+		c.JSON(http.StatusConflict, gin.H{"error": "passkey credential already exists"})
+		return
+	}
 	if errors.Is(err, usecase.ErrPasskeySaveCredentialFailed) {
 		log.Printf("failed to save passkey credential: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to save passkey credential"})
@@ -99,9 +111,14 @@ func (h *PasskeyHandler) FinishRegistration(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"ok": true})
 }
 
+// パスキーによる discoverable login の options を発行する。
 func (h *PasskeyHandler) BeginLogin(c *gin.Context) {
 	// パスキーによるログインを開始し、検証用セッションを Cookie に保持する。
 	options, err := h.passkeys.BeginLogin(c.Request.Context())
+	if errors.Is(err, usecase.ErrPasskeySessionLimitExceeded) {
+		c.JSON(http.StatusTooManyRequests, gin.H{"error": "too many passkey sessions"})
+		return
+	}
 	if errors.Is(err, usecase.ErrPasskeySaveSessionFailed) {
 		log.Printf("failed to save passkey login session: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to save passkey session"})
@@ -118,8 +135,9 @@ func (h *PasskeyHandler) BeginLogin(c *gin.Context) {
 	c.JSON(http.StatusOK, options.Assertion)
 }
 
+// 認証器から返ったログイン応答を検証してログインセッションを発行する。
 func (h *PasskeyHandler) FinishLogin(c *gin.Context) {
-	sessionID, err := c.Cookie(passkeySessionCookieName)
+	sessionID, err := c.Cookie(h.base.cookieName(passkeySessionCookieName))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "passkey session is missing"})
 		return

@@ -30,7 +30,7 @@ func (r *EntAccountRepository) UpsertProviderIdentity(ctx context.Context, ident
 		return domain.Account{}, err
 	}
 
-	// 既存の外部認証 ID があれば、メールと確認状態を更新する。
+	// 既存の外部認証 ID があれば、メールと確認状態を更新する
 	storedIdentity, err := client.AuthIdentity.Query().
 		Where(
 			entidentity.Provider(identity.Provider),
@@ -51,7 +51,7 @@ func (r *EntAccountRepository) UpsertProviderIdentity(ctx context.Context, ident
 		return domain.Account{}, err
 	}
 
-	// 初回ログイン時は、WebAuthn のユーザーハンドルを持つアカウントも作成する。
+	// 初回ログイン時は、WebAuthn のユーザーハンドルを持つアカウントも作成する
 	userHandle, err := randomBytes(32)
 	if err != nil {
 		return domain.Account{}, err
@@ -138,7 +138,7 @@ func (r *EntAccountRepository) primaryIdentity(ctx context.Context, accountID in
 		return nil, err
 	}
 
-	// 表示用の代表 ID として、最初に紐づいた外部認証 ID を使う。
+	// 表示用の代表 ID として、最初に紐づいた外部認証 ID を使う
 	storedIdentity, err := client.AuthIdentity.Query().
 		Where(entidentity.AccountID(accountID)).
 		Order(ent.Asc(entidentity.FieldCreatedAt)).
@@ -150,7 +150,7 @@ func (r *EntAccountRepository) primaryIdentity(ctx context.Context, accountID in
 }
 
 func toAccount(storedAccount *ent.Account, identity *ent.AuthIdentity) domain.Account {
-	// Ent の保存形式から、handler と usecase が扱う domain.Account へ詰め替える。
+	// Ent の保存形式から、handler と usecase が扱う domain.Account へ詰め替える
 	account := domain.Account{
 		ID:                 int64(storedAccount.ID),
 		CreatedAt:          storedAccount.CreatedAt,

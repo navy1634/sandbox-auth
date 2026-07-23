@@ -25,12 +25,6 @@ services:
       - ./api/.env.local
     environment:
       - FRONTEND_URL=${SANDBOX_FRONTEND_URL:-http://localhost:3000}
-      - DEFAULT_REDIRECT_URL=${SANDBOX_DEFAULT_REDIRECT_URL:-http://localhost:3000/mypage}
-      - ALLOWED_REDIRECT_URLS=${SANDBOX_ALLOWED_REDIRECT_URLS:-http://localhost:3000/mypage,http://localhost:3001,http://localhost:3100}
-      - GOOGLE_REDIRECT_URL=${SANDBOX_API_URL:-http://localhost:8080}/auth/google/callback
-      - DATABASE_URL=postgres://postgres:password@db:5432/test?sslmode=disable
-      - PASSKEY_RP_ID=${SANDBOX_RP_ID:-localhost}
-      - PASSKEY_RP_ORIGIN=${SANDBOX_FRONTEND_URL:-http://localhost:3000}
     ports:
       - 8080:8080
 

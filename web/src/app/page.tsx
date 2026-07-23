@@ -7,10 +7,7 @@ export default function Home() {
         <div className={styles.intro}>
           <p className={styles.label}>Auth Sandbox</p>
           <h1>アカウント確認</h1>
-          <p>
-            Google
-            ログイン、パスキー、本体アプリへの戻りを確認できます。
-          </p>
+          <p>Google ログイン、パスキー、本体アプリへの戻りを確認できます。</p>
         </div>
       </main>
     </div>

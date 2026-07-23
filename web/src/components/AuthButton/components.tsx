@@ -22,7 +22,9 @@ export function AuthButtonView({
   if (userEmail || accountId) {
     return (
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        <span style={{ fontSize: 14 }}>{userEmail ?? `Account ID: ${accountId}`}</span>
+        <span style={{ fontSize: 14 }}>
+          {userEmail ?? `Account ID: ${accountId}`}
+        </span>
         <button type="button" onClick={onLogout}>
           Logout
         </button>

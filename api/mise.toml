@@ -1,12 +1,15 @@
 [tools]
 go = "1.26.5"
 golangci-lint = "2.12.2"
+air = "1.65.3"
+"go:entgo.io/ent/cmd/ent" = "v0.14.6"
+"go:github.com/pressly/goose/v3/cmd/goose" = "v3.27.2"
 
 [env]
 _.file = ".env.local"
 
 [tasks.dev]
-run = "go tool air"
+run = "air"
 
 [tasks.build]
 run = "go build -o ./tmp/ ./src"
@@ -18,10 +21,10 @@ run = "go run src/main.go"
 run = "go mod tidy"
 
 [tasks."migrate:up"]
-run = "go tool goose -dir ./migrations postgres \"$DATABASE_URL\" up"
+run = "goose -dir ./migrations postgres \"$DATABASE_URL\" up"
 
 [tasks."migrate:down"]
-run = "go tool goose -dir ./migrations postgres \"$DATABASE_URL\" down"
+run = "goose -dir ./migrations postgres \"$DATABASE_URL\" down"
 
 [tasks.format]
 run = "go fmt ./..."
@@ -38,6 +41,12 @@ run = "golangci-lint config verify"
 [tasks.test]
 run = "go test ./..."
 
+[tasks.vulncheck]
+run = "go run golang.org/x/vuln/cmd/govulncheck@v1.1.4 ./..."
+
+[tasks."docker:build"]
+run = "docker build -t \"$IMAGE_TAG\" ."
+
 [tasks.ci]
 run = [
   { task = "build" },
@@ -45,5 +54,6 @@ run = [
     "format",
     "lint",
     "test",
+    "vulncheck",
   ] },
 ]
