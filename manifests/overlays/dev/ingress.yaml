@@ -6,8 +6,12 @@ metadata:
     app.kubernetes.io/name: sandbox-auth
     app.kubernetes.io/part-of: sandbox-auth
 spec:
+  tls:
+    - hosts:
+        - auth.sandbox.navy1634.com
+      secretName: sandbox-auth-tls
   rules:
-    - host: auth.localhost
+    - host: auth.sandbox.navy1634.com
       http:
         paths:
           - path: /api

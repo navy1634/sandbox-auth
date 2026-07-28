@@ -5,4 +5,4 @@ metadata:
 data:
   API_INTERNAL_BASE_URL: "http://sandbox-auth-api.sandbox-auth.svc.cluster.local:8080"
   NEXT_PUBLIC_API_BASE_URL: "/api"
-  NEXT_PUBLIC_DEFAULT_REDIRECT_URL: "http://localhost:3000/mypage"
+  NEXT_PUBLIC_DEFAULT_REDIRECT_URL: "https://auth.sandbox.navy1634.com/mypage"

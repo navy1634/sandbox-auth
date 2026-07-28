@@ -49,13 +49,19 @@ kubectl -n sandbox-auth create secret generic sandbox-auth-api-secret \
   --from-literal=GOOGLE_ID='replace-me' \
   --from-literal=GOOGLE_SECRET='replace-me' \
   --from-literal=AUTH_SECRET='replace-me-with-at-least-32-bytes'
+
+kubectl -n sandbox-auth create secret tls sandbox-auth-tls \
+  --cert=/path/to/tls.crt \
+  --key=/path/to/tls.key
 ```
 
 ## 設定
 
-適用する overlay の `api-configmap.yaml`、`web-configmap.yaml`、`domain-configmap.yaml` を編集します。
+適用する overlay の `api-configmap.yaml`、`web-configmap.yaml`、`ingress.yaml` を編集します。
 
 `API_INTERNAL_BASE_URL` は CoreDNS 名、`NEXT_PUBLIC_API_BASE_URL` はブラウザから到達できる URL を指定します。
+
+パスキーを使う場合、Ingress は HTTPS で公開します。`PASSKEY_RP_ORIGIN` と Google OAuth のリダイレクト URI は同じ HTTPS の origin に合わせます。
 
 ## 適用
 

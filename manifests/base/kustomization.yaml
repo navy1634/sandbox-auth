@@ -3,7 +3,6 @@ kind: Kustomization
 resources:
   - api-deployment.yaml
   - api-service.yaml
-  - ingress.yaml
   - database-service.yaml
   - database-networkpolicy.yaml
   - database-statefulset.yaml
