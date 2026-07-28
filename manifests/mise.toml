@@ -1,0 +1,11 @@
+[tools]
+kubectl = "1.36.3"
+
+[env]
+_.file = ".env"
+
+[tasks."render"]
+run = "kubectl kustomize manifests/overlays/$ENVIRONMENT"
+
+[tasks."apply"]
+run = "kubectl apply -k manifests/overlays/$ENVIRONMENT"

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sandbox-auth-database
+  labels:
+    app.kubernetes.io/name: sandbox-auth-database
+    app.kubernetes.io/part-of: sandbox-auth
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: sandbox-auth-database
+  ports:
+    - name: database
+      port: 5432
+      targetPort: database

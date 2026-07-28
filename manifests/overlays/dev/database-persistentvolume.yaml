@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: sandbox-auth-database-storage
+  labels:
+    app.kubernetes.io/name: sandbox-auth-database
+    app.kubernetes.io/part-of: sandbox-auth
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+  hostPath:
+    path: /var/lib/sandbox-auth/database
+    type: DirectoryOrCreate

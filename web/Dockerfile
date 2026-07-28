@@ -21,15 +21,15 @@ RUN pnpm prune --prod
 FROM base AS runner
 WORKDIR /app
 ENV NODE_ENV=production
-RUN addgroup -S nodejs && adduser -S nextjs -G nodejs
-COPY --from=builder --chown=nextjs:nodejs /app/package.json ./
-COPY --from=builder --chown=nextjs:nodejs /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
-COPY --from=builder --chown=nextjs:nodejs /app/next.config.mjs ./
-COPY --from=builder --chown=nextjs:nodejs /app/next-env.d.ts ./
-USER nextjs
+RUN chown node:node /app
+COPY --from=builder --chown=node:node /app/package.json ./
+COPY --from=builder --chown=node:node /app/public ./public
+COPY --from=builder --chown=node:node /app/.next ./.next
+COPY --from=builder --chown=node:node /app/node_modules ./node_modules
+COPY --from=builder --chown=node:node /app/next.config.mjs ./
+COPY --from=builder --chown=node:node /app/next-env.d.ts ./
+USER node
 
 EXPOSE 3000
 
-CMD ["pnpm", "start"]
+CMD ["./node_modules/.bin/next", "start"]

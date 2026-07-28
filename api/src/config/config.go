@@ -2,6 +2,7 @@ package config
 
 import (
 	"errors"
+	"net"
 	"net/url"
 	"os"
 	"strings"
@@ -27,6 +28,10 @@ type Config struct {
 func Load() (Config, error) {
 	frontendURL := strings.TrimRight(GetEnv("FRONTEND_URL", "http://localhost:3000"), "/")
 	defaultRedirectURL := strings.TrimRight(GetEnv("DEFAULT_REDIRECT_URL", frontendURL+"/mypage"), "/")
+	databaseURL, err := databaseURLFromEnv()
+	if err != nil {
+		return Config{}, err
+	}
 
 	// 環境変数から API の起動設定と外部サービス設定を読み込む。
 	cfg := Config{
@@ -38,7 +43,7 @@ func Load() (Config, error) {
 		GoogleClientID:      os.Getenv("GOOGLE_ID"),
 		GoogleSecret:        os.Getenv("GOOGLE_SECRET"),
 		GoogleRedirectURL:   GetEnv("GOOGLE_REDIRECT_URL", "http://localhost:8080/auth/google/callback"),
-		DatabaseURL:         os.Getenv("DATABASE_URL"),
+		DatabaseURL:         databaseURL,
 		PasskeyRPID:         GetEnv("PASSKEY_RP_ID", "localhost"),
 		PasskeyRPOrigin:     GetEnv("PASSKEY_RP_ORIGIN", "http://localhost:3000"),
 		SessionSecret:       []byte(os.Getenv("AUTH_SECRET")),
@@ -52,9 +57,6 @@ func Load() (Config, error) {
 	if len(cfg.SessionSecret) < 32 {
 		return cfg, errors.New("AUTH_SECRET must be at least 32 bytes")
 	}
-	if cfg.DatabaseURL == "" {
-		return cfg, errors.New("DATABASE_URL is required")
-	}
 	if cfg.DefaultRedirectURL == "" {
 		return cfg, errors.New("DEFAULT_REDIRECT_URL is required")
 	}
@@ -66,6 +68,37 @@ func Load() (Config, error) {
 	}
 
 	return cfg, nil
+}
+
+// DB 接続用の環境変数から PostgreSQL 接続 URL を組み立てる。
+func databaseURLFromEnv() (string, error) {
+	host := GetEnv("DB_HOST", "localhost")
+	port := GetEnv("DB_PORT", "5432")
+	name := os.Getenv("DB_NAME")
+	user := os.Getenv("DB_USER")
+	password := os.Getenv("DB_PASSWORD")
+	sslmode := GetEnv("DB_SSLMODE", "disable")
+
+	if name == "" {
+		return "", errors.New("DB_NAME is required")
+	}
+	if user == "" {
+		return "", errors.New("DB_USER is required")
+	}
+	if password == "" {
+		return "", errors.New("DB_PASSWORD is required")
+	}
+
+	query := url.Values{}
+	query.Set("sslmode", sslmode)
+	databaseURL := url.URL{
+		Scheme:   "postgres",
+		User:     url.UserPassword(user, password),
+		Host:     net.JoinHostPort(host, port),
+		Path:     "/" + name,
+		RawQuery: query.Encode(),
+	}
+	return databaseURL.String(), nil
 }
 
 // 環境変数が空なら fallback を返す。

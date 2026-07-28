@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sandbox-auth-api
+  labels:
+    app.kubernetes.io/name: sandbox-auth-api
+    app.kubernetes.io/part-of: sandbox-auth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: sandbox-auth-api
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: sandbox-auth-api
+        app.kubernetes.io/part-of: sandbox-auth
+    spec:
+      containers:
+        - name: api
+          image: sandbox-auth-api:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: sandbox-auth-api-config
+            - secretRef:
+                name: sandbox-auth-api-secret
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsGroup: 1000
+            runAsNonRoot: true
+            runAsUser: 1000
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault

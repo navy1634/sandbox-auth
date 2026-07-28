@@ -119,7 +119,9 @@ func TestLoadReadsTrustedProxies(t *testing.T) {
 	t.Setenv("GOOGLE_ID", "google-client-id")
 	t.Setenv("GOOGLE_SECRET", "google-secret")
 	t.Setenv("AUTH_SECRET", "01234567890123456789012345678901")
-	t.Setenv("DATABASE_URL", "postgres://user:pass@localhost:5432/app")
+	t.Setenv("DB_NAME", "app")
+	t.Setenv("DB_USER", "user")
+	t.Setenv("DB_PASSWORD", "pass")
 	t.Setenv("TRUSTED_PROXIES", "10.0.0.0/8,192.0.2.10")
 
 	cfg, err := Load()
@@ -135,5 +137,24 @@ func TestLoadReadsTrustedProxies(t *testing.T) {
 		if cfg.TrustedProxies[i] != want[i] {
 			t.Fatalf("TrustedProxies = %v, want %v", cfg.TrustedProxies, want)
 		}
+	}
+}
+
+// DB 接続要素から PostgreSQL 接続 URL を組み立てることを確認する。
+func TestDatabaseURLFromEnv(t *testing.T) {
+	t.Setenv("DB_HOST", "database.internal")
+	t.Setenv("DB_PORT", "15432")
+	t.Setenv("DB_NAME", "app")
+	t.Setenv("DB_USER", "user")
+	t.Setenv("DB_PASSWORD", "p@ss word")
+	t.Setenv("DB_SSLMODE", "require")
+
+	got, err := databaseURLFromEnv()
+	if err != nil {
+		t.Fatalf("databaseURLFromEnv() error = %v", err)
+	}
+	want := "postgres://user:p%40ss%20word@database.internal:15432/app?sslmode=require"
+	if got != want {
+		t.Fatalf("databaseURLFromEnv() = %q, want %q", got, want)
 	}
 }

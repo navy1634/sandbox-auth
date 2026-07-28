@@ -1,0 +1,29 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: sandbox-auth
+resources:
+  - api-configmap.yaml
+  - database-persistentvolume.yaml
+  - domain-configmap.yaml
+  - namespace.yaml
+  - web-configmap.yaml
+  - ../../base
+images:
+  - name: sandbox-auth-api
+    newName: localhost:5000/sandbox_nextjs-api
+    newTag: latest
+  - name: sandbox-auth-web
+    newName: localhost:5000/sandbox_nextjs-web
+    newTag: latest
+
+replacements:
+  - source:
+      kind: ConfigMap
+      name: sandbox-auth-domain-config
+      fieldPath: data.AUTH_HOST
+    targets:
+      - select:
+          kind: Ingress
+          name: sandbox-auth
+        fieldPaths:
+          - spec.rules.0.host

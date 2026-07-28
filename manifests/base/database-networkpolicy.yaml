@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: sandbox-auth-database
+  labels:
+    app.kubernetes.io/name: sandbox-auth-database
+    app.kubernetes.io/part-of: sandbox-auth
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: sandbox-auth-database
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: sandbox-auth-api
+      ports:
+        - protocol: TCP
+          port: 5432
