@@ -23,7 +23,7 @@ export type MeResponse = {
 };
 
 export const apiBaseURL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
+  process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api";
 
 const configuredDefaultRedirectURL =
   process.env.NEXT_PUBLIC_DEFAULT_REDIRECT_URL;
@@ -33,7 +33,7 @@ export function defaultRedirectURL(): string {
     return configuredDefaultRedirectURL;
   }
   if (typeof window === "undefined") {
-    return "http://localhost:3000/mypage";
+    return "/mypage";
   }
 
   return `${window.location.origin}/mypage`;

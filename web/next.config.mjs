@@ -8,9 +8,8 @@ const nextConfig = {
           {
             key: "Content-Security-Policy",
             value:
-              "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://lh3.googleusercontent.com; connect-src 'self' " +
-              (process.env.NEXT_PUBLIC_API_BASE_URL ??
-                "http://localhost:8080") +
+              "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://lh3.googleusercontent.com; connect-src 'self' " +
+              (process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api") +
               "; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'",
           },
           {
@@ -27,7 +26,8 @@ const nextConfig = {
           },
           {
             key: "Permissions-Policy",
-            value: "camera=(), microphone=(), geolocation=()",
+            value:
+              "camera=(), microphone=(), geolocation=(), publickey-credentials-create=(self), publickey-credentials-get=(self)",
           },
         ],
       },

@@ -4,7 +4,6 @@ import { startRegistration } from "@simplewebauthn/browser";
 import { useEffect, useState } from "react";
 import {
   apiBaseURL,
-  authRedirectTo,
   defaultRedirectURL,
   oauthLoginURL,
   webAuthnOptions,
@@ -12,11 +11,23 @@ import {
 } from "../authTypes";
 import styles from "./page.module.css";
 
+type APIErrorResponse = {
+  error?: string;
+};
+
+function errorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return `${error.name}: ${error.message}`;
+  }
+  return "unknown error";
+}
+
 export default function RegisterPage() {
   const [me, setMe] = useState<MeResponse>({ authenticated: false });
   const [status, setStatus] = useState("loading");
   const [message, setMessage] = useState("");
-  const redirectTo = authRedirectTo();
+  const [isRegistering, setIsRegistering] = useState(false);
+  const redirectTo = "/register";
 
   useEffect(() => {
     fetch(`${apiBaseURL}/me?redirect_to=${encodeURIComponent(redirectTo)}`, {
@@ -33,7 +44,8 @@ export default function RegisterPage() {
   }, [redirectTo]);
 
   const registerPasskey = async () => {
-    setMessage("");
+    setIsRegistering(true);
+    setMessage("パスキー登録を開始しています。");
 
     try {
       const optionsResponse = await fetch(
@@ -43,8 +55,19 @@ export default function RegisterPage() {
           credentials: "include",
         },
       );
-      const optionsJSON = webAuthnOptions(await optionsResponse.json());
+      const optionsBody = await optionsResponse.json();
+
+      if (!optionsResponse.ok) {
+        const error = optionsBody as APIErrorResponse;
+        throw new Error(
+          `failed to create passkey options: ${optionsResponse.status} ${error.error ?? optionsResponse.statusText}`,
+        );
+      }
+
+      const optionsJSON = webAuthnOptions(optionsBody);
       const credential = await startRegistration({ optionsJSON });
+      setMessage("パスキー登録結果を検証しています。");
+
       const verifyResponse = await fetch(
         `${apiBaseURL}/passkeys/register/verify`,
         {
@@ -56,12 +79,17 @@ export default function RegisterPage() {
       );
 
       if (!verifyResponse.ok) {
-        throw new Error("failed to verify passkey");
+        const error = (await verifyResponse.json()) as APIErrorResponse;
+        throw new Error(
+          `failed to verify passkey: ${verifyResponse.status} ${error.error ?? verifyResponse.statusText}`,
+        );
       }
 
       setMessage("パスキーを登録しました。");
-    } catch {
-      setMessage("パスキーを登録できませんでした。");
+    } catch (error) {
+      setMessage(`パスキーを登録できませんでした。${errorMessage(error)}`);
+    } finally {
+      setIsRegistering(false);
     }
   };
 
@@ -119,9 +147,10 @@ export default function RegisterPage() {
           <button
             className={styles.primaryButton}
             type="button"
+            disabled={isRegistering}
             onClick={registerPasskey}
           >
-            パスキーを登録
+            {isRegistering ? "登録中" : "パスキーを登録"}
           </button>
           <button
             className={styles.secondaryButton}

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { authRedirectTo, oauthLoginURL } from "@/app/authTypes";
 
 const apiBaseURL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
+  process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api";
 
 export type AuthButtonViewProps = {
   accountId?: number | null;
@@ -75,7 +75,7 @@ function AuthButtonContent() {
             throw new Error("failed to logout");
           }
 
-          window.location.reload();
+          window.location.href = "/login";
         } catch (error) {
           console.error(error);
         }
