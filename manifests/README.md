@@ -55,6 +55,43 @@ kubectl -n sandbox-auth create secret tls sandbox-auth-tls \
   --key=/path/to/tls.key
 ```
 
+## ローカル HTTPS
+
+パスキーを使う場合、ブラウザで証明書エラーが出ない HTTPS が必要です。ローカルでは `mkcert` で証明書を作成します。
+
+ブラウザが使う OS の信頼ストアへ、`mkcert` のローカル CA を登録します。
+
+```sh
+mkcert -install
+```
+
+開発用ドメインの証明書を作成します。
+
+```sh
+mkcert auth.sandbox.navy1634.com
+```
+
+作成された証明書を Kubernetes の TLS Secret として登録します。
+
+```sh
+kubectl -n sandbox-auth delete secret sandbox-auth-tls
+kubectl -n sandbox-auth create secret tls sandbox-auth-tls \
+  --cert=auth.sandbox.navy1634.com.pem \
+  --key=auth.sandbox.navy1634.com-key.pem
+```
+
+ブラウザが使う OS の hosts に、Ingress の IP と開発用ドメインを設定します。
+
+```txt
+192.168.0.242 auth.sandbox.navy1634.com
+```
+
+Google OAuth のリダイレクト URI は HTTPS の URL を登録します。
+
+```txt
+https://auth.sandbox.navy1634.com/api/auth/google/callback
+```
+
 ## 設定
 
 適用する overlay の `api-configmap.yaml`、`web-configmap.yaml`、`ingress.yaml` を編集します。
