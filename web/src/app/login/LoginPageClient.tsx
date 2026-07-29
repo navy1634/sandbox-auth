@@ -13,6 +13,17 @@ import {
 } from "../authTypes";
 import styles from "./page.module.css";
 
+type APIErrorResponse = {
+  error?: string;
+};
+
+function errorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return `${error.name}: ${error.message}`;
+  }
+  return "unknown error";
+}
+
 function postLoginRedirectURL(candidate?: string): string {
   const fallbackURL = defaultRedirectURL();
   if (!candidate || typeof window === "undefined") {
@@ -63,7 +74,7 @@ export default function LoginPageClient() {
   const user = me.user;
 
   const handlePasskeyLogin = async () => {
-    setMessage("");
+    setMessage("パスキーログインを開始しています。");
     setStatus("passkey");
 
     try {
@@ -74,8 +85,21 @@ export default function LoginPageClient() {
           credentials: "include",
         },
       );
-      const optionsJSON = webAuthnOptions(await optionsResponse.json());
+      const optionsBody = await optionsResponse.json();
+
+      if (!optionsResponse.ok) {
+        const error = optionsBody as APIErrorResponse;
+        throw new Error(
+          `failed to create passkey options: ${optionsResponse.status} ${error.error ?? optionsResponse.statusText}`,
+        );
+      }
+
+      setMessage("認証器を起動しています。");
+
+      const optionsJSON = webAuthnOptions(optionsBody);
       const assertion = await startAuthentication({ optionsJSON });
+      setMessage("パスキーログイン結果を検証しています。");
+
       const verifyResponse = await fetch(
         `${apiBaseURL}/passkeys/login/verify`,
         {
@@ -87,16 +111,19 @@ export default function LoginPageClient() {
       );
 
       if (!verifyResponse.ok) {
-        throw new Error("failed to verify passkey");
+        const error = (await verifyResponse.json()) as APIErrorResponse;
+        throw new Error(
+          `failed to verify passkey: ${verifyResponse.status} ${error.error ?? verifyResponse.statusText}`,
+        );
       }
 
       const data = (await verifyResponse.json()) as MeResponse;
       setMe(data);
       setStatus("authenticated");
       window.location.href = postLoginRedirectURL(data.redirectTo);
-    } catch {
+    } catch (error) {
       setStatus(me.authenticated ? "authenticated" : "unauthenticated");
-      setMessage("パスキーでログインできませんでした。");
+      setMessage(`パスキーでログインできませんでした。${errorMessage(error)}`);
     }
   };
 
