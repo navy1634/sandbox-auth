@@ -2,7 +2,7 @@ allowBuilds:
   esbuild: false
   sharp: false
 overrides:
-  postcss: 8.5.19
+  postcss: 8.5.23
   sharp: 0.35.3
 ignoredBuiltDependencies:
   - sharp
@@ -10,3 +10,6 @@ ignoredBuiltDependencies:
 minimumReleaseAge: 4320
 minimumReleaseAgeStrict: true
 minimumReleaseAgeIgnoreMissingTime: false
+minimumReleaseAgeExclude:
+  # Renovate security update: postcss@8.5.23
+  - postcss@8.5.23
