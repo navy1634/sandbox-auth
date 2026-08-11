@@ -29,7 +29,7 @@ services:
       - 8080:8080
 
   wiremock:
-    image: wiremock/wiremock:3.9.1
+    image: wiremock/wiremock:3.13.2
     container_name: sandbox-auth-wiremock-container
     profiles:
       - mock
@@ -40,7 +40,7 @@ services:
     command: ["--global-response-templating", "--verbose"]
 
   db:
-    image: postgres:17.1
+    image: postgres:17.10
     container_name: sandbox-auth-db-container
     environment:
       - POSTGRES_DB=test
