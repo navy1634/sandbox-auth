@@ -37,14 +37,14 @@ func (h *AuthHandler) readSession(c *gin.Context) (session.User, error) {
 func (h *AuthHandler) setCookie(c *gin.Context, name string, value string, maxAge int, httpOnly bool) {
 	// フロントエンド URL が HTTPS のときだけ Secure 属性付き Cookie として送る。
 	c.SetSameSite(http.SameSiteLaxMode)
-	c.SetCookie(h.cookieName(name), value, maxAge, "/", "", h.secureCookies(), httpOnly)
+	c.SetCookie(h.cookieName(name), value, maxAge, "/", h.cookieDomain(name), h.secureCookies(), httpOnly)
 }
 
 // 認証系 Cookie をブラウザから削除する Set-Cookie を返す。
 func (h *AuthHandler) clearCookie(c *gin.Context, name string) {
 	// 同じ属性で期限切れ Cookie を返し、ブラウザ側の値を消す。
 	c.SetSameSite(http.SameSiteLaxMode)
-	c.SetCookie(h.cookieName(name), "", -1, "/", "", h.secureCookies(), true)
+	c.SetCookie(h.cookieName(name), "", -1, "/", h.cookieDomain(name), h.secureCookies(), true)
 }
 
 // 認証完了後の戻り先 URL を検証して Cookie に保存する。
@@ -86,6 +86,9 @@ func (h *AuthHandler) cookieName(name string) string {
 	}
 	switch name {
 	case sessionCookieName:
+		if h.cfg.CookieDomain != "" {
+			return sessionCookieName
+		}
 		return hostSessionCookieName
 	case stateCookieName:
 		return hostStateCookieName
@@ -96,4 +99,12 @@ func (h *AuthHandler) cookieName(name string) string {
 	default:
 		return name
 	}
+}
+
+// ログインセッションだけを設定済みの親ドメインで共有する。
+func (h *AuthHandler) cookieDomain(name string) string {
+	if name == sessionCookieName {
+		return h.cfg.CookieDomain
+	}
+	return ""
 }

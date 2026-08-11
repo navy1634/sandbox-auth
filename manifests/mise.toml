@@ -5,10 +5,20 @@ kubectl = "1.36.3"
 _.file = ".env"
 
 [tasks."render"]
-run = "kubectl kustomize manifests/overlays/$ENVIRONMENT"
+run = "kubectl kustomize overlays/${usage_env}/"
+usage = '''
+arg "<env>" help="Target environment" {
+  choices "dev" "staging" "prd"
+}
+'''
 
 [tasks."apply"]
-run = "kubectl apply -k manifests/overlays/$ENVIRONMENT"
+run = "kubectl apply -k overlays/${usage_env}/"
+usage = '''
+arg "<env>" help="Target environment" {
+  choices "dev" "staging" "prd"
+}
+'''
 
 [tasks."connect:db"]
 run = "kubectl exec -it -n sandbox-auth statefulset/sandbox-auth-database -- psql -U postgres -d test"

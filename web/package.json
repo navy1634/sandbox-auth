@@ -6,6 +6,8 @@
     "dev": "next dev --hostname 0.0.0.0 --port 3000",
     "build": "next build",
     "start": "next start",
+    "test": "vitest run --project unit",
+    "test:coverage": "vitest run --project unit --coverage",
     "lint": "pnpm lint:js && pnpm lint:css",
     "lint:js": "oxlint --fix .",
     "lint:css": "stylelint \"**/*.css\" --fix",

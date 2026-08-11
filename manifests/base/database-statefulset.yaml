@@ -32,6 +32,7 @@ spec:
             capabilities:
               add:
                 - CHOWN
+                - DAC_READ_SEARCH
               drop:
                 - ALL
             runAsGroup: 0

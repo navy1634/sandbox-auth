@@ -7,6 +7,7 @@ require (
 	github.com/gin-gonic/gin v1.12.0
 	github.com/go-webauthn/webauthn v0.17.4
 	github.com/lib/pq v1.12.3
+	golang.org/x/net v0.57.0
 	golang.org/x/oauth2 v0.36.0
 	google.golang.org/api v0.289.0
 	modernc.org/sqlite v1.53.0
@@ -77,7 +78,6 @@ require (
 	golang.org/x/arch v0.29.0 // indirect
 	golang.org/x/crypto v0.54.0 // indirect
 	golang.org/x/mod v0.38.0 // indirect
-	golang.org/x/net v0.57.0 // indirect
 	golang.org/x/sync v0.22.0 // indirect
 	golang.org/x/sys v0.47.0 // indirect
 	golang.org/x/text v0.40.0 // indirect

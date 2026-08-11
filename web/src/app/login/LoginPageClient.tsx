@@ -5,13 +5,16 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   apiBaseURL,
-  authRedirectTo,
   defaultRedirectURL,
   oauthLoginURL,
   webAuthnOptions,
   type MeResponse,
 } from "../authTypes";
 import styles from "./page.module.css";
+
+type LoginPageClientProps = {
+  redirectTo: string;
+};
 
 type APIErrorResponse = {
   error?: string;
@@ -45,12 +48,10 @@ function postLoginRedirectURL(candidate?: string): string {
   return candidate;
 }
 
-export default function LoginPageClient() {
+export default function LoginPageClient({ redirectTo }: LoginPageClientProps) {
   const [me, setMe] = useState<MeResponse>({ authenticated: false });
   const [status, setStatus] = useState("loading");
   const [message, setMessage] = useState("");
-  const redirectTo = authRedirectTo();
-
   useEffect(() => {
     fetch(`${apiBaseURL}/me?redirect_to=${encodeURIComponent(redirectTo)}`, {
       credentials: "include",

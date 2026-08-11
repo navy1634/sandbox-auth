@@ -2,6 +2,47 @@ package config
 
 import "testing"
 
+func TestNormalizeCookieDomain(t *testing.T) {
+	tests := []struct {
+		name        string
+		frontendURL string
+		raw         string
+		want        string
+		wantError   bool
+	}{
+		{
+			name:        "accepts parent domain",
+			frontendURL: "https://auth.sandbox.example.com",
+			raw:         ".sandbox.example.com",
+			want:        "sandbox.example.com",
+		},
+		{
+			name:        "rejects unrelated domain",
+			frontendURL: "https://auth.sandbox.example.com",
+			raw:         "other.example.com",
+			wantError:   true,
+		},
+		{
+			name:        "rejects public suffix",
+			frontendURL: "https://auth.sandbox.example.com",
+			raw:         "com",
+			wantError:   true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := normalizeCookieDomain(tt.frontendURL, tt.raw)
+			if (err != nil) != tt.wantError {
+				t.Fatalf("normalizeCookieDomain() error = %v, wantError %v", err, tt.wantError)
+			}
+			if got != tt.want {
+				t.Fatalf("normalizeCookieDomain() = %q, want %q", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestConfigAuthRedirectURL(t *testing.T) {
 	cfg := Config{
 		DefaultRedirectURL:  "http://localhost:3000/mypage",

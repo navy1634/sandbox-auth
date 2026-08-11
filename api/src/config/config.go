@@ -6,6 +6,8 @@ import (
 	"net/url"
 	"os"
 	"strings"
+
+	"golang.org/x/net/publicsuffix"
 )
 
 type Config struct {
@@ -14,6 +16,7 @@ type Config struct {
 	DefaultRedirectURL  string
 	AllowedRedirectURLs []string
 	CORSAllowedOrigins  []string
+	CookieDomain        string
 	GoogleClientID      string
 	GoogleSecret        string
 	GoogleRedirectURL   string
@@ -28,6 +31,10 @@ type Config struct {
 func Load() (Config, error) {
 	frontendURL := strings.TrimRight(GetEnv("FRONTEND_URL", "http://localhost:3000"), "/")
 	defaultRedirectURL := strings.TrimRight(GetEnv("DEFAULT_REDIRECT_URL", frontendURL+"/mypage"), "/")
+	cookieDomain, err := normalizeCookieDomain(frontendURL, os.Getenv("COOKIE_DOMAIN"))
+	if err != nil {
+		return Config{}, err
+	}
 	databaseURL, err := databaseURLFromEnv()
 	if err != nil {
 		return Config{}, err
@@ -40,6 +47,7 @@ func Load() (Config, error) {
 		DefaultRedirectURL:  defaultRedirectURL,
 		AllowedRedirectURLs: splitURLs(GetEnv("ALLOWED_REDIRECT_URLS", defaultRedirectURL)),
 		CORSAllowedOrigins:  splitOrigins(GetEnv("CORS_ALLOWED_ORIGINS", originOf(frontendURL))),
+		CookieDomain:        cookieDomain,
 		GoogleClientID:      os.Getenv("GOOGLE_ID"),
 		GoogleSecret:        os.Getenv("GOOGLE_SECRET"),
 		GoogleRedirectURL:   GetEnv("GOOGLE_REDIRECT_URL", "http://localhost:8080/auth/google/callback"),
@@ -68,6 +76,27 @@ func Load() (Config, error) {
 	}
 
 	return cfg, nil
+}
+
+// Cookie の共有先を frontend host 配下の public suffix ではないドメインに制限する。
+func normalizeCookieDomain(frontendURL string, raw string) (string, error) {
+	domain := strings.TrimPrefix(strings.ToLower(strings.TrimSpace(raw)), ".")
+	if domain == "" {
+		return "", nil
+	}
+	parsedFrontendURL, err := url.Parse(frontendURL)
+	if err != nil || parsedFrontendURL.Hostname() == "" {
+		return "", errors.New("FRONTEND_URL must include a valid host")
+	}
+	host := strings.ToLower(parsedFrontendURL.Hostname())
+	if host != domain && !strings.HasSuffix(host, "."+domain) {
+		return "", errors.New("COOKIE_DOMAIN must be a parent of FRONTEND_URL host")
+	}
+	registrableDomain, err := publicsuffix.EffectiveTLDPlusOne(domain)
+	if err != nil || registrableDomain == "" {
+		return "", errors.New("COOKIE_DOMAIN must not be a public suffix")
+	}
+	return domain, nil
 }
 
 // DB 接続用の環境変数から PostgreSQL 接続 URL を組み立てる。

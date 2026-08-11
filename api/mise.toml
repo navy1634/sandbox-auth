@@ -44,12 +44,8 @@ run = "go test ./..."
 [tasks.vulncheck]
 run = "go run golang.org/x/vuln/cmd/govulncheck@v1.1.4 ./..."
 
-[tasks."docker:build"]
-run = "docker build -t \"$IMAGE_TAG\" ."
-
 [tasks.ci]
 run = [
-  { task = "build" },
   { tasks = [
     "format",
     "lint",
