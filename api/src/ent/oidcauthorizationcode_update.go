@@ -12,8 +12,8 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
-	"github.com/sandbox-nextjs/src/ent/oidcauthorizationcode"
-	"github.com/sandbox-nextjs/src/ent/predicate"
+	"github.com/sandbox-auth/src/ent/oidcauthorizationcode"
+	"github.com/sandbox-auth/src/ent/predicate"
 )
 
 // OIDCAuthorizationCodeUpdate is the builder for updating OIDCAuthorizationCode entities.

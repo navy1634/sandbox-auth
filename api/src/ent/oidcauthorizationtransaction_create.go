@@ -10,7 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/sandbox-nextjs/src/ent/oidcauthorizationtransaction"
+	"github.com/sandbox-auth/src/ent/oidcauthorizationtransaction"
 )
 
 // OIDCAuthorizationTransactionCreate is the builder for creating a OIDCAuthorizationTransaction entity.

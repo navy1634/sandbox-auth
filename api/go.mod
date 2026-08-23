@@ -1,4 +1,4 @@
-module github.com/sandbox-nextjs
+module github.com/sandbox-auth
 
 go 1.26.4
 

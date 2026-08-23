@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sandbox-nextjs/src/infrastructure/session"
+	"github.com/sandbox-auth/src/infrastructure/session"
 )
 
 // OAuth callback の state が開始時に保存した値と一致するか確認する。

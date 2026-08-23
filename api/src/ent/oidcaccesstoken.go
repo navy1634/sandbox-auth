@@ -10,7 +10,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/sandbox-nextjs/src/ent/oidcaccesstoken"
+	"github.com/sandbox-auth/src/ent/oidcaccesstoken"
 )
 
 // OIDCAccessToken is the model entity for the OIDCAccessToken schema.

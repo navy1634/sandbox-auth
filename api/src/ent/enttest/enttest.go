@@ -5,12 +5,12 @@ package enttest
 import (
 	"context"
 
-	"github.com/sandbox-nextjs/src/ent"
+	"github.com/sandbox-auth/src/ent"
 	// required by schema hooks.
-	_ "github.com/sandbox-nextjs/src/ent/runtime"
+	_ "github.com/sandbox-auth/src/ent/runtime"
 
 	"entgo.io/ent/dialect/sql/schema"
-	"github.com/sandbox-nextjs/src/ent/migrate"
+	"github.com/sandbox-auth/src/ent/migrate"
 )
 
 type (

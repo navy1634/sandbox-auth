@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sandbox-nextjs/src/config"
+	"github.com/sandbox-auth/src/config"
 )
 
 func TestCookieNameUsesHostPrefixForSecureCookies(t *testing.T) {

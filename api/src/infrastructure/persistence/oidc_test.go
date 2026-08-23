@@ -10,9 +10,9 @@ import (
 
 	"entgo.io/ent/dialect"
 	entsql "entgo.io/ent/dialect/sql"
-	"github.com/sandbox-nextjs/src/ent"
-	"github.com/sandbox-nextjs/src/ent/enttest"
-	"github.com/sandbox-nextjs/src/infrastructure/oidc"
+	"github.com/sandbox-auth/src/ent"
+	"github.com/sandbox-auth/src/ent/enttest"
+	"github.com/sandbox-auth/src/infrastructure/oidc"
 	_ "modernc.org/sqlite"
 )
 

@@ -16,11 +16,11 @@ import (
 	entsql "entgo.io/ent/dialect/sql"
 	"github.com/gin-gonic/gin"
 	"github.com/go-webauthn/webauthn/webauthn"
-	"github.com/sandbox-nextjs/src/ent"
-	"github.com/sandbox-nextjs/src/ent/enttest"
-	entsession "github.com/sandbox-nextjs/src/ent/webauthnsession"
-	"github.com/sandbox-nextjs/src/infrastructure/database"
-	"github.com/sandbox-nextjs/src/repository"
+	"github.com/sandbox-auth/src/ent"
+	"github.com/sandbox-auth/src/ent/enttest"
+	entsession "github.com/sandbox-auth/src/ent/webauthnsession"
+	"github.com/sandbox-auth/src/infrastructure/database"
+	"github.com/sandbox-auth/src/repository"
 	_ "modernc.org/sqlite"
 )
 

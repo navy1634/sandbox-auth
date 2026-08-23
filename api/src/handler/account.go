@@ -6,9 +6,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sandbox-nextjs/src/domain"
-	"github.com/sandbox-nextjs/src/infrastructure/session"
-	"github.com/sandbox-nextjs/src/repository"
+	"github.com/sandbox-auth/src/domain"
+	"github.com/sandbox-auth/src/infrastructure/session"
+	"github.com/sandbox-auth/src/repository"
 )
 
 // 現在のログインセッションに対応するアカウント情報を返す。

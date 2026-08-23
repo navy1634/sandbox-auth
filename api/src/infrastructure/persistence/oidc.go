@@ -4,14 +4,14 @@ import (
 	"context"
 	"time"
 
-	"github.com/sandbox-nextjs/src/ent"
-	"github.com/sandbox-nextjs/src/ent/oidcaccesstoken"
-	"github.com/sandbox-nextjs/src/ent/oidcauthorizationcode"
-	"github.com/sandbox-nextjs/src/ent/oidcauthorizationtransaction"
-	"github.com/sandbox-nextjs/src/ent/oidcclient"
-	"github.com/sandbox-nextjs/src/ent/oidcclientredirecturi"
-	"github.com/sandbox-nextjs/src/infrastructure/database"
-	"github.com/sandbox-nextjs/src/infrastructure/oidc"
+	"github.com/sandbox-auth/src/ent"
+	"github.com/sandbox-auth/src/ent/oidcaccesstoken"
+	"github.com/sandbox-auth/src/ent/oidcauthorizationcode"
+	"github.com/sandbox-auth/src/ent/oidcauthorizationtransaction"
+	"github.com/sandbox-auth/src/ent/oidcclient"
+	"github.com/sandbox-auth/src/ent/oidcclientredirecturi"
+	"github.com/sandbox-auth/src/infrastructure/database"
+	"github.com/sandbox-auth/src/infrastructure/oidc"
 )
 
 type EntOIDCStore struct {
@@ -56,6 +56,7 @@ func (s *EntOIDCStore) EnsureClients(ctx context.Context, clients []oidc.Client)
 	if err != nil {
 		return err
 	}
+	// クライアント同期の途中で失敗しても、部分的な設定だけを残さない。
 	committed := false
 	defer func() {
 		if !committed {
@@ -187,6 +188,7 @@ func (s *EntOIDCStore) ConsumeTransaction(ctx context.Context, transactionID str
 	if err != nil {
 		return oidc.AuthorizationRequest{}, err
 	}
+	// 認可要求の消費をHTTPトランザクションから分離し、後続処理の失敗による再利用を防ぐ。
 	committed := false
 	defer func() {
 		if !committed {
@@ -259,6 +261,7 @@ func (s *EntOIDCStore) RedeemAuthorizationCode(ctx context.Context, code string,
 	if err != nil {
 		return oidc.AuthorizationCodeRecord{}, err
 	}
+	// 認可コードの消費をHTTPトランザクションから分離し、PKCE検証やトークン発行失敗時の再利用を防ぐ。
 	committed := false
 	defer func() {
 		if !committed {

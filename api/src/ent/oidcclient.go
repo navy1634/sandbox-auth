@@ -9,7 +9,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/sandbox-nextjs/src/ent/oidcclient"
+	"github.com/sandbox-auth/src/ent/oidcclient"
 )
 
 // OIDCClient is the model entity for the OIDCClient schema.

@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/sandbox-nextjs/src/infrastructure/session"
+	"github.com/sandbox-auth/src/infrastructure/session"
 )
 
 func TestEntSessionStorePersistsHashedAndRevocableSession(t *testing.T) {

@@ -9,7 +9,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/sandbox-nextjs/src/ent/authsession"
+	"github.com/sandbox-auth/src/ent/authsession"
 )
 
 // AuthSession is the model entity for the AuthSession schema.

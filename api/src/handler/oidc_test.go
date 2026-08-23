@@ -17,12 +17,12 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sandbox-nextjs/src/config"
-	"github.com/sandbox-nextjs/src/domain"
-	"github.com/sandbox-nextjs/src/infrastructure/oidc"
-	"github.com/sandbox-nextjs/src/infrastructure/session"
-	"github.com/sandbox-nextjs/src/repository"
-	"github.com/sandbox-nextjs/src/usecase"
+	"github.com/sandbox-auth/src/config"
+	"github.com/sandbox-auth/src/domain"
+	"github.com/sandbox-auth/src/infrastructure/oidc"
+	"github.com/sandbox-auth/src/infrastructure/session"
+	"github.com/sandbox-auth/src/repository"
+	"github.com/sandbox-auth/src/usecase"
 )
 
 func TestOIDCProviderSupportsAuthorizationCodeFlow(t *testing.T) {

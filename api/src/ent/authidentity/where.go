@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/sandbox-nextjs/src/ent/predicate"
+	"github.com/sandbox-auth/src/ent/predicate"
 )
 
 // ID filters vertices based on their ID field.

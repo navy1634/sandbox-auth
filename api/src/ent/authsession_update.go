@@ -11,8 +11,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/sandbox-nextjs/src/ent/authsession"
-	"github.com/sandbox-nextjs/src/ent/predicate"
+	"github.com/sandbox-auth/src/ent/authsession"
+	"github.com/sandbox-auth/src/ent/predicate"
 )
 
 // AuthSessionUpdate is the builder for updating AuthSession entities.

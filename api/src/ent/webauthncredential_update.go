@@ -13,8 +13,8 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
-	"github.com/sandbox-nextjs/src/ent/predicate"
-	"github.com/sandbox-nextjs/src/ent/webauthncredential"
+	"github.com/sandbox-auth/src/ent/predicate"
+	"github.com/sandbox-auth/src/ent/webauthncredential"
 )
 
 // WebauthnCredentialUpdate is the builder for updating WebauthnCredential entities.

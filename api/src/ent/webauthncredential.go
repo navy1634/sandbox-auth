@@ -10,7 +10,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/sandbox-nextjs/src/ent/webauthncredential"
+	"github.com/sandbox-auth/src/ent/webauthncredential"
 )
 
 // WebauthnCredential is the model entity for the WebauthnCredential schema.

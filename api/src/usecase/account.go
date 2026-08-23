@@ -3,8 +3,8 @@ package usecase
 import (
 	"context"
 
-	"github.com/sandbox-nextjs/src/domain"
-	"github.com/sandbox-nextjs/src/repository"
+	"github.com/sandbox-auth/src/domain"
+	"github.com/sandbox-auth/src/repository"
 )
 
 type AccountUsecase struct {

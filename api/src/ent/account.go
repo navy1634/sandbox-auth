@@ -9,7 +9,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/sandbox-nextjs/src/ent/account"
+	"github.com/sandbox-auth/src/ent/account"
 )
 
 // Account is the model entity for the Account schema.

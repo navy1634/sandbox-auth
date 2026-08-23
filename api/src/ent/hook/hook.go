@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/sandbox-nextjs/src/ent"
+	"github.com/sandbox-auth/src/ent"
 )
 
 // The AccountFunc type is an adapter to allow the use of ordinary

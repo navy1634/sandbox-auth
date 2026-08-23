@@ -12,17 +12,17 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/sandbox-nextjs/src/ent/account"
-	"github.com/sandbox-nextjs/src/ent/authidentity"
-	"github.com/sandbox-nextjs/src/ent/authsession"
-	"github.com/sandbox-nextjs/src/ent/oidcaccesstoken"
-	"github.com/sandbox-nextjs/src/ent/oidcauthorizationcode"
-	"github.com/sandbox-nextjs/src/ent/oidcauthorizationtransaction"
-	"github.com/sandbox-nextjs/src/ent/oidcclient"
-	"github.com/sandbox-nextjs/src/ent/oidcclientredirecturi"
-	"github.com/sandbox-nextjs/src/ent/predicate"
-	"github.com/sandbox-nextjs/src/ent/webauthncredential"
-	"github.com/sandbox-nextjs/src/ent/webauthnsession"
+	"github.com/sandbox-auth/src/ent/account"
+	"github.com/sandbox-auth/src/ent/authidentity"
+	"github.com/sandbox-auth/src/ent/authsession"
+	"github.com/sandbox-auth/src/ent/oidcaccesstoken"
+	"github.com/sandbox-auth/src/ent/oidcauthorizationcode"
+	"github.com/sandbox-auth/src/ent/oidcauthorizationtransaction"
+	"github.com/sandbox-auth/src/ent/oidcclient"
+	"github.com/sandbox-auth/src/ent/oidcclientredirecturi"
+	"github.com/sandbox-auth/src/ent/predicate"
+	"github.com/sandbox-auth/src/ent/webauthncredential"
+	"github.com/sandbox-auth/src/ent/webauthnsession"
 )
 
 const (

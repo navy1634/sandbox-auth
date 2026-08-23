@@ -8,7 +8,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/sandbox-nextjs/src/ent/oidcclientredirecturi"
+	"github.com/sandbox-auth/src/ent/oidcclientredirecturi"
 )
 
 // OIDCClientRedirectURI is the model entity for the OIDCClientRedirectURI schema.

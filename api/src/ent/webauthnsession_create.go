@@ -11,7 +11,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/sandbox-nextjs/src/ent/webauthnsession"
+	"github.com/sandbox-auth/src/ent/webauthnsession"
 )
 
 // WebauthnSessionCreate is the builder for creating a WebauthnSession entity.

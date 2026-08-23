@@ -5,7 +5,7 @@ import (
 
 	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/go-webauthn/webauthn/webauthn"
-	"github.com/sandbox-nextjs/src/domain"
+	"github.com/sandbox-auth/src/domain"
 )
 
 type PasskeyService struct {
@@ -17,7 +17,7 @@ func NewPasskeyService(rpID string, rpOrigin string) (*PasskeyService, error) {
 	// このアプリの RP 情報と認証器要件を WebAuthn ライブラリへ渡す。
 	passkey, err := webauthn.New(&webauthn.Config{
 		RPID:          rpID,
-		RPDisplayName: "sandbox_nextjs",
+		RPDisplayName: "sandbox_auth",
 		RPOrigins:     []string{rpOrigin},
 		AuthenticatorSelection: protocol.AuthenticatorSelection{
 			ResidentKey:      protocol.ResidentKeyRequirementRequired,

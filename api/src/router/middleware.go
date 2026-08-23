@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sandbox-nextjs/src/config"
-	"github.com/sandbox-nextjs/src/ent"
-	"github.com/sandbox-nextjs/src/infrastructure/database"
+	"github.com/sandbox-auth/src/config"
+	"github.com/sandbox-auth/src/ent"
+	"github.com/sandbox-auth/src/infrastructure/database"
 )
 
 // API 全体へ適用する middleware を登録する。

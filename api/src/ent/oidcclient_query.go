@@ -11,8 +11,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/sandbox-nextjs/src/ent/oidcclient"
-	"github.com/sandbox-nextjs/src/ent/predicate"
+	"github.com/sandbox-auth/src/ent/oidcclient"
+	"github.com/sandbox-auth/src/ent/predicate"
 )
 
 // OIDCClientQuery is the builder for querying OIDCClient entities.

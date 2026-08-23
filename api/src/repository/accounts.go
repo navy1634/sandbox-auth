@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/sandbox-nextjs/src/domain"
+	"github.com/sandbox-auth/src/domain"
 )
 
 var ErrNotFound = errors.New("not found")

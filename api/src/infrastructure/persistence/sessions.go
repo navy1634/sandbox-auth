@@ -4,10 +4,10 @@ import (
 	"context"
 	"time"
 
-	"github.com/sandbox-nextjs/src/ent"
-	"github.com/sandbox-nextjs/src/ent/authsession"
-	"github.com/sandbox-nextjs/src/infrastructure/database"
-	"github.com/sandbox-nextjs/src/infrastructure/session"
+	"github.com/sandbox-auth/src/ent"
+	"github.com/sandbox-auth/src/ent/authsession"
+	"github.com/sandbox-auth/src/infrastructure/database"
+	"github.com/sandbox-auth/src/infrastructure/session"
 )
 
 type EntSessionStore struct {

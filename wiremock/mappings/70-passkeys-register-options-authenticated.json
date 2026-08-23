@@ -19,7 +19,7 @@
     },
     "jsonBody": {
       "rp": {
-        "name": "sandbox_nextjs",
+        "name": "sandbox_auth",
         "id": "localhost"
       },
       "user": {

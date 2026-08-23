@@ -10,7 +10,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/sandbox-nextjs/src/ent/oidcauthorizationcode"
+	"github.com/sandbox-auth/src/ent/oidcauthorizationcode"
 )
 
 // OIDCAuthorizationCode is the model entity for the OIDCAuthorizationCode schema.

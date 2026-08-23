@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/sandbox-nextjs/src/domain"
+	"github.com/sandbox-auth/src/domain"
 )
 
 const DefaultTTL = 24 * time.Hour

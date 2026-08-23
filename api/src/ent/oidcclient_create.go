@@ -10,7 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/sandbox-nextjs/src/ent/oidcclient"
+	"github.com/sandbox-auth/src/ent/oidcclient"
 )
 
 // OIDCClientCreate is the builder for creating a OIDCClient entity.

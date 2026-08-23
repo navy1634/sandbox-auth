@@ -1,13 +1,13 @@
 package router
 
 import (
-	"github.com/sandbox-nextjs/src/config"
-	"github.com/sandbox-nextjs/src/ent"
-	"github.com/sandbox-nextjs/src/handler"
-	"github.com/sandbox-nextjs/src/infrastructure/auth"
-	"github.com/sandbox-nextjs/src/infrastructure/oidc"
-	"github.com/sandbox-nextjs/src/infrastructure/persistence"
-	"github.com/sandbox-nextjs/src/usecase"
+	"github.com/sandbox-auth/src/config"
+	"github.com/sandbox-auth/src/ent"
+	"github.com/sandbox-auth/src/handler"
+	"github.com/sandbox-auth/src/infrastructure/auth"
+	"github.com/sandbox-auth/src/infrastructure/oidc"
+	"github.com/sandbox-auth/src/infrastructure/persistence"
+	"github.com/sandbox-auth/src/usecase"
 )
 
 // 認証関連の永続化、認証、ユースケース、HTTP ハンドラを組み立てる。

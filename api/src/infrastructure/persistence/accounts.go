@@ -5,12 +5,12 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 
-	"github.com/sandbox-nextjs/src/domain"
-	"github.com/sandbox-nextjs/src/ent"
-	entaccount "github.com/sandbox-nextjs/src/ent/account"
-	entidentity "github.com/sandbox-nextjs/src/ent/authidentity"
-	"github.com/sandbox-nextjs/src/infrastructure/database"
-	"github.com/sandbox-nextjs/src/repository"
+	"github.com/sandbox-auth/src/domain"
+	"github.com/sandbox-auth/src/ent"
+	entaccount "github.com/sandbox-auth/src/ent/account"
+	entidentity "github.com/sandbox-auth/src/ent/authidentity"
+	"github.com/sandbox-auth/src/infrastructure/database"
+	"github.com/sandbox-auth/src/repository"
 )
 
 type EntAccountRepository struct {

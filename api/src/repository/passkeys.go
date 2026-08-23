@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/go-webauthn/webauthn/webauthn"
-	"github.com/sandbox-nextjs/src/domain"
+	"github.com/sandbox-auth/src/domain"
 )
 
 // 保存可能な WebAuthn セッション数を超えたときのエラー。

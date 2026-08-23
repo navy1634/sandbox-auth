@@ -10,7 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/sandbox-nextjs/src/ent/oidcaccesstoken"
+	"github.com/sandbox-auth/src/ent/oidcaccesstoken"
 )
 
 // OIDCAccessTokenCreate is the builder for creating a OIDCAccessToken entity.

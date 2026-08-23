@@ -10,8 +10,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/sandbox-nextjs/src/ent/oidcclientredirecturi"
-	"github.com/sandbox-nextjs/src/ent/predicate"
+	"github.com/sandbox-auth/src/ent/oidcclientredirecturi"
+	"github.com/sandbox-auth/src/ent/predicate"
 )
 
 // OIDCClientRedirectURIUpdate is the builder for updating OIDCClientRedirectURI entities.

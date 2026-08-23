@@ -10,7 +10,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/sandbox-nextjs/src/ent/webauthnsession"
+	"github.com/sandbox-auth/src/ent/webauthnsession"
 )
 
 // WebauthnSession is the model entity for the WebauthnSession schema.

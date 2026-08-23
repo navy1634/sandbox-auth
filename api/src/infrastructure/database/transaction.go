@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sandbox-nextjs/src/ent"
+	"github.com/sandbox-auth/src/ent"
 )
 
 type transactionClientKey struct{}

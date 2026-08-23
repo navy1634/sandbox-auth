@@ -11,8 +11,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/sandbox-nextjs/src/ent/predicate"
-	"github.com/sandbox-nextjs/src/ent/webauthnsession"
+	"github.com/sandbox-auth/src/ent/predicate"
+	"github.com/sandbox-auth/src/ent/webauthnsession"
 )
 
 // WebauthnSessionQuery is the builder for querying WebauthnSession entities.

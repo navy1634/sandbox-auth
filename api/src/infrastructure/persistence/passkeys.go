@@ -7,12 +7,12 @@ import (
 	"time"
 
 	"github.com/go-webauthn/webauthn/webauthn"
-	"github.com/sandbox-nextjs/src/domain"
-	"github.com/sandbox-nextjs/src/ent"
-	entcredential "github.com/sandbox-nextjs/src/ent/webauthncredential"
-	entsession "github.com/sandbox-nextjs/src/ent/webauthnsession"
-	"github.com/sandbox-nextjs/src/infrastructure/database"
-	"github.com/sandbox-nextjs/src/repository"
+	"github.com/sandbox-auth/src/domain"
+	"github.com/sandbox-auth/src/ent"
+	entcredential "github.com/sandbox-auth/src/ent/webauthncredential"
+	entsession "github.com/sandbox-auth/src/ent/webauthnsession"
+	"github.com/sandbox-auth/src/infrastructure/database"
+	"github.com/sandbox-auth/src/repository"
 )
 
 const (

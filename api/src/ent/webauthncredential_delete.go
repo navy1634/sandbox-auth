@@ -8,8 +8,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/sandbox-nextjs/src/ent/predicate"
-	"github.com/sandbox-nextjs/src/ent/webauthncredential"
+	"github.com/sandbox-auth/src/ent/predicate"
+	"github.com/sandbox-auth/src/ent/webauthncredential"
 )
 
 // WebauthnCredentialDelete is the builder for deleting a WebauthnCredential entity.

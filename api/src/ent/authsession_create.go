@@ -10,7 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/sandbox-nextjs/src/ent/authsession"
+	"github.com/sandbox-auth/src/ent/authsession"
 )
 
 // AuthSessionCreate is the builder for creating a AuthSession entity.

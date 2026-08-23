@@ -10,7 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/sandbox-nextjs/src/ent/account"
+	"github.com/sandbox-auth/src/ent/account"
 )
 
 // AccountCreate is the builder for creating a Account entity.
