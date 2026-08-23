@@ -3,6 +3,7 @@ package persistence
 import (
 	"context"
 	"crypto/rand"
+	"encoding/base64"
 
 	"github.com/sandbox-nextjs/src/domain"
 	"github.com/sandbox-nextjs/src/ent"
@@ -56,8 +57,13 @@ func (r *EntAccountRepository) UpsertProviderIdentity(ctx context.Context, ident
 	if err != nil {
 		return domain.Account{}, err
 	}
+	subject, err := randomSubject()
+	if err != nil {
+		return domain.Account{}, err
+	}
 
 	createdAccount, err := client.Account.Create().
+		SetOidcSubject(subject).
 		SetWebauthnUserHandle(userHandle).
 		Save(ctx)
 	if err != nil {
@@ -153,6 +159,7 @@ func toAccount(storedAccount *ent.Account, identity *ent.AuthIdentity) domain.Ac
 	// Ent の保存形式から、handler と usecase が扱う domain.Account へ詰め替える
 	account := domain.Account{
 		ID:                 int64(storedAccount.ID),
+		Subject:            storedAccount.OidcSubject,
 		CreatedAt:          storedAccount.CreatedAt,
 		UpdatedAt:          storedAccount.UpdatedAt,
 		WebAuthnUserHandle: storedAccount.WebauthnUserHandle,
@@ -174,6 +181,14 @@ func randomBytes(size int) ([]byte, error) {
 		return nil, err
 	}
 	return bytes, nil
+}
+
+func randomSubject() (string, error) {
+	bytes, err := randomBytes(32)
+	if err != nil {
+		return "", err
+	}
+	return base64.RawURLEncoding.EncodeToString(bytes), nil
 }
 
 func mapError(err error) error {

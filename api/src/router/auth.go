@@ -9,15 +9,25 @@ import (
 
 // 認証関連の HTTP ルートと middleware を Gin engine に登録する。
 func RegisterRoutes(engine *gin.Engine, cfg config.Config, db *ent.Client) error {
-	authHandler, authMethods, err := newAuthHandlers(cfg, db)
+	authHandler, authMethods, oidcHandler, err := newAuthHandlers(cfg, db)
 	if err != nil {
 		return err
 	}
 
 	registerMiddleware(engine, cfg, db)
 	registerAuthRoutes(engine, authHandler, authMethods)
+	registerOIDCRoutes(engine, oidcHandler)
 
 	return nil
+}
+
+// OIDC Providerのルートを公開URLのルートと/api配下へ登録する。
+func registerOIDCRoutes(engine *gin.Engine, oidcHandler *handler.OIDCHandler) {
+	if oidcHandler == nil {
+		return
+	}
+	oidcHandler.RegisterRoutes(engine)
+	oidcHandler.RegisterRoutes(engine.Group("/api"))
 }
 
 // 認証関連のルートを登録する。

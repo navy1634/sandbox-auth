@@ -1,10 +1,10 @@
-version: 2
+version: "2"
 
 run:
   timeout: 5m
 
 linters:
-  enable-all: true
+  default: standard
   disable:
     - wrapcheck
     - rowserrcheck
@@ -49,9 +49,8 @@ linters:
     - asasalint
     - gosmopolitan
     - promlinter
-
-issues:
-  exclude-rules:
-    - path: _test\.go
-      linters:
-        - errcheck
+  exclusions:
+    rules:
+      - path: _test\.go
+        linters:
+          - errcheck

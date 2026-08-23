@@ -64,6 +64,11 @@ func UpdatedAt(v time.Time) predicate.Account {
 	return predicate.Account(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
+// OidcSubject applies equality check predicate on the "oidc_subject" field. It's identical to OidcSubjectEQ.
+func OidcSubject(v string) predicate.Account {
+	return predicate.Account(sql.FieldEQ(FieldOidcSubject, v))
+}
+
 // WebauthnUserHandle applies equality check predicate on the "webauthn_user_handle" field. It's identical to WebauthnUserHandleEQ.
 func WebauthnUserHandle(v []byte) predicate.Account {
 	return predicate.Account(sql.FieldEQ(FieldWebauthnUserHandle, v))
@@ -147,6 +152,71 @@ func UpdatedAtLT(v time.Time) predicate.Account {
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.Account {
 	return predicate.Account(sql.FieldLTE(FieldUpdatedAt, v))
+}
+
+// OidcSubjectEQ applies the EQ predicate on the "oidc_subject" field.
+func OidcSubjectEQ(v string) predicate.Account {
+	return predicate.Account(sql.FieldEQ(FieldOidcSubject, v))
+}
+
+// OidcSubjectNEQ applies the NEQ predicate on the "oidc_subject" field.
+func OidcSubjectNEQ(v string) predicate.Account {
+	return predicate.Account(sql.FieldNEQ(FieldOidcSubject, v))
+}
+
+// OidcSubjectIn applies the In predicate on the "oidc_subject" field.
+func OidcSubjectIn(vs ...string) predicate.Account {
+	return predicate.Account(sql.FieldIn(FieldOidcSubject, vs...))
+}
+
+// OidcSubjectNotIn applies the NotIn predicate on the "oidc_subject" field.
+func OidcSubjectNotIn(vs ...string) predicate.Account {
+	return predicate.Account(sql.FieldNotIn(FieldOidcSubject, vs...))
+}
+
+// OidcSubjectGT applies the GT predicate on the "oidc_subject" field.
+func OidcSubjectGT(v string) predicate.Account {
+	return predicate.Account(sql.FieldGT(FieldOidcSubject, v))
+}
+
+// OidcSubjectGTE applies the GTE predicate on the "oidc_subject" field.
+func OidcSubjectGTE(v string) predicate.Account {
+	return predicate.Account(sql.FieldGTE(FieldOidcSubject, v))
+}
+
+// OidcSubjectLT applies the LT predicate on the "oidc_subject" field.
+func OidcSubjectLT(v string) predicate.Account {
+	return predicate.Account(sql.FieldLT(FieldOidcSubject, v))
+}
+
+// OidcSubjectLTE applies the LTE predicate on the "oidc_subject" field.
+func OidcSubjectLTE(v string) predicate.Account {
+	return predicate.Account(sql.FieldLTE(FieldOidcSubject, v))
+}
+
+// OidcSubjectContains applies the Contains predicate on the "oidc_subject" field.
+func OidcSubjectContains(v string) predicate.Account {
+	return predicate.Account(sql.FieldContains(FieldOidcSubject, v))
+}
+
+// OidcSubjectHasPrefix applies the HasPrefix predicate on the "oidc_subject" field.
+func OidcSubjectHasPrefix(v string) predicate.Account {
+	return predicate.Account(sql.FieldHasPrefix(FieldOidcSubject, v))
+}
+
+// OidcSubjectHasSuffix applies the HasSuffix predicate on the "oidc_subject" field.
+func OidcSubjectHasSuffix(v string) predicate.Account {
+	return predicate.Account(sql.FieldHasSuffix(FieldOidcSubject, v))
+}
+
+// OidcSubjectEqualFold applies the EqualFold predicate on the "oidc_subject" field.
+func OidcSubjectEqualFold(v string) predicate.Account {
+	return predicate.Account(sql.FieldEqualFold(FieldOidcSubject, v))
+}
+
+// OidcSubjectContainsFold applies the ContainsFold predicate on the "oidc_subject" field.
+func OidcSubjectContainsFold(v string) predicate.Account {
+	return predicate.Account(sql.FieldContainsFold(FieldOidcSubject, v))
 }
 
 // WebauthnUserHandleEQ applies the EQ predicate on the "webauthn_user_handle" field.

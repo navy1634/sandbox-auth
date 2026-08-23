@@ -15,6 +15,7 @@ type ProviderIdentity struct {
 
 type Account struct {
 	ID                 int64                 `json:"id"`
+	Subject            string                `json:"-"`
 	Identity           *ProviderIdentity     `json:"identity,omitempty"`
 	Credentials        []webauthn.Credential `json:"-"`
 	WebAuthnUserHandle []byte                `json:"-"`

@@ -14,6 +14,7 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "oidc_subject", Type: field.TypeString, Unique: true},
 		{Name: "webauthn_user_handle", Type: field.TypeBytes, Unique: true},
 	}
 	// AccountsTable holds the schema information for the "accounts" table.
@@ -58,6 +59,172 @@ var (
 				Name:    "authidentity_email",
 				Unique:  false,
 				Columns: []*schema.Column{AuthIdentitiesColumns[6]},
+			},
+		},
+	}
+	// AuthSessionsColumns holds the columns for the "auth_sessions" table.
+	AuthSessionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "token_hash", Type: field.TypeBytes, Unique: true},
+		{Name: "account_id", Type: field.TypeInt64},
+		{Name: "expires_at", Type: field.TypeTime},
+		{Name: "revoked_at", Type: field.TypeTime, Nullable: true},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// AuthSessionsTable holds the schema information for the "auth_sessions" table.
+	AuthSessionsTable = &schema.Table{
+		Name:       "auth_sessions",
+		Columns:    AuthSessionsColumns,
+		PrimaryKey: []*schema.Column{AuthSessionsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "authsession_account_id_expires_at",
+				Unique:  false,
+				Columns: []*schema.Column{AuthSessionsColumns[2], AuthSessionsColumns[3]},
+			},
+			{
+				Name:    "authsession_expires_at",
+				Unique:  false,
+				Columns: []*schema.Column{AuthSessionsColumns[3]},
+			},
+		},
+	}
+	// OidcAccessTokensColumns holds the columns for the "oidc_access_tokens" table.
+	OidcAccessTokensColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "token_hash", Type: field.TypeBytes, Unique: true},
+		{Name: "client_id", Type: field.TypeString},
+		{Name: "account_id", Type: field.TypeInt64},
+		{Name: "scope", Type: field.TypeJSON},
+		{Name: "expires_at", Type: field.TypeTime},
+		{Name: "revoked_at", Type: field.TypeTime, Nullable: true},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// OidcAccessTokensTable holds the schema information for the "oidc_access_tokens" table.
+	OidcAccessTokensTable = &schema.Table{
+		Name:       "oidc_access_tokens",
+		Columns:    OidcAccessTokensColumns,
+		PrimaryKey: []*schema.Column{OidcAccessTokensColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "oidcaccesstoken_expires_at",
+				Unique:  false,
+				Columns: []*schema.Column{OidcAccessTokensColumns[5]},
+			},
+			{
+				Name:    "oidcaccesstoken_account_id_expires_at",
+				Unique:  false,
+				Columns: []*schema.Column{OidcAccessTokensColumns[3], OidcAccessTokensColumns[5]},
+			},
+		},
+	}
+	// OidcAuthorizationCodesColumns holds the columns for the "oidc_authorization_codes" table.
+	OidcAuthorizationCodesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "code_hash", Type: field.TypeBytes, Unique: true},
+		{Name: "client_id", Type: field.TypeString},
+		{Name: "redirect_uri", Type: field.TypeString},
+		{Name: "account_id", Type: field.TypeInt64},
+		{Name: "scope", Type: field.TypeJSON},
+		{Name: "nonce", Type: field.TypeString},
+		{Name: "code_challenge", Type: field.TypeString},
+		{Name: "code_challenge_method", Type: field.TypeString},
+		{Name: "expires_at", Type: field.TypeTime},
+		{Name: "consumed_at", Type: field.TypeTime, Nullable: true},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// OidcAuthorizationCodesTable holds the schema information for the "oidc_authorization_codes" table.
+	OidcAuthorizationCodesTable = &schema.Table{
+		Name:       "oidc_authorization_codes",
+		Columns:    OidcAuthorizationCodesColumns,
+		PrimaryKey: []*schema.Column{OidcAuthorizationCodesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "oidcauthorizationcode_expires_at",
+				Unique:  false,
+				Columns: []*schema.Column{OidcAuthorizationCodesColumns[9]},
+			},
+			{
+				Name:    "oidcauthorizationcode_client_id_expires_at",
+				Unique:  false,
+				Columns: []*schema.Column{OidcAuthorizationCodesColumns[2], OidcAuthorizationCodesColumns[9]},
+			},
+			{
+				Name:    "oidcauthorizationcode_account_id_expires_at",
+				Unique:  false,
+				Columns: []*schema.Column{OidcAuthorizationCodesColumns[4], OidcAuthorizationCodesColumns[9]},
+			},
+		},
+	}
+	// OidcAuthorizationTransactionsColumns holds the columns for the "oidc_authorization_transactions" table.
+	OidcAuthorizationTransactionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "transaction_hash", Type: field.TypeBytes, Unique: true},
+		{Name: "client_id", Type: field.TypeString},
+		{Name: "redirect_uri", Type: field.TypeString},
+		{Name: "scope", Type: field.TypeJSON},
+		{Name: "state", Type: field.TypeString, Default: ""},
+		{Name: "nonce", Type: field.TypeString},
+		{Name: "code_challenge", Type: field.TypeString},
+		{Name: "code_challenge_method", Type: field.TypeString},
+		{Name: "expires_at", Type: field.TypeTime},
+		{Name: "consumed_at", Type: field.TypeTime, Nullable: true},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// OidcAuthorizationTransactionsTable holds the schema information for the "oidc_authorization_transactions" table.
+	OidcAuthorizationTransactionsTable = &schema.Table{
+		Name:       "oidc_authorization_transactions",
+		Columns:    OidcAuthorizationTransactionsColumns,
+		PrimaryKey: []*schema.Column{OidcAuthorizationTransactionsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "oidcauthorizationtransaction_expires_at",
+				Unique:  false,
+				Columns: []*schema.Column{OidcAuthorizationTransactionsColumns[9]},
+			},
+			{
+				Name:    "oidcauthorizationtransaction_client_id_expires_at",
+				Unique:  false,
+				Columns: []*schema.Column{OidcAuthorizationTransactionsColumns[2], OidcAuthorizationTransactionsColumns[9]},
+			},
+		},
+	}
+	// OidcClientsColumns holds the columns for the "oidc_clients" table.
+	OidcClientsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "client_id", Type: field.TypeString, Unique: true},
+		{Name: "client_secret_hash", Type: field.TypeBytes},
+		{Name: "disabled", Type: field.TypeBool, Default: false},
+	}
+	// OidcClientsTable holds the schema information for the "oidc_clients" table.
+	OidcClientsTable = &schema.Table{
+		Name:       "oidc_clients",
+		Columns:    OidcClientsColumns,
+		PrimaryKey: []*schema.Column{OidcClientsColumns[0]},
+	}
+	// OidcClientRedirectUrisColumns holds the columns for the "oidc_client_redirect_uris" table.
+	OidcClientRedirectUrisColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "client_id", Type: field.TypeString},
+		{Name: "redirect_uri", Type: field.TypeString},
+	}
+	// OidcClientRedirectUrisTable holds the schema information for the "oidc_client_redirect_uris" table.
+	OidcClientRedirectUrisTable = &schema.Table{
+		Name:       "oidc_client_redirect_uris",
+		Columns:    OidcClientRedirectUrisColumns,
+		PrimaryKey: []*schema.Column{OidcClientRedirectUrisColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "oidcclientredirecturi_client_id_redirect_uri",
+				Unique:  true,
+				Columns: []*schema.Column{OidcClientRedirectUrisColumns[1], OidcClientRedirectUrisColumns[2]},
+			},
+			{
+				Name:    "oidcclientredirecturi_client_id",
+				Unique:  false,
+				Columns: []*schema.Column{OidcClientRedirectUrisColumns[1]},
 			},
 		},
 	}
@@ -110,6 +277,12 @@ var (
 	Tables = []*schema.Table{
 		AccountsTable,
 		AuthIdentitiesTable,
+		AuthSessionsTable,
+		OidcAccessTokensTable,
+		OidcAuthorizationCodesTable,
+		OidcAuthorizationTransactionsTable,
+		OidcClientsTable,
+		OidcClientRedirectUrisTable,
 		WebauthnCredentialsTable,
 		WebauthnSessionsTable,
 	}
@@ -121,6 +294,24 @@ func init() {
 	}
 	AuthIdentitiesTable.Annotation = &entsql.Annotation{
 		Table: "auth_identities",
+	}
+	AuthSessionsTable.Annotation = &entsql.Annotation{
+		Table: "auth_sessions",
+	}
+	OidcAccessTokensTable.Annotation = &entsql.Annotation{
+		Table: "oidc_access_tokens",
+	}
+	OidcAuthorizationCodesTable.Annotation = &entsql.Annotation{
+		Table: "oidc_authorization_codes",
+	}
+	OidcAuthorizationTransactionsTable.Annotation = &entsql.Annotation{
+		Table: "oidc_authorization_transactions",
+	}
+	OidcClientsTable.Annotation = &entsql.Annotation{
+		Table: "oidc_clients",
+	}
+	OidcClientRedirectUrisTable.Annotation = &entsql.Annotation{
+		Table: "oidc_client_redirect_uris",
 	}
 	WebauthnCredentialsTable.Annotation = &entsql.Annotation{
 		Table: "webauthn_credentials",

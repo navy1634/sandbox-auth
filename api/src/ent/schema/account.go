@@ -22,6 +22,7 @@ func (Account) Annotations() []schema.Annotation {
 
 func (Account) Fields() []ent.Field {
 	return []ent.Field{
+		field.String("oidc_subject").Unique().Immutable(),
 		field.Bytes("webauthn_user_handle").Unique(),
 	}
 }

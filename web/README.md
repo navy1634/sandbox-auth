@@ -1,6 +1,6 @@
 # web
 
-Next.js の認証フロントエンドです。Google OAuth ログイン、パスキー登録、パスキーログインの画面を提供し、認証完了後は別リポジトリの本体アプリへ戻します。
+Next.js の認証フロントエンドです。Google OAuth ログイン、パスキー登録、パスキーログインの画面を提供します。外部アプリとの接続は、この画面の戻り先機能ではなく API の OIDC Provider を使います。
 
 ## 主な画面
 
@@ -22,7 +22,7 @@ NEXT_PUBLIC_DEFAULT_REDIRECT_URL=http://localhost:3000/mypage
 
 Docker Compose で起動する場合は、ルートディレクトリの `SANDBOX_API_URL` が `NEXT_PUBLIC_API_BASE_URL` に、`SANDBOX_DEFAULT_REDIRECT_URL` が `NEXT_PUBLIC_DEFAULT_REDIRECT_URL` に渡されます。
 
-本体アプリから認証を開始する場合は、`/login` に `redirect_to` を付けます。
+認証 web 自身の画面から別の許可済み画面へ戻す場合は、`/login` に `redirect_to` を付けます。外部アプリはこの URL を呼ばず、API の OIDC Discovery と登録済み callback URL を使ってください。
 
 ```txt
 http://localhost:3000/login?redirect_to=http%3A%2F%2Flocalhost%3A3100%2Fdashboard

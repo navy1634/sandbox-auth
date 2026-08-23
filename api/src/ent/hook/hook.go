@@ -33,6 +33,78 @@ func (f AuthIdentityFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AuthIdentityMutation", m)
 }
 
+// The AuthSessionFunc type is an adapter to allow the use of ordinary
+// function as AuthSession mutator.
+type AuthSessionFunc func(context.Context, *ent.AuthSessionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AuthSessionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AuthSessionMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AuthSessionMutation", m)
+}
+
+// The OIDCAccessTokenFunc type is an adapter to allow the use of ordinary
+// function as OIDCAccessToken mutator.
+type OIDCAccessTokenFunc func(context.Context, *ent.OIDCAccessTokenMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f OIDCAccessTokenFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.OIDCAccessTokenMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OIDCAccessTokenMutation", m)
+}
+
+// The OIDCAuthorizationCodeFunc type is an adapter to allow the use of ordinary
+// function as OIDCAuthorizationCode mutator.
+type OIDCAuthorizationCodeFunc func(context.Context, *ent.OIDCAuthorizationCodeMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f OIDCAuthorizationCodeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.OIDCAuthorizationCodeMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OIDCAuthorizationCodeMutation", m)
+}
+
+// The OIDCAuthorizationTransactionFunc type is an adapter to allow the use of ordinary
+// function as OIDCAuthorizationTransaction mutator.
+type OIDCAuthorizationTransactionFunc func(context.Context, *ent.OIDCAuthorizationTransactionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f OIDCAuthorizationTransactionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.OIDCAuthorizationTransactionMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OIDCAuthorizationTransactionMutation", m)
+}
+
+// The OIDCClientFunc type is an adapter to allow the use of ordinary
+// function as OIDCClient mutator.
+type OIDCClientFunc func(context.Context, *ent.OIDCClientMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f OIDCClientFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.OIDCClientMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OIDCClientMutation", m)
+}
+
+// The OIDCClientRedirectURIFunc type is an adapter to allow the use of ordinary
+// function as OIDCClientRedirectURI mutator.
+type OIDCClientRedirectURIFunc func(context.Context, *ent.OIDCClientRedirectURIMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f OIDCClientRedirectURIFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.OIDCClientRedirectURIMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OIDCClientRedirectURIMutation", m)
+}
+
 // The WebauthnCredentialFunc type is an adapter to allow the use of ordinary
 // function as WebauthnCredential mutator.
 type WebauthnCredentialFunc func(context.Context, *ent.WebauthnCredentialMutation) (ent.Value, error)

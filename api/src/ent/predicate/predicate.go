@@ -12,6 +12,24 @@ type Account func(*sql.Selector)
 // AuthIdentity is the predicate function for authidentity builders.
 type AuthIdentity func(*sql.Selector)
 
+// AuthSession is the predicate function for authsession builders.
+type AuthSession func(*sql.Selector)
+
+// OIDCAccessToken is the predicate function for oidcaccesstoken builders.
+type OIDCAccessToken func(*sql.Selector)
+
+// OIDCAuthorizationCode is the predicate function for oidcauthorizationcode builders.
+type OIDCAuthorizationCode func(*sql.Selector)
+
+// OIDCAuthorizationTransaction is the predicate function for oidcauthorizationtransaction builders.
+type OIDCAuthorizationTransaction func(*sql.Selector)
+
+// OIDCClient is the predicate function for oidcclient builders.
+type OIDCClient func(*sql.Selector)
+
+// OIDCClientRedirectURI is the predicate function for oidcclientredirecturi builders.
+type OIDCClientRedirectURI func(*sql.Selector)
+
 // WebauthnCredential is the predicate function for webauthncredential builders.
 type WebauthnCredential func(*sql.Selector)
 

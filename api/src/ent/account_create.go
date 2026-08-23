@@ -48,6 +48,12 @@ func (_c *AccountCreate) SetNillableUpdatedAt(v *time.Time) *AccountCreate {
 	return _c
 }
 
+// SetOidcSubject sets the "oidc_subject" field.
+func (_c *AccountCreate) SetOidcSubject(v string) *AccountCreate {
+	_c.mutation.SetOidcSubject(v)
+	return _c
+}
+
 // SetWebauthnUserHandle sets the "webauthn_user_handle" field.
 func (_c *AccountCreate) SetWebauthnUserHandle(v []byte) *AccountCreate {
 	_c.mutation.SetWebauthnUserHandle(v)
@@ -107,6 +113,9 @@ func (_c *AccountCreate) check() error {
 	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Account.updated_at"`)}
 	}
+	if _, ok := _c.mutation.OidcSubject(); !ok {
+		return &ValidationError{Name: "oidc_subject", err: errors.New(`ent: missing required field "Account.oidc_subject"`)}
+	}
 	if _, ok := _c.mutation.WebauthnUserHandle(); !ok {
 		return &ValidationError{Name: "webauthn_user_handle", err: errors.New(`ent: missing required field "Account.webauthn_user_handle"`)}
 	}
@@ -143,6 +152,10 @@ func (_c *AccountCreate) createSpec() (*Account, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.UpdatedAt(); ok {
 		_spec.SetField(account.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
+	}
+	if value, ok := _c.mutation.OidcSubject(); ok {
+		_spec.SetField(account.FieldOidcSubject, field.TypeString, value)
+		_node.OidcSubject = value
 	}
 	if value, ok := _c.mutation.WebauthnUserHandle(); ok {
 		_spec.SetField(account.FieldWebauthnUserHandle, field.TypeBytes, value)

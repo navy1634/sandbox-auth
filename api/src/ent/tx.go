@@ -16,6 +16,18 @@ type Tx struct {
 	Account *AccountClient
 	// AuthIdentity is the client for interacting with the AuthIdentity builders.
 	AuthIdentity *AuthIdentityClient
+	// AuthSession is the client for interacting with the AuthSession builders.
+	AuthSession *AuthSessionClient
+	// OIDCAccessToken is the client for interacting with the OIDCAccessToken builders.
+	OIDCAccessToken *OIDCAccessTokenClient
+	// OIDCAuthorizationCode is the client for interacting with the OIDCAuthorizationCode builders.
+	OIDCAuthorizationCode *OIDCAuthorizationCodeClient
+	// OIDCAuthorizationTransaction is the client for interacting with the OIDCAuthorizationTransaction builders.
+	OIDCAuthorizationTransaction *OIDCAuthorizationTransactionClient
+	// OIDCClient is the client for interacting with the OIDCClient builders.
+	OIDCClient *OIDCClientClient
+	// OIDCClientRedirectURI is the client for interacting with the OIDCClientRedirectURI builders.
+	OIDCClientRedirectURI *OIDCClientRedirectURIClient
 	// WebauthnCredential is the client for interacting with the WebauthnCredential builders.
 	WebauthnCredential *WebauthnCredentialClient
 	// WebauthnSession is the client for interacting with the WebauthnSession builders.
@@ -153,6 +165,12 @@ func (tx *Tx) Client() *Client {
 func (tx *Tx) init() {
 	tx.Account = NewAccountClient(tx.config)
 	tx.AuthIdentity = NewAuthIdentityClient(tx.config)
+	tx.AuthSession = NewAuthSessionClient(tx.config)
+	tx.OIDCAccessToken = NewOIDCAccessTokenClient(tx.config)
+	tx.OIDCAuthorizationCode = NewOIDCAuthorizationCodeClient(tx.config)
+	tx.OIDCAuthorizationTransaction = NewOIDCAuthorizationTransactionClient(tx.config)
+	tx.OIDCClient = NewOIDCClientClient(tx.config)
+	tx.OIDCClientRedirectURI = NewOIDCClientRedirectURIClient(tx.config)
 	tx.WebauthnCredential = NewWebauthnCredentialClient(tx.config)
 	tx.WebauthnSession = NewWebauthnSessionClient(tx.config)
 }

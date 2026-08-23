@@ -100,6 +100,16 @@ https://auth.sandbox.navy1634.com/api/auth/google/callback
 
 パスキーを使う場合、Ingress は HTTPS で公開します。`PASSKEY_RP_ORIGIN` と Google OAuth のリダイレクト URI は同じ HTTPS の origin に合わせます。
 
+外部アプリからOIDCで接続する場合は、API ConfigMapへ公開URLを設定し、API Secretへクライアント設定とRSA署名鍵を追加します。Ingress配下のIssuerは `/api` を含めます。
+
+```txt
+OIDC_ISSUER_URL=https://auth.example.com/api
+OIDC_CLIENTS=[{"client_id":"external-app","client_secret":"replace-me","redirect_uris":["https://app.example.com/oidc/callback"]}]
+OIDC_SIGNING_KEY=-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----
+```
+
+`OIDC_ISSUER_URL` は `api-configmap.yaml`、`OIDC_CLIENTS` と `OIDC_SIGNING_KEY` は `sandbox-auth-api-secret` へ設定してください。設定値の詳細とOIDCの接続条件は `api/README.md` を参照してください。
+
 ## 適用
 
 ```sh

@@ -16,6 +16,12 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/sandbox-nextjs/src/ent/account"
 	"github.com/sandbox-nextjs/src/ent/authidentity"
+	"github.com/sandbox-nextjs/src/ent/authsession"
+	"github.com/sandbox-nextjs/src/ent/oidcaccesstoken"
+	"github.com/sandbox-nextjs/src/ent/oidcauthorizationcode"
+	"github.com/sandbox-nextjs/src/ent/oidcauthorizationtransaction"
+	"github.com/sandbox-nextjs/src/ent/oidcclient"
+	"github.com/sandbox-nextjs/src/ent/oidcclientredirecturi"
 	"github.com/sandbox-nextjs/src/ent/webauthncredential"
 	"github.com/sandbox-nextjs/src/ent/webauthnsession"
 )
@@ -29,6 +35,18 @@ type Client struct {
 	Account *AccountClient
 	// AuthIdentity is the client for interacting with the AuthIdentity builders.
 	AuthIdentity *AuthIdentityClient
+	// AuthSession is the client for interacting with the AuthSession builders.
+	AuthSession *AuthSessionClient
+	// OIDCAccessToken is the client for interacting with the OIDCAccessToken builders.
+	OIDCAccessToken *OIDCAccessTokenClient
+	// OIDCAuthorizationCode is the client for interacting with the OIDCAuthorizationCode builders.
+	OIDCAuthorizationCode *OIDCAuthorizationCodeClient
+	// OIDCAuthorizationTransaction is the client for interacting with the OIDCAuthorizationTransaction builders.
+	OIDCAuthorizationTransaction *OIDCAuthorizationTransactionClient
+	// OIDCClient is the client for interacting with the OIDCClient builders.
+	OIDCClient *OIDCClientClient
+	// OIDCClientRedirectURI is the client for interacting with the OIDCClientRedirectURI builders.
+	OIDCClientRedirectURI *OIDCClientRedirectURIClient
 	// WebauthnCredential is the client for interacting with the WebauthnCredential builders.
 	WebauthnCredential *WebauthnCredentialClient
 	// WebauthnSession is the client for interacting with the WebauthnSession builders.
@@ -46,6 +64,12 @@ func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Account = NewAccountClient(c.config)
 	c.AuthIdentity = NewAuthIdentityClient(c.config)
+	c.AuthSession = NewAuthSessionClient(c.config)
+	c.OIDCAccessToken = NewOIDCAccessTokenClient(c.config)
+	c.OIDCAuthorizationCode = NewOIDCAuthorizationCodeClient(c.config)
+	c.OIDCAuthorizationTransaction = NewOIDCAuthorizationTransactionClient(c.config)
+	c.OIDCClient = NewOIDCClientClient(c.config)
+	c.OIDCClientRedirectURI = NewOIDCClientRedirectURIClient(c.config)
 	c.WebauthnCredential = NewWebauthnCredentialClient(c.config)
 	c.WebauthnSession = NewWebauthnSessionClient(c.config)
 }
@@ -138,12 +162,18 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:                ctx,
-		config:             cfg,
-		Account:            NewAccountClient(cfg),
-		AuthIdentity:       NewAuthIdentityClient(cfg),
-		WebauthnCredential: NewWebauthnCredentialClient(cfg),
-		WebauthnSession:    NewWebauthnSessionClient(cfg),
+		ctx:                          ctx,
+		config:                       cfg,
+		Account:                      NewAccountClient(cfg),
+		AuthIdentity:                 NewAuthIdentityClient(cfg),
+		AuthSession:                  NewAuthSessionClient(cfg),
+		OIDCAccessToken:              NewOIDCAccessTokenClient(cfg),
+		OIDCAuthorizationCode:        NewOIDCAuthorizationCodeClient(cfg),
+		OIDCAuthorizationTransaction: NewOIDCAuthorizationTransactionClient(cfg),
+		OIDCClient:                   NewOIDCClientClient(cfg),
+		OIDCClientRedirectURI:        NewOIDCClientRedirectURIClient(cfg),
+		WebauthnCredential:           NewWebauthnCredentialClient(cfg),
+		WebauthnSession:              NewWebauthnSessionClient(cfg),
 	}, nil
 }
 
@@ -161,12 +191,18 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:                ctx,
-		config:             cfg,
-		Account:            NewAccountClient(cfg),
-		AuthIdentity:       NewAuthIdentityClient(cfg),
-		WebauthnCredential: NewWebauthnCredentialClient(cfg),
-		WebauthnSession:    NewWebauthnSessionClient(cfg),
+		ctx:                          ctx,
+		config:                       cfg,
+		Account:                      NewAccountClient(cfg),
+		AuthIdentity:                 NewAuthIdentityClient(cfg),
+		AuthSession:                  NewAuthSessionClient(cfg),
+		OIDCAccessToken:              NewOIDCAccessTokenClient(cfg),
+		OIDCAuthorizationCode:        NewOIDCAuthorizationCodeClient(cfg),
+		OIDCAuthorizationTransaction: NewOIDCAuthorizationTransactionClient(cfg),
+		OIDCClient:                   NewOIDCClientClient(cfg),
+		OIDCClientRedirectURI:        NewOIDCClientRedirectURIClient(cfg),
+		WebauthnCredential:           NewWebauthnCredentialClient(cfg),
+		WebauthnSession:              NewWebauthnSessionClient(cfg),
 	}, nil
 }
 
@@ -195,19 +231,25 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.Account.Use(hooks...)
-	c.AuthIdentity.Use(hooks...)
-	c.WebauthnCredential.Use(hooks...)
-	c.WebauthnSession.Use(hooks...)
+	for _, n := range []interface{ Use(...Hook) }{
+		c.Account, c.AuthIdentity, c.AuthSession, c.OIDCAccessToken,
+		c.OIDCAuthorizationCode, c.OIDCAuthorizationTransaction, c.OIDCClient,
+		c.OIDCClientRedirectURI, c.WebauthnCredential, c.WebauthnSession,
+	} {
+		n.Use(hooks...)
+	}
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
-	c.Account.Intercept(interceptors...)
-	c.AuthIdentity.Intercept(interceptors...)
-	c.WebauthnCredential.Intercept(interceptors...)
-	c.WebauthnSession.Intercept(interceptors...)
+	for _, n := range []interface{ Intercept(...Interceptor) }{
+		c.Account, c.AuthIdentity, c.AuthSession, c.OIDCAccessToken,
+		c.OIDCAuthorizationCode, c.OIDCAuthorizationTransaction, c.OIDCClient,
+		c.OIDCClientRedirectURI, c.WebauthnCredential, c.WebauthnSession,
+	} {
+		n.Intercept(interceptors...)
+	}
 }
 
 // Mutate implements the ent.Mutator interface.
@@ -217,6 +259,18 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Account.mutate(ctx, m)
 	case *AuthIdentityMutation:
 		return c.AuthIdentity.mutate(ctx, m)
+	case *AuthSessionMutation:
+		return c.AuthSession.mutate(ctx, m)
+	case *OIDCAccessTokenMutation:
+		return c.OIDCAccessToken.mutate(ctx, m)
+	case *OIDCAuthorizationCodeMutation:
+		return c.OIDCAuthorizationCode.mutate(ctx, m)
+	case *OIDCAuthorizationTransactionMutation:
+		return c.OIDCAuthorizationTransaction.mutate(ctx, m)
+	case *OIDCClientMutation:
+		return c.OIDCClient.mutate(ctx, m)
+	case *OIDCClientRedirectURIMutation:
+		return c.OIDCClientRedirectURI.mutate(ctx, m)
 	case *WebauthnCredentialMutation:
 		return c.WebauthnCredential.mutate(ctx, m)
 	case *WebauthnSessionMutation:
@@ -492,6 +546,804 @@ func (c *AuthIdentityClient) mutate(ctx context.Context, m *AuthIdentityMutation
 	}
 }
 
+// AuthSessionClient is a client for the AuthSession schema.
+type AuthSessionClient struct {
+	config
+}
+
+// NewAuthSessionClient returns a client for the AuthSession from the given config.
+func NewAuthSessionClient(c config) *AuthSessionClient {
+	return &AuthSessionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `authsession.Hooks(f(g(h())))`.
+func (c *AuthSessionClient) Use(hooks ...Hook) {
+	c.hooks.AuthSession = append(c.hooks.AuthSession, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `authsession.Intercept(f(g(h())))`.
+func (c *AuthSessionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.AuthSession = append(c.inters.AuthSession, interceptors...)
+}
+
+// Create returns a builder for creating a AuthSession entity.
+func (c *AuthSessionClient) Create() *AuthSessionCreate {
+	mutation := newAuthSessionMutation(c.config, OpCreate)
+	return &AuthSessionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of AuthSession entities.
+func (c *AuthSessionClient) CreateBulk(builders ...*AuthSessionCreate) *AuthSessionCreateBulk {
+	return &AuthSessionCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *AuthSessionClient) MapCreateBulk(slice any, setFunc func(*AuthSessionCreate, int)) *AuthSessionCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &AuthSessionCreateBulk{err: fmt.Errorf("calling to AuthSessionClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*AuthSessionCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &AuthSessionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for AuthSession.
+func (c *AuthSessionClient) Update() *AuthSessionUpdate {
+	mutation := newAuthSessionMutation(c.config, OpUpdate)
+	return &AuthSessionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AuthSessionClient) UpdateOne(_m *AuthSession) *AuthSessionUpdateOne {
+	mutation := newAuthSessionMutation(c.config, OpUpdateOne, withAuthSession(_m))
+	return &AuthSessionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AuthSessionClient) UpdateOneID(id int) *AuthSessionUpdateOne {
+	mutation := newAuthSessionMutation(c.config, OpUpdateOne, withAuthSessionID(id))
+	return &AuthSessionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for AuthSession.
+func (c *AuthSessionClient) Delete() *AuthSessionDelete {
+	mutation := newAuthSessionMutation(c.config, OpDelete)
+	return &AuthSessionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AuthSessionClient) DeleteOne(_m *AuthSession) *AuthSessionDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AuthSessionClient) DeleteOneID(id int) *AuthSessionDeleteOne {
+	builder := c.Delete().Where(authsession.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AuthSessionDeleteOne{builder}
+}
+
+// Query returns a query builder for AuthSession.
+func (c *AuthSessionClient) Query() *AuthSessionQuery {
+	return &AuthSessionQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeAuthSession},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a AuthSession entity by its id.
+func (c *AuthSessionClient) Get(ctx context.Context, id int) (*AuthSession, error) {
+	return c.Query().Where(authsession.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AuthSessionClient) GetX(ctx context.Context, id int) *AuthSession {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *AuthSessionClient) Hooks() []Hook {
+	return c.hooks.AuthSession
+}
+
+// Interceptors returns the client interceptors.
+func (c *AuthSessionClient) Interceptors() []Interceptor {
+	return c.inters.AuthSession
+}
+
+func (c *AuthSessionClient) mutate(ctx context.Context, m *AuthSessionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AuthSessionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AuthSessionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AuthSessionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AuthSessionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown AuthSession mutation op: %q", m.Op())
+	}
+}
+
+// OIDCAccessTokenClient is a client for the OIDCAccessToken schema.
+type OIDCAccessTokenClient struct {
+	config
+}
+
+// NewOIDCAccessTokenClient returns a client for the OIDCAccessToken from the given config.
+func NewOIDCAccessTokenClient(c config) *OIDCAccessTokenClient {
+	return &OIDCAccessTokenClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `oidcaccesstoken.Hooks(f(g(h())))`.
+func (c *OIDCAccessTokenClient) Use(hooks ...Hook) {
+	c.hooks.OIDCAccessToken = append(c.hooks.OIDCAccessToken, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `oidcaccesstoken.Intercept(f(g(h())))`.
+func (c *OIDCAccessTokenClient) Intercept(interceptors ...Interceptor) {
+	c.inters.OIDCAccessToken = append(c.inters.OIDCAccessToken, interceptors...)
+}
+
+// Create returns a builder for creating a OIDCAccessToken entity.
+func (c *OIDCAccessTokenClient) Create() *OIDCAccessTokenCreate {
+	mutation := newOIDCAccessTokenMutation(c.config, OpCreate)
+	return &OIDCAccessTokenCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of OIDCAccessToken entities.
+func (c *OIDCAccessTokenClient) CreateBulk(builders ...*OIDCAccessTokenCreate) *OIDCAccessTokenCreateBulk {
+	return &OIDCAccessTokenCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *OIDCAccessTokenClient) MapCreateBulk(slice any, setFunc func(*OIDCAccessTokenCreate, int)) *OIDCAccessTokenCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &OIDCAccessTokenCreateBulk{err: fmt.Errorf("calling to OIDCAccessTokenClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*OIDCAccessTokenCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &OIDCAccessTokenCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for OIDCAccessToken.
+func (c *OIDCAccessTokenClient) Update() *OIDCAccessTokenUpdate {
+	mutation := newOIDCAccessTokenMutation(c.config, OpUpdate)
+	return &OIDCAccessTokenUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *OIDCAccessTokenClient) UpdateOne(_m *OIDCAccessToken) *OIDCAccessTokenUpdateOne {
+	mutation := newOIDCAccessTokenMutation(c.config, OpUpdateOne, withOIDCAccessToken(_m))
+	return &OIDCAccessTokenUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *OIDCAccessTokenClient) UpdateOneID(id int) *OIDCAccessTokenUpdateOne {
+	mutation := newOIDCAccessTokenMutation(c.config, OpUpdateOne, withOIDCAccessTokenID(id))
+	return &OIDCAccessTokenUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for OIDCAccessToken.
+func (c *OIDCAccessTokenClient) Delete() *OIDCAccessTokenDelete {
+	mutation := newOIDCAccessTokenMutation(c.config, OpDelete)
+	return &OIDCAccessTokenDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *OIDCAccessTokenClient) DeleteOne(_m *OIDCAccessToken) *OIDCAccessTokenDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *OIDCAccessTokenClient) DeleteOneID(id int) *OIDCAccessTokenDeleteOne {
+	builder := c.Delete().Where(oidcaccesstoken.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &OIDCAccessTokenDeleteOne{builder}
+}
+
+// Query returns a query builder for OIDCAccessToken.
+func (c *OIDCAccessTokenClient) Query() *OIDCAccessTokenQuery {
+	return &OIDCAccessTokenQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeOIDCAccessToken},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a OIDCAccessToken entity by its id.
+func (c *OIDCAccessTokenClient) Get(ctx context.Context, id int) (*OIDCAccessToken, error) {
+	return c.Query().Where(oidcaccesstoken.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *OIDCAccessTokenClient) GetX(ctx context.Context, id int) *OIDCAccessToken {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *OIDCAccessTokenClient) Hooks() []Hook {
+	return c.hooks.OIDCAccessToken
+}
+
+// Interceptors returns the client interceptors.
+func (c *OIDCAccessTokenClient) Interceptors() []Interceptor {
+	return c.inters.OIDCAccessToken
+}
+
+func (c *OIDCAccessTokenClient) mutate(ctx context.Context, m *OIDCAccessTokenMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&OIDCAccessTokenCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&OIDCAccessTokenUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&OIDCAccessTokenUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&OIDCAccessTokenDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown OIDCAccessToken mutation op: %q", m.Op())
+	}
+}
+
+// OIDCAuthorizationCodeClient is a client for the OIDCAuthorizationCode schema.
+type OIDCAuthorizationCodeClient struct {
+	config
+}
+
+// NewOIDCAuthorizationCodeClient returns a client for the OIDCAuthorizationCode from the given config.
+func NewOIDCAuthorizationCodeClient(c config) *OIDCAuthorizationCodeClient {
+	return &OIDCAuthorizationCodeClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `oidcauthorizationcode.Hooks(f(g(h())))`.
+func (c *OIDCAuthorizationCodeClient) Use(hooks ...Hook) {
+	c.hooks.OIDCAuthorizationCode = append(c.hooks.OIDCAuthorizationCode, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `oidcauthorizationcode.Intercept(f(g(h())))`.
+func (c *OIDCAuthorizationCodeClient) Intercept(interceptors ...Interceptor) {
+	c.inters.OIDCAuthorizationCode = append(c.inters.OIDCAuthorizationCode, interceptors...)
+}
+
+// Create returns a builder for creating a OIDCAuthorizationCode entity.
+func (c *OIDCAuthorizationCodeClient) Create() *OIDCAuthorizationCodeCreate {
+	mutation := newOIDCAuthorizationCodeMutation(c.config, OpCreate)
+	return &OIDCAuthorizationCodeCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of OIDCAuthorizationCode entities.
+func (c *OIDCAuthorizationCodeClient) CreateBulk(builders ...*OIDCAuthorizationCodeCreate) *OIDCAuthorizationCodeCreateBulk {
+	return &OIDCAuthorizationCodeCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *OIDCAuthorizationCodeClient) MapCreateBulk(slice any, setFunc func(*OIDCAuthorizationCodeCreate, int)) *OIDCAuthorizationCodeCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &OIDCAuthorizationCodeCreateBulk{err: fmt.Errorf("calling to OIDCAuthorizationCodeClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*OIDCAuthorizationCodeCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &OIDCAuthorizationCodeCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for OIDCAuthorizationCode.
+func (c *OIDCAuthorizationCodeClient) Update() *OIDCAuthorizationCodeUpdate {
+	mutation := newOIDCAuthorizationCodeMutation(c.config, OpUpdate)
+	return &OIDCAuthorizationCodeUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *OIDCAuthorizationCodeClient) UpdateOne(_m *OIDCAuthorizationCode) *OIDCAuthorizationCodeUpdateOne {
+	mutation := newOIDCAuthorizationCodeMutation(c.config, OpUpdateOne, withOIDCAuthorizationCode(_m))
+	return &OIDCAuthorizationCodeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *OIDCAuthorizationCodeClient) UpdateOneID(id int) *OIDCAuthorizationCodeUpdateOne {
+	mutation := newOIDCAuthorizationCodeMutation(c.config, OpUpdateOne, withOIDCAuthorizationCodeID(id))
+	return &OIDCAuthorizationCodeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for OIDCAuthorizationCode.
+func (c *OIDCAuthorizationCodeClient) Delete() *OIDCAuthorizationCodeDelete {
+	mutation := newOIDCAuthorizationCodeMutation(c.config, OpDelete)
+	return &OIDCAuthorizationCodeDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *OIDCAuthorizationCodeClient) DeleteOne(_m *OIDCAuthorizationCode) *OIDCAuthorizationCodeDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *OIDCAuthorizationCodeClient) DeleteOneID(id int) *OIDCAuthorizationCodeDeleteOne {
+	builder := c.Delete().Where(oidcauthorizationcode.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &OIDCAuthorizationCodeDeleteOne{builder}
+}
+
+// Query returns a query builder for OIDCAuthorizationCode.
+func (c *OIDCAuthorizationCodeClient) Query() *OIDCAuthorizationCodeQuery {
+	return &OIDCAuthorizationCodeQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeOIDCAuthorizationCode},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a OIDCAuthorizationCode entity by its id.
+func (c *OIDCAuthorizationCodeClient) Get(ctx context.Context, id int) (*OIDCAuthorizationCode, error) {
+	return c.Query().Where(oidcauthorizationcode.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *OIDCAuthorizationCodeClient) GetX(ctx context.Context, id int) *OIDCAuthorizationCode {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *OIDCAuthorizationCodeClient) Hooks() []Hook {
+	return c.hooks.OIDCAuthorizationCode
+}
+
+// Interceptors returns the client interceptors.
+func (c *OIDCAuthorizationCodeClient) Interceptors() []Interceptor {
+	return c.inters.OIDCAuthorizationCode
+}
+
+func (c *OIDCAuthorizationCodeClient) mutate(ctx context.Context, m *OIDCAuthorizationCodeMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&OIDCAuthorizationCodeCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&OIDCAuthorizationCodeUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&OIDCAuthorizationCodeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&OIDCAuthorizationCodeDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown OIDCAuthorizationCode mutation op: %q", m.Op())
+	}
+}
+
+// OIDCAuthorizationTransactionClient is a client for the OIDCAuthorizationTransaction schema.
+type OIDCAuthorizationTransactionClient struct {
+	config
+}
+
+// NewOIDCAuthorizationTransactionClient returns a client for the OIDCAuthorizationTransaction from the given config.
+func NewOIDCAuthorizationTransactionClient(c config) *OIDCAuthorizationTransactionClient {
+	return &OIDCAuthorizationTransactionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `oidcauthorizationtransaction.Hooks(f(g(h())))`.
+func (c *OIDCAuthorizationTransactionClient) Use(hooks ...Hook) {
+	c.hooks.OIDCAuthorizationTransaction = append(c.hooks.OIDCAuthorizationTransaction, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `oidcauthorizationtransaction.Intercept(f(g(h())))`.
+func (c *OIDCAuthorizationTransactionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.OIDCAuthorizationTransaction = append(c.inters.OIDCAuthorizationTransaction, interceptors...)
+}
+
+// Create returns a builder for creating a OIDCAuthorizationTransaction entity.
+func (c *OIDCAuthorizationTransactionClient) Create() *OIDCAuthorizationTransactionCreate {
+	mutation := newOIDCAuthorizationTransactionMutation(c.config, OpCreate)
+	return &OIDCAuthorizationTransactionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of OIDCAuthorizationTransaction entities.
+func (c *OIDCAuthorizationTransactionClient) CreateBulk(builders ...*OIDCAuthorizationTransactionCreate) *OIDCAuthorizationTransactionCreateBulk {
+	return &OIDCAuthorizationTransactionCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *OIDCAuthorizationTransactionClient) MapCreateBulk(slice any, setFunc func(*OIDCAuthorizationTransactionCreate, int)) *OIDCAuthorizationTransactionCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &OIDCAuthorizationTransactionCreateBulk{err: fmt.Errorf("calling to OIDCAuthorizationTransactionClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*OIDCAuthorizationTransactionCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &OIDCAuthorizationTransactionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for OIDCAuthorizationTransaction.
+func (c *OIDCAuthorizationTransactionClient) Update() *OIDCAuthorizationTransactionUpdate {
+	mutation := newOIDCAuthorizationTransactionMutation(c.config, OpUpdate)
+	return &OIDCAuthorizationTransactionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *OIDCAuthorizationTransactionClient) UpdateOne(_m *OIDCAuthorizationTransaction) *OIDCAuthorizationTransactionUpdateOne {
+	mutation := newOIDCAuthorizationTransactionMutation(c.config, OpUpdateOne, withOIDCAuthorizationTransaction(_m))
+	return &OIDCAuthorizationTransactionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *OIDCAuthorizationTransactionClient) UpdateOneID(id int) *OIDCAuthorizationTransactionUpdateOne {
+	mutation := newOIDCAuthorizationTransactionMutation(c.config, OpUpdateOne, withOIDCAuthorizationTransactionID(id))
+	return &OIDCAuthorizationTransactionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for OIDCAuthorizationTransaction.
+func (c *OIDCAuthorizationTransactionClient) Delete() *OIDCAuthorizationTransactionDelete {
+	mutation := newOIDCAuthorizationTransactionMutation(c.config, OpDelete)
+	return &OIDCAuthorizationTransactionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *OIDCAuthorizationTransactionClient) DeleteOne(_m *OIDCAuthorizationTransaction) *OIDCAuthorizationTransactionDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *OIDCAuthorizationTransactionClient) DeleteOneID(id int) *OIDCAuthorizationTransactionDeleteOne {
+	builder := c.Delete().Where(oidcauthorizationtransaction.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &OIDCAuthorizationTransactionDeleteOne{builder}
+}
+
+// Query returns a query builder for OIDCAuthorizationTransaction.
+func (c *OIDCAuthorizationTransactionClient) Query() *OIDCAuthorizationTransactionQuery {
+	return &OIDCAuthorizationTransactionQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeOIDCAuthorizationTransaction},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a OIDCAuthorizationTransaction entity by its id.
+func (c *OIDCAuthorizationTransactionClient) Get(ctx context.Context, id int) (*OIDCAuthorizationTransaction, error) {
+	return c.Query().Where(oidcauthorizationtransaction.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *OIDCAuthorizationTransactionClient) GetX(ctx context.Context, id int) *OIDCAuthorizationTransaction {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *OIDCAuthorizationTransactionClient) Hooks() []Hook {
+	return c.hooks.OIDCAuthorizationTransaction
+}
+
+// Interceptors returns the client interceptors.
+func (c *OIDCAuthorizationTransactionClient) Interceptors() []Interceptor {
+	return c.inters.OIDCAuthorizationTransaction
+}
+
+func (c *OIDCAuthorizationTransactionClient) mutate(ctx context.Context, m *OIDCAuthorizationTransactionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&OIDCAuthorizationTransactionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&OIDCAuthorizationTransactionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&OIDCAuthorizationTransactionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&OIDCAuthorizationTransactionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown OIDCAuthorizationTransaction mutation op: %q", m.Op())
+	}
+}
+
+// OIDCClientClient is a client for the OIDCClient schema.
+type OIDCClientClient struct {
+	config
+}
+
+// NewOIDCClientClient returns a client for the OIDCClient from the given config.
+func NewOIDCClientClient(c config) *OIDCClientClient {
+	return &OIDCClientClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `oidcclient.Hooks(f(g(h())))`.
+func (c *OIDCClientClient) Use(hooks ...Hook) {
+	c.hooks.OIDCClient = append(c.hooks.OIDCClient, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `oidcclient.Intercept(f(g(h())))`.
+func (c *OIDCClientClient) Intercept(interceptors ...Interceptor) {
+	c.inters.OIDCClient = append(c.inters.OIDCClient, interceptors...)
+}
+
+// Create returns a builder for creating a OIDCClient entity.
+func (c *OIDCClientClient) Create() *OIDCClientCreate {
+	mutation := newOIDCClientMutation(c.config, OpCreate)
+	return &OIDCClientCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of OIDCClient entities.
+func (c *OIDCClientClient) CreateBulk(builders ...*OIDCClientCreate) *OIDCClientCreateBulk {
+	return &OIDCClientCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *OIDCClientClient) MapCreateBulk(slice any, setFunc func(*OIDCClientCreate, int)) *OIDCClientCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &OIDCClientCreateBulk{err: fmt.Errorf("calling to OIDCClientClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*OIDCClientCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &OIDCClientCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for OIDCClient.
+func (c *OIDCClientClient) Update() *OIDCClientUpdate {
+	mutation := newOIDCClientMutation(c.config, OpUpdate)
+	return &OIDCClientUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *OIDCClientClient) UpdateOne(_m *OIDCClient) *OIDCClientUpdateOne {
+	mutation := newOIDCClientMutation(c.config, OpUpdateOne, withOIDCClient(_m))
+	return &OIDCClientUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *OIDCClientClient) UpdateOneID(id int) *OIDCClientUpdateOne {
+	mutation := newOIDCClientMutation(c.config, OpUpdateOne, withOIDCClientID(id))
+	return &OIDCClientUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for OIDCClient.
+func (c *OIDCClientClient) Delete() *OIDCClientDelete {
+	mutation := newOIDCClientMutation(c.config, OpDelete)
+	return &OIDCClientDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *OIDCClientClient) DeleteOne(_m *OIDCClient) *OIDCClientDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *OIDCClientClient) DeleteOneID(id int) *OIDCClientDeleteOne {
+	builder := c.Delete().Where(oidcclient.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &OIDCClientDeleteOne{builder}
+}
+
+// Query returns a query builder for OIDCClient.
+func (c *OIDCClientClient) Query() *OIDCClientQuery {
+	return &OIDCClientQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeOIDCClient},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a OIDCClient entity by its id.
+func (c *OIDCClientClient) Get(ctx context.Context, id int) (*OIDCClient, error) {
+	return c.Query().Where(oidcclient.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *OIDCClientClient) GetX(ctx context.Context, id int) *OIDCClient {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *OIDCClientClient) Hooks() []Hook {
+	return c.hooks.OIDCClient
+}
+
+// Interceptors returns the client interceptors.
+func (c *OIDCClientClient) Interceptors() []Interceptor {
+	return c.inters.OIDCClient
+}
+
+func (c *OIDCClientClient) mutate(ctx context.Context, m *OIDCClientMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&OIDCClientCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&OIDCClientUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&OIDCClientUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&OIDCClientDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown OIDCClient mutation op: %q", m.Op())
+	}
+}
+
+// OIDCClientRedirectURIClient is a client for the OIDCClientRedirectURI schema.
+type OIDCClientRedirectURIClient struct {
+	config
+}
+
+// NewOIDCClientRedirectURIClient returns a client for the OIDCClientRedirectURI from the given config.
+func NewOIDCClientRedirectURIClient(c config) *OIDCClientRedirectURIClient {
+	return &OIDCClientRedirectURIClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `oidcclientredirecturi.Hooks(f(g(h())))`.
+func (c *OIDCClientRedirectURIClient) Use(hooks ...Hook) {
+	c.hooks.OIDCClientRedirectURI = append(c.hooks.OIDCClientRedirectURI, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `oidcclientredirecturi.Intercept(f(g(h())))`.
+func (c *OIDCClientRedirectURIClient) Intercept(interceptors ...Interceptor) {
+	c.inters.OIDCClientRedirectURI = append(c.inters.OIDCClientRedirectURI, interceptors...)
+}
+
+// Create returns a builder for creating a OIDCClientRedirectURI entity.
+func (c *OIDCClientRedirectURIClient) Create() *OIDCClientRedirectURICreate {
+	mutation := newOIDCClientRedirectURIMutation(c.config, OpCreate)
+	return &OIDCClientRedirectURICreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of OIDCClientRedirectURI entities.
+func (c *OIDCClientRedirectURIClient) CreateBulk(builders ...*OIDCClientRedirectURICreate) *OIDCClientRedirectURICreateBulk {
+	return &OIDCClientRedirectURICreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *OIDCClientRedirectURIClient) MapCreateBulk(slice any, setFunc func(*OIDCClientRedirectURICreate, int)) *OIDCClientRedirectURICreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &OIDCClientRedirectURICreateBulk{err: fmt.Errorf("calling to OIDCClientRedirectURIClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*OIDCClientRedirectURICreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &OIDCClientRedirectURICreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for OIDCClientRedirectURI.
+func (c *OIDCClientRedirectURIClient) Update() *OIDCClientRedirectURIUpdate {
+	mutation := newOIDCClientRedirectURIMutation(c.config, OpUpdate)
+	return &OIDCClientRedirectURIUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *OIDCClientRedirectURIClient) UpdateOne(_m *OIDCClientRedirectURI) *OIDCClientRedirectURIUpdateOne {
+	mutation := newOIDCClientRedirectURIMutation(c.config, OpUpdateOne, withOIDCClientRedirectURI(_m))
+	return &OIDCClientRedirectURIUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *OIDCClientRedirectURIClient) UpdateOneID(id int) *OIDCClientRedirectURIUpdateOne {
+	mutation := newOIDCClientRedirectURIMutation(c.config, OpUpdateOne, withOIDCClientRedirectURIID(id))
+	return &OIDCClientRedirectURIUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for OIDCClientRedirectURI.
+func (c *OIDCClientRedirectURIClient) Delete() *OIDCClientRedirectURIDelete {
+	mutation := newOIDCClientRedirectURIMutation(c.config, OpDelete)
+	return &OIDCClientRedirectURIDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *OIDCClientRedirectURIClient) DeleteOne(_m *OIDCClientRedirectURI) *OIDCClientRedirectURIDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *OIDCClientRedirectURIClient) DeleteOneID(id int) *OIDCClientRedirectURIDeleteOne {
+	builder := c.Delete().Where(oidcclientredirecturi.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &OIDCClientRedirectURIDeleteOne{builder}
+}
+
+// Query returns a query builder for OIDCClientRedirectURI.
+func (c *OIDCClientRedirectURIClient) Query() *OIDCClientRedirectURIQuery {
+	return &OIDCClientRedirectURIQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeOIDCClientRedirectURI},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a OIDCClientRedirectURI entity by its id.
+func (c *OIDCClientRedirectURIClient) Get(ctx context.Context, id int) (*OIDCClientRedirectURI, error) {
+	return c.Query().Where(oidcclientredirecturi.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *OIDCClientRedirectURIClient) GetX(ctx context.Context, id int) *OIDCClientRedirectURI {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *OIDCClientRedirectURIClient) Hooks() []Hook {
+	return c.hooks.OIDCClientRedirectURI
+}
+
+// Interceptors returns the client interceptors.
+func (c *OIDCClientRedirectURIClient) Interceptors() []Interceptor {
+	return c.inters.OIDCClientRedirectURI
+}
+
+func (c *OIDCClientRedirectURIClient) mutate(ctx context.Context, m *OIDCClientRedirectURIMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&OIDCClientRedirectURICreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&OIDCClientRedirectURIUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&OIDCClientRedirectURIUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&OIDCClientRedirectURIDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown OIDCClientRedirectURI mutation op: %q", m.Op())
+	}
+}
+
 // WebauthnCredentialClient is a client for the WebauthnCredential schema.
 type WebauthnCredentialClient struct {
 	config
@@ -761,9 +1613,13 @@ func (c *WebauthnSessionClient) mutate(ctx context.Context, m *WebauthnSessionMu
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Account, AuthIdentity, WebauthnCredential, WebauthnSession []ent.Hook
+		Account, AuthIdentity, AuthSession, OIDCAccessToken, OIDCAuthorizationCode,
+		OIDCAuthorizationTransaction, OIDCClient, OIDCClientRedirectURI,
+		WebauthnCredential, WebauthnSession []ent.Hook
 	}
 	inters struct {
-		Account, AuthIdentity, WebauthnCredential, WebauthnSession []ent.Interceptor
+		Account, AuthIdentity, AuthSession, OIDCAccessToken, OIDCAuthorizationCode,
+		OIDCAuthorizationTransaction, OIDCClient, OIDCClientRedirectURI,
+		WebauthnCredential, WebauthnSession []ent.Interceptor
 	}
 )

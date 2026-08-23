@@ -5,6 +5,7 @@ metadata:
 data:
   ADDR: ":8080"
   FRONTEND_URL: "https://auth.sandbox.navy1634.com"
+  OIDC_ISSUER_URL: "https://auth.sandbox.navy1634.com/api"
   DEFAULT_REDIRECT_URL: "https://auth.sandbox.navy1634.com/mypage"
   ALLOWED_REDIRECT_URLS: "https://auth.sandbox.navy1634.com/mypage,https://app.sandbox.navy1634.com"
   CORS_ALLOWED_ORIGINS: "https://auth.sandbox.navy1634.com,https://app.sandbox.navy1634.com"

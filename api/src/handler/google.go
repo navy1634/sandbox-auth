@@ -85,7 +85,7 @@ func (h *OAuthHandler) Callback(c *gin.Context) {
 		return
 	}
 
-	sessionValue, err := h.base.sessions.Sign(session.FromAccount(storedAccount))
+	sessionValue, err := h.base.sessions.SignContext(c.Request.Context(), session.FromAccount(storedAccount))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create session"})
 		return

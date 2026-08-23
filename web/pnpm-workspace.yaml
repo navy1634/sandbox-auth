@@ -1,3 +1,5 @@
 minimumReleaseAge: 4320
 minimumReleaseAgeStrict: true
 minimumReleaseAgeIgnoreMissingTime: false
+allowBuilds:
+  esbuild: true

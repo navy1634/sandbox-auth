@@ -2,6 +2,40 @@ package config
 
 import "testing"
 
+func TestParseOIDCClients(t *testing.T) {
+	clients, err := parseOIDCClients(`[{"client_id":"app","client_secret":"secret","redirect_uris":["https://app.example.com/callback"]}]`)
+	if err != nil {
+		t.Fatalf("parseOIDCClients() error = %v", err)
+	}
+	if len(clients) != 1 || clients[0].ClientID != "app" {
+		t.Fatalf("clients = %+v, want one app client", clients)
+	}
+
+	if _, err := parseOIDCClients(`[{"client_id":"app","redirect_uris":["https://app.example.com/callback"]},{"client_id":"app","redirect_uris":["https://other.example.com/callback"]}]`); err == nil {
+		t.Fatal("expected duplicate OIDC client IDs to be rejected")
+	}
+}
+
+func TestAuthRedirectURLAllowsOnlyOIDCResumeURL(t *testing.T) {
+	cfg := Config{
+		OIDCIssuerURL:      "https://auth.example.com/api",
+		DefaultRedirectURL: "https://auth.example.com/mypage",
+		AllowedRedirectURLs: []string{
+			"https://auth.example.com/mypage",
+		},
+	}
+	resumeURL := "https://auth.example.com/api/oidc/authorize/resume?transaction=transaction-value"
+
+	if got := cfg.AuthRedirectURL(resumeURL); got != resumeURL {
+		t.Fatalf("AuthRedirectURL() = %q, want %q", got, resumeURL)
+	}
+
+	foreignURL := "https://evil.example.com/api/oidc/authorize/resume?transaction=transaction-value"
+	if got := cfg.AuthRedirectURL(foreignURL); got != cfg.DefaultRedirectURL {
+		t.Fatalf("AuthRedirectURL() = %q, want default %q", got, cfg.DefaultRedirectURL)
+	}
+}
+
 func TestNormalizeCookieDomain(t *testing.T) {
 	tests := []struct {
 		name        string
@@ -159,7 +193,6 @@ func TestSplitStringsReturnsNilForEmptyValues(t *testing.T) {
 func TestLoadReadsTrustedProxies(t *testing.T) {
 	t.Setenv("GOOGLE_ID", "google-client-id")
 	t.Setenv("GOOGLE_SECRET", "google-secret")
-	t.Setenv("AUTH_SECRET", "01234567890123456789012345678901")
 	t.Setenv("DB_NAME", "app")
 	t.Setenv("DB_USER", "user")
 	t.Setenv("DB_PASSWORD", "pass")

@@ -7,6 +7,11 @@ import (
 
 	"github.com/sandbox-nextjs/src/ent/account"
 	"github.com/sandbox-nextjs/src/ent/authidentity"
+	"github.com/sandbox-nextjs/src/ent/authsession"
+	"github.com/sandbox-nextjs/src/ent/oidcaccesstoken"
+	"github.com/sandbox-nextjs/src/ent/oidcauthorizationcode"
+	"github.com/sandbox-nextjs/src/ent/oidcauthorizationtransaction"
+	"github.com/sandbox-nextjs/src/ent/oidcclient"
 	"github.com/sandbox-nextjs/src/ent/schema"
 	"github.com/sandbox-nextjs/src/ent/webauthncredential"
 	"github.com/sandbox-nextjs/src/ent/webauthnsession"
@@ -50,6 +55,53 @@ func init() {
 	authidentityDescEmailVerified := authidentityFields[4].Descriptor()
 	// authidentity.DefaultEmailVerified holds the default value on creation for the email_verified field.
 	authidentity.DefaultEmailVerified = authidentityDescEmailVerified.Default.(bool)
+	authsessionFields := schema.AuthSession{}.Fields()
+	_ = authsessionFields
+	// authsessionDescCreatedAt is the schema descriptor for created_at field.
+	authsessionDescCreatedAt := authsessionFields[4].Descriptor()
+	// authsession.DefaultCreatedAt holds the default value on creation for the created_at field.
+	authsession.DefaultCreatedAt = authsessionDescCreatedAt.Default.(func() time.Time)
+	oidcaccesstokenFields := schema.OIDCAccessToken{}.Fields()
+	_ = oidcaccesstokenFields
+	// oidcaccesstokenDescCreatedAt is the schema descriptor for created_at field.
+	oidcaccesstokenDescCreatedAt := oidcaccesstokenFields[6].Descriptor()
+	// oidcaccesstoken.DefaultCreatedAt holds the default value on creation for the created_at field.
+	oidcaccesstoken.DefaultCreatedAt = oidcaccesstokenDescCreatedAt.Default.(func() time.Time)
+	oidcauthorizationcodeFields := schema.OIDCAuthorizationCode{}.Fields()
+	_ = oidcauthorizationcodeFields
+	// oidcauthorizationcodeDescCreatedAt is the schema descriptor for created_at field.
+	oidcauthorizationcodeDescCreatedAt := oidcauthorizationcodeFields[10].Descriptor()
+	// oidcauthorizationcode.DefaultCreatedAt holds the default value on creation for the created_at field.
+	oidcauthorizationcode.DefaultCreatedAt = oidcauthorizationcodeDescCreatedAt.Default.(func() time.Time)
+	oidcauthorizationtransactionFields := schema.OIDCAuthorizationTransaction{}.Fields()
+	_ = oidcauthorizationtransactionFields
+	// oidcauthorizationtransactionDescState is the schema descriptor for state field.
+	oidcauthorizationtransactionDescState := oidcauthorizationtransactionFields[4].Descriptor()
+	// oidcauthorizationtransaction.DefaultState holds the default value on creation for the state field.
+	oidcauthorizationtransaction.DefaultState = oidcauthorizationtransactionDescState.Default.(string)
+	// oidcauthorizationtransactionDescCreatedAt is the schema descriptor for created_at field.
+	oidcauthorizationtransactionDescCreatedAt := oidcauthorizationtransactionFields[10].Descriptor()
+	// oidcauthorizationtransaction.DefaultCreatedAt holds the default value on creation for the created_at field.
+	oidcauthorizationtransaction.DefaultCreatedAt = oidcauthorizationtransactionDescCreatedAt.Default.(func() time.Time)
+	oidcclientMixin := schema.OIDCClient{}.Mixin()
+	oidcclientMixinFields0 := oidcclientMixin[0].Fields()
+	_ = oidcclientMixinFields0
+	oidcclientFields := schema.OIDCClient{}.Fields()
+	_ = oidcclientFields
+	// oidcclientDescCreatedAt is the schema descriptor for created_at field.
+	oidcclientDescCreatedAt := oidcclientMixinFields0[0].Descriptor()
+	// oidcclient.DefaultCreatedAt holds the default value on creation for the created_at field.
+	oidcclient.DefaultCreatedAt = oidcclientDescCreatedAt.Default.(func() time.Time)
+	// oidcclientDescUpdatedAt is the schema descriptor for updated_at field.
+	oidcclientDescUpdatedAt := oidcclientMixinFields0[1].Descriptor()
+	// oidcclient.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	oidcclient.DefaultUpdatedAt = oidcclientDescUpdatedAt.Default.(func() time.Time)
+	// oidcclient.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	oidcclient.UpdateDefaultUpdatedAt = oidcclientDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// oidcclientDescDisabled is the schema descriptor for disabled field.
+	oidcclientDescDisabled := oidcclientFields[2].Descriptor()
+	// oidcclient.DefaultDisabled holds the default value on creation for the disabled field.
+	oidcclient.DefaultDisabled = oidcclientDescDisabled.Default.(bool)
 	webauthncredentialFields := schema.WebauthnCredential{}.Fields()
 	_ = webauthncredentialFields
 	// webauthncredentialDescCreatedAt is the schema descriptor for created_at field.

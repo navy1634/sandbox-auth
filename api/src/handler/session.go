@@ -30,7 +30,7 @@ func (h *AuthHandler) readSession(c *gin.Context) (session.User, error) {
 	if err != nil {
 		return session.User{}, err
 	}
-	return h.sessions.Verify(value)
+	return h.sessions.VerifyContext(c.Request.Context(), value)
 }
 
 // アプリ共通の属性で認証系 Cookie を設定する。
@@ -96,6 +96,11 @@ func (h *AuthHandler) cookieName(name string) string {
 		return hostRedirectCookieName
 	case passkeySessionCookieName:
 		return hostPasskeySessionCookieName
+	case oidcTransactionCookieName:
+		if h.cfg.CookieDomain != "" {
+			return oidcTransactionCookieName
+		}
+		return hostOIDCTransactionCookieName
 	default:
 		return name
 	}
@@ -104,6 +109,9 @@ func (h *AuthHandler) cookieName(name string) string {
 // ログインセッションだけを設定済みの親ドメインで共有する。
 func (h *AuthHandler) cookieDomain(name string) string {
 	if name == sessionCookieName {
+		return h.cfg.CookieDomain
+	}
+	if name == oidcTransactionCookieName {
 		return h.cfg.CookieDomain
 	}
 	return ""

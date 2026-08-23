@@ -72,6 +72,24 @@ func TestOriginMiddlewareAllowsTrustedPostOrigin(t *testing.T) {
 	}
 }
 
+// OIDC token endpointはサーバー間POSTのためOriginなしでも通ることを確認する。
+func TestOriginMiddlewareAllowsOIDCTokenWithoutOrigin(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	engine := gin.New()
+	engine.Use(originMiddleware("https://app.example.com"))
+	engine.POST("/oidc/token", func(c *gin.Context) {
+		c.Status(http.StatusOK)
+	})
+
+	req := httptest.NewRequest(http.MethodPost, "/oidc/token", nil)
+	rec := httptest.NewRecorder()
+	engine.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", rec.Code, http.StatusOK)
+	}
+}
+
 // 同じ送信元から上限を超えて送ると 429 になることを確認する。
 func TestRateLimitMiddlewareRejectsRequestsOverLimit(t *testing.T) {
 	gin.SetMode(gin.TestMode)

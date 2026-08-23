@@ -1,9 +1,7 @@
 FROM golang:1.26-bookworm@sha256:1ecb7edf62a0408027bd5729dfd6b1b8766e578e8df93995b225dfd0944eb651 AS builder
 WORKDIR /app
-COPY go.mod go.sum ./
-RUN go mod download -x
 COPY . .
-RUN go build -o /app/bin/api ./src
+RUN --mount=type=cache,target=~/go/pkg/mod --mount=type=cache,target=/root/.cache/go-build go build -o /app/bin/api ./src
 
 FROM debian:bookworm-slim@sha256:7b140f374b289a7c2befc338f42ebe6441b7ea838a042bbd5acbfca6ec875818
 WORKDIR /app

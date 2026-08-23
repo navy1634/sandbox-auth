@@ -14,6 +14,12 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/sandbox-nextjs/src/ent/account"
 	"github.com/sandbox-nextjs/src/ent/authidentity"
+	"github.com/sandbox-nextjs/src/ent/authsession"
+	"github.com/sandbox-nextjs/src/ent/oidcaccesstoken"
+	"github.com/sandbox-nextjs/src/ent/oidcauthorizationcode"
+	"github.com/sandbox-nextjs/src/ent/oidcauthorizationtransaction"
+	"github.com/sandbox-nextjs/src/ent/oidcclient"
+	"github.com/sandbox-nextjs/src/ent/oidcclientredirecturi"
 	"github.com/sandbox-nextjs/src/ent/webauthncredential"
 	"github.com/sandbox-nextjs/src/ent/webauthnsession"
 )
@@ -76,10 +82,16 @@ var (
 func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			account.Table:            account.ValidColumn,
-			authidentity.Table:       authidentity.ValidColumn,
-			webauthncredential.Table: webauthncredential.ValidColumn,
-			webauthnsession.Table:    webauthnsession.ValidColumn,
+			account.Table:                      account.ValidColumn,
+			authidentity.Table:                 authidentity.ValidColumn,
+			authsession.Table:                  authsession.ValidColumn,
+			oidcaccesstoken.Table:              oidcaccesstoken.ValidColumn,
+			oidcauthorizationcode.Table:        oidcauthorizationcode.ValidColumn,
+			oidcauthorizationtransaction.Table: oidcauthorizationtransaction.ValidColumn,
+			oidcclient.Table:                   oidcclient.ValidColumn,
+			oidcclientredirecturi.Table:        oidcclientredirecturi.ValidColumn,
+			webauthncredential.Table:           webauthncredential.ValidColumn,
+			webauthnsession.Table:              webauthnsession.ValidColumn,
 		})
 	})
 	return columnCheck(t, c)

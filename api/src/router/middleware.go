@@ -20,6 +20,14 @@ func registerMiddleware(engine *gin.Engine, cfg config.Config, db *ent.Client) {
 			Limit:  20,
 			Window: time.Minute,
 		},
+		"/oidc/token": {
+			Limit:  60,
+			Window: time.Minute,
+		},
+		"/api/oidc/token": {
+			Limit:  60,
+			Window: time.Minute,
+		},
 	}))
 	engine.Use(maxBodyBytesMiddleware(1 << 20))
 	engine.Use(database.TransactionMiddleware(db))
@@ -93,12 +101,21 @@ func originMiddleware(allowedOrigins ...string) gin.HandlerFunc {
 			c.Next()
 			return
 		}
+		if isOIDCTokenPath(c.FullPath()) {
+			c.Next()
+			return
+		}
 		if _, ok := allowed[c.GetHeader("Origin")]; !ok {
 			c.AbortWithStatus(http.StatusForbidden)
 			return
 		}
 		c.Next()
 	}
+}
+
+// OIDC token endpointはサーバー間POSTのためOriginヘッダーを要求しない。
+func isOIDCTokenPath(path string) bool {
+	return path == "/oidc/token" || path == "/api/oidc/token"
 }
 
 // リクエスト本文の読み取りサイズを指定バイト数に制限する。

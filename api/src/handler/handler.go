@@ -10,14 +10,16 @@ import (
 )
 
 const (
-	sessionCookieName            = "app_session"
-	stateCookieName              = "oauth_state"
-	redirectCookieName           = "auth_redirect"
-	passkeySessionCookieName     = "passkey_session"
-	hostSessionCookieName        = "__Host-app_session"
-	hostStateCookieName          = "__Host-oauth_state"
-	hostRedirectCookieName       = "__Host-auth_redirect"
-	hostPasskeySessionCookieName = "__Host-passkey_session"
+	sessionCookieName             = "app_session"
+	stateCookieName               = "oauth_state"
+	redirectCookieName            = "auth_redirect"
+	passkeySessionCookieName      = "passkey_session"
+	oidcTransactionCookieName     = "oidc_transaction"
+	hostSessionCookieName         = "__Host-app_session"
+	hostStateCookieName           = "__Host-oauth_state"
+	hostRedirectCookieName        = "__Host-auth_redirect"
+	hostPasskeySessionCookieName  = "__Host-passkey_session"
+	hostOIDCTransactionCookieName = "__Host-oidc_transaction"
 )
 
 type AuthHandler struct {
@@ -27,12 +29,12 @@ type AuthHandler struct {
 }
 
 // 認証系 handler で共有する依存をまとめて初期化する。
-func NewAuthHandler(cfg config.Config, accounts *usecase.AccountUsecase) *AuthHandler {
+func NewAuthHandler(cfg config.Config, accounts *usecase.AccountUsecase, stores ...session.Store) *AuthHandler {
 	// 認証系ハンドラで共有する設定、アカウント処理、Cookie セッション管理をまとめる。
 	return &AuthHandler{
 		cfg:      cfg,
 		accounts: accounts,
-		sessions: session.NewManager(cfg.SessionSecret),
+		sessions: session.NewManager(stores...),
 	}
 }
 
@@ -45,7 +47,7 @@ func (h *AuthHandler) Health(c *gin.Context) {
 func (h *AuthHandler) Logout(c *gin.Context) {
 	// ブラウザに残るログイン Cookie を削除してログアウト状態にする。
 	if value, err := c.Cookie(h.cookieName(sessionCookieName)); err == nil {
-		_ = h.sessions.Revoke(value)
+		_ = h.sessions.RevokeContext(c.Request.Context(), value)
 	}
 	h.clearCookie(c, sessionCookieName)
 	c.JSON(http.StatusOK, gin.H{"ok": true})
