@@ -1,7 +1,7 @@
 FROM node:26-alpine@sha256:dbaa92e5758cbbcf85d65d5403fdb530fe3442cbe8c6dbfb7ef23365450d5070 AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN npm install -g pnpm@11.15.1
+RUN npm install -g pnpm@12.5.1
 
 # Dependencies
 FROM base AS deps
