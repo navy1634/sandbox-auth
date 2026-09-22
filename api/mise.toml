@@ -1,9 +1,9 @@
 [tools]
-go = "1.26.6"
-golangci-lint = "2.12.2"
+go = "1.27.1"
+golangci-lint = "2.13.2"
 air = "1.67.4"
 "go:entgo.io/ent/cmd/ent" = "v0.14.6"
-"go:github.com/pressly/goose/v3/cmd/goose" = "v3.27.3"
+"go:github.com/pressly/goose/v3/cmd/goose" = "v3.28.0"
 
 [env]
 _.file = ".env.local"
