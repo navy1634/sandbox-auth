@@ -4,6 +4,7 @@ golangci-lint = "2.13.2"
 air = "1.67.4"
 "go:entgo.io/ent/cmd/ent" = "v0.14.6"
 "go:github.com/pressly/goose/v3/cmd/goose" = "v3.28.0"
+"go:golang.org/x/vuln/cmd/govulncheck" = "v1.8.0"
 
 [env]
 _.file = ".env.local"
@@ -45,7 +46,7 @@ run = "golangci-lint config verify"
 run = "go test ./..."
 
 [tasks.vulncheck]
-run = "go run golang.org/x/vuln/cmd/govulncheck@v1.1.4 ./..."
+run = "govulncheck ./..."
 
 [tasks.ci]
 run = [

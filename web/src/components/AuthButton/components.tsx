@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react";
 import { authRedirectTo, oauthLoginURL } from "@/app/authTypes";
 
-const apiBaseURL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api";
+const apiBaseURL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api";
 
 export type AuthButtonViewProps = {
   accountId?: number | null;
