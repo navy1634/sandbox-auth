@@ -180,10 +180,7 @@ export default function LoginPageClient({ redirectTo }: LoginPageClientProps) {
         )}
 
         <div className={styles.actions}>
-          <a
-            className={styles.primaryButton}
-            href={oauthLoginURL(redirectTo)}
-          >
+          <a className={styles.primaryButton} href={oauthLoginURL(redirectTo)}>
             Google でログイン
           </a>
           <button
