@@ -22,8 +22,7 @@ export type MeResponse = {
   };
 };
 
-export const apiBaseURL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api";
+export const apiBaseURL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api";
 
 const configuredDefaultRedirectURL =
   process.env.NEXT_PUBLIC_DEFAULT_REDIRECT_URL;
