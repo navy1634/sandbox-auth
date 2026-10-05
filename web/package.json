@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@simplewebauthn/browser": "^13.3.0",
-    "next": "16.3.6",
+    "next": "16.3.8",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-markdown": "^10.1.0",
@@ -44,11 +44,11 @@
     "oxlint": "1.86.0",
     "playwright": "^1.62.1",
     "storybook": "^10.5.7",
-    "stylelint": "17.15.0",
+    "stylelint": "17.16.0",
     "stylelint-config-standard": "40.0.0",
     "typescript": "^7.0.2",
     "vite": "^8.2.1",
     "vitest": "^4.1.10"
   },
-  "packageManager": "pnpm@11.28.2"
+  "packageManager": "pnpm@11.28.3"
 }
