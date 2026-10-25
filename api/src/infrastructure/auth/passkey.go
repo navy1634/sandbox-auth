@@ -38,7 +38,7 @@ func (s *PasskeyService) BeginRegistration(user domain.Account) (*protocol.Crede
 		user,
 		webauthn.WithResidentKeyRequirement(protocol.ResidentKeyRequirementRequired),
 		webauthn.WithExclusions(webauthn.Credentials(user.WebAuthnCredentials()).CredentialDescriptors()),
-		webauthn.WithExtensions(map[string]any{"credProps": true}),
+		webauthn.WithExtensions(webauthn.WithExtensionCredProps()),
 	)
 }
 
