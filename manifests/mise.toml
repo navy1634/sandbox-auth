@@ -1,5 +1,5 @@
 [tools]
-kubectl = "1.37.1"
+kubectl = "1.37.2"
 
 [env]
 _.file = ".env"
