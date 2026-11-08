@@ -3,16 +3,30 @@ kind: Kustomization
 namespace: sandbox-auth
 resources:
   - api-configmap.yaml
+  - database-persistentvolume.yaml
   - ingress.yaml
   - namespace.yaml
   - web-configmap.yaml
   - ../../base
 images:
   - name: sandbox-auth-api
-    newName: registry.example.com/sandbox-auth-api
+    newName: registry.local:5000/sandbox_auth-api
     newTag: latest
   - name: sandbox-auth-web
-    newName: registry.example.com/sandbox-auth-web
+    newName: registry.local:5000/sandbox_auth-web
     newTag: latest
 patches:
-  - path: replicas-patch.yaml
+  - target:
+      kind: Deployment
+      name: sandbox-auth-api
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: IfNotPresent
+  - target:
+      kind: Deployment
+      name: sandbox-auth-web
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: IfNotPresent
