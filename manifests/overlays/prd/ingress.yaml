@@ -8,10 +8,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - auth.example.com
+        - auth.sandbox.navy1634.com
       secretName: sandbox-auth-tls
   rules:
-    - host: auth.example.com
+    - host: auth.sandbox.navy1634.com
       http:
         paths:
           - path: /api
