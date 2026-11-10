@@ -1,6 +1,6 @@
 [tools]
 node = "26.13.0"
-pnpm = "11.28.10"
+pnpm = "11.28.11"
 
 [env]
 _.file = { path = ".env.local", redact = true }
