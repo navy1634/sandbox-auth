@@ -1,4 +1,4 @@
-FROM golang:1.27-bookworm@sha256:d9b6a1beb9474adc2a1ce842573639b44b2a0dd49b6669f51d3821baf9ec37c9 AS builder
+FROM golang:1.27-bookworm@sha256:ce59b41415e2524ae99926fe1f37ce48ba8c194dcbd2a56a65436cdcefa2bd34 AS builder
 WORKDIR /app
 COPY . .
 RUN --mount=type=cache,target=~/go/pkg/mod --mount=type=cache,target=/root/.cache/go-build go build -o /app/bin/api ./src
